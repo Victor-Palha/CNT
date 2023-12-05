@@ -1,0 +1,62 @@
+[
+  {
+    "id_avatar": "81a0c8e6-9b72-4758-8c20-b3aa9fbf379d",
+    "name": "Crawler de dados",
+    "description": "Rastejando pelo seu sistema... Cuidado com o que procura.",
+    "image": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/91c64743-70df-48d8-bc46-032dcb781164/dfie5c5-2b88b948-afe5-4cee-aa4d-d090b344384b.png/v1/fit/w_375,h_375,q_70,strp/cyberse_sage_artwork_by_d_evil6661_dfie5c5-375w.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9ODAwIiwicGF0aCI6IlwvZlwvOTFjNjQ3NDMtNzBkZi00OGQ4LWJjNDYtMDMyZGNiNzgxMTY0XC9kZmllNWM1LTJiODhiOTQ4LWFmZTUtNGNlZS1hYTRkLWQwOTBiMzQ0Mzg0Yi5wbmciLCJ3aWR0aCI6Ijw9ODAwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.98cq550-Jt8mUSWfsMJXO651XvbLLIfBSL-8iXYlQYk",
+    "set_avatar": "EXPLORADORES DE DADOS",
+    "unique_ability": "fcf3ee48-6e6a-4275-86c1-1f54add1b44b",
+    "passive_ability": "",
+    "hit_points": 35,
+    "attack": 15,
+    "defense": 10,
+    "type_avatar": "OFENSIVO",
+    "created_at": "2023-12-05T17:49:18.098Z",
+    "updated_at": "2023-12-05T17:49:18.098Z"
+  },
+  {
+    "id_avatar": "d6135bb6-5bb1-4520-b0dd-87f3293ca251",
+    "name": "Manipulador de dados",
+    "description": "16 bit, 32 bits, 64 bits... Ops, sistema corrompido!",
+    "image": "https://storage.googleapis.com/binderpos-event-images/b1409172-8a86-460f-91ec-6e8d3c1bbbc4-1658189456484.jpg",
+    "set_avatar": "EXPLORADORES DE DADOS",
+    "unique_ability": "d57f235a-431f-4c99-802b-57f849deb082",
+    "passive_ability": "",
+    "hit_points": 35,
+    "attack": 13,
+    "defense": 13,
+    "type_avatar": "MODERADO",
+    "created_at": "2023-12-05T17:52:25.473Z",
+    "updated_at": "2023-12-05T17:52:25.473Z"
+  },
+  {
+    "id_avatar": "d768cb8a-fd60-417a-8197-fb181db4b1a5",
+    "name": "Programador",
+    "description": "Nada nesse mundo é capaz de escapar das minhas mãos.",
+    "image": "https://cdna.artstation.com/p/assets/images/images/005/739/710/large/richard-bruss-diable-destroyer-of-prophecy.jpg?1493404885",
+    "set_avatar": "EXPLORADORES DE DADOS",
+    "unique_ability": "26e6973c-4bb4-45ab-95f4-eb01f64ee123",
+    "passive_ability": "",
+    "hit_points": 35,
+    "attack": 12,
+    "defense": 14,
+    "type_avatar": "MODERADO",
+    "created_at": "2023-12-05T17:54:36.362Z",
+    "updated_at": "2023-12-05T17:54:36.362Z"
+  },
+  {
+    "id_avatar": "007f770a-857d-4e30-8c7e-76e5fba5fd41",
+    "name": "Coletor de dados",
+    "description": "Pacotes capturados com sucesso... Analisando dados...",
+    "image": "https://pics.craiyon.com/2023-06-12/9fb87d13e0734febb75a91d637be1d5e.webp",
+    "set_avatar": "EXPLORADORES DE DADOS",
+    "unique_ability": "52a2ba2b-a17a-4129-8739-b6da9cf110df",
+    "passive_ability": "",
+    "hit_points": 35,
+    "attack": 10,
+    "defense": 15,
+    "type_avatar": "DEFENSIVO",
+    "created_at": "2023-12-05T17:56:19.900Z",
+    "updated_at": "2023-12-05T17:56:19.900Z"
+  }
+]

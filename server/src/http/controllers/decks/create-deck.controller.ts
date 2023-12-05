@@ -10,12 +10,13 @@ export async function createDeckController(req:FastifyRequest, res: FastifyReply
     })
 
     const {avatar_id, deck_name, cards} = createDeckSchema.parse(req.body);
+    // console.log(req.body)
 
     try {
         const createDeckService = createDeckService_make();
 
         const deck = await createDeckService.execute({
-            player_id: req.user.sub,
+            player_id: req.user.sign.sub,
             avatar_id,
             deck_name,
             cards
@@ -27,7 +28,7 @@ export async function createDeckController(req:FastifyRequest, res: FastifyReply
 
     } catch (error) {
         return res.status(400).send({
-            message: "do error later"
+            error
         })
     }
 }

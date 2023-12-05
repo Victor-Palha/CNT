@@ -2,7 +2,7 @@ import "dotenv/config"
 import { z } from "zod";
 
 const applicationSchema = z.object({
-    port: z.coerce.number(),
+    port: z.coerce.number().default(3000),
     jwtSecret: z.string(),
     databaseUrl: z.string().url(),
 })

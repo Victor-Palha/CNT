@@ -1,11 +1,25 @@
 import { Deck, Prisma } from "@prisma/client";
-import { DecksRepository } from "../Decks.repository";
+import { CreateDeckRequest, DecksRepository } from "../Decks.repository";
 import { prisma } from "../../../lib/prisma";
 
 export class DecksPrismaRepository implements DecksRepository{
-    async createDeck(data: Prisma.DeckCreateInput): Promise<Deck> {
+    async createDeck({player_id, avatar_id, cards, deck_name}: CreateDeckRequest): Promise<Deck> {
         const deck = await prisma.deck.create({
-            data
+            data: {
+                name: deck_name,
+                player_id: player_id,
+                avatar_id: avatar_id,
+            }
+            
+        })
+        
+        cards.forEach(async (card) => {
+            await prisma.cardsDeck.create({
+                data: {
+                    card_id: card.id_card,
+                    deck_id: deck.id_deck
+                }
+            })
         })
 
         return deck;

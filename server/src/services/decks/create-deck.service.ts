@@ -20,13 +20,11 @@ export class CreateDeckService{
 
     async execute({player_id, avatar_id, deck_name, cards}: CreateDeckRequest){
         const player = await this.playerRepository.getPlayerById(player_id);
-
         if(!player){
             throw new Error("Player not found");
         }
 
         const avatar = await this.avatarRepository.getAvatarById(avatar_id);
-
         if(!avatar){
             throw new Error("Avatar not found");
         }
@@ -49,29 +47,14 @@ export class CreateDeckService{
 
             cardsInDeck.push(cardInDeck);
         }
-
+        // console.log(cardsInDeck);
         const deck = await this.deckRepository.createDeck({
-            Player: {
-                connect: {
-                    id_player: player.id_player
-                }
-            },
-            Avatar: {
-                connect: {
-                    id_avatar: avatar.id_avatar
-                }
-            },
-            CardsDeck: {
-                createMany: {
-                    data: cardsInDeck.map(card => {
-                        return {
-                            card_id: card.id_card
-                        }
-                    })
-                }
-            },
-            name: deck_name
+            avatar_id: avatar.id_avatar,
+            player_id: player.id_player,
+            deck_name: deck_name,
+            cards: cardsInDeck
         });
+        console.log(deck);
         
         return deck;
     }

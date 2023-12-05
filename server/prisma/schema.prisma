@@ -72,6 +72,7 @@ model Avatars {
 }
 
 model CardsDeck {
+  id_cards_deck String   @id @default(uuid())
   deck_id   String   @map("deck_id")
   card_id   String   @map("card_id")
 
@@ -79,8 +80,6 @@ model CardsDeck {
   deck      Deck     @relation(fields: [deck_id], references: [id_deck])
   // Relacionamento com a tabela de Cards
   cards     Cards    @relation(fields: [card_id], references: [id_card])
-
-  @@id([deck_id, card_id])
 }
 
 model Deck {
