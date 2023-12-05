@@ -22,7 +22,7 @@ export async function createAvatarController(req: FastifyRequest, res: FastifyRe
         image: z.string().url(),
         set_avatar: z.string(),
         unique_ability: z.string().uuid(),
-        passive_ability: z.string().uuid().optional(),
+        passive_ability: z.string().optional(),
         hit_points: z.number().int().positive(),
         attack: z.number().int().positive(),
         defense: z.number().int().positive(),
