@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TypeCard {
+  OFENSIVA
+  DEFENSIVA
+  HABILIDADE
+  HABILIDADE_UNICA
+}
+
+enum TypeAvatar {
+  OFENSIVO
+  DEFENSIVO
+  MODERADO
+}
+
+model Players {
+  id_player    String    @id @default(uuid())
+  username     String    @unique
+  email        String    @unique
+  password     String
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  // Relacionamento com os baralhos do jogador
+  Decks        Deck[]
+
+  @@map("players")
+}
+
+model Cards {
+  id_card      String    @id @default(uuid())
+  name         String
+  description  String
+  image        String
+  set_card     String
+  type_card    TypeCard
+  list       Int @default(3)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  // Relacionamento com os baralhos (muitos para um)
+  Decks        CardsDeck[]
+}
+
+model Avatars {
+  id_avatar        String    @id @default(uuid())
+  name             String
+  description      String
+  image            String
+  set_avatar       String
+  unique_ability   String
+  passive_ability  String?
+  hit_points       Int
+  attack           Int
+  defense          Int
+  type_avatar      TypeAvatar
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  // Relacionamento com os baralhos (um para um)
+  Deck             Deck[]
+}
+
+model CardsDeck {
+  deck_id   String   @map("deck_id")
+  card_id   String   @map("card_id")
+
+  // Relacionamento com a tabela de Decks
+  deck      Deck     @relation(fields: [deck_id], references: [id_deck])
+  // Relacionamento com a tabela de Cards
+  cards     Cards    @relation(fields: [card_id], references: [id_card])
+
+  @@id([deck_id, card_id])
+}
+
+model Deck {
+  id_deck      String    @id @default(uuid())
+  name         String
+  player_id    String    @map("player_id")
+  avatar_id    String    @map("avatar_id")
+
+  // Relacionamento com os jogadores
+  Player       Players   @relation(fields: [player_id], references: [id_player])
+
+  // Relacionamento com os avatares
+  Avatar       Avatars?   @relation(fields: [avatar_id], references: [id_avatar])
+
+  // Relacionamento com as cartas (um para muitos)
+  CardsDeck    CardsDeck[]
+  
+  @@map("decks")
+}
