@@ -16,14 +16,19 @@ export interface AvatarsProps {
 type AvatarModelProps = {
     avatar: AvatarsProps,
     cards?: CardsProps[],
-    handleAvatar(avatar: AvatarsProps): void
+    handleAvatar(e: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, avatar: AvatarsProps): void
+    handleAvatarInfo(cards: CardsProps | null, avatar: AvatarsProps | null): void
 }
-export function AvatarModel({avatar, cards = [], handleAvatar}: AvatarModelProps){
+export function AvatarModel({avatar, cards = [], handleAvatar, handleAvatarInfo}: AvatarModelProps){
     return(
-        <div className="flex flex-col cyber-tile-small bg-black w-40 h-auto cursor-pointer hover:scale-105" key={avatar.id_avatar} onClick={()=>handleAvatar(avatar)}>
+        <div 
+            className="flex flex-col cyber-tile-small bg-black h-56 cursor-pointer hover:scale-105 w-[30%] overflow-hidden" 
+            onContextMenu={(e)=>handleAvatar(e, avatar)}
+            onClick={()=>handleAvatarInfo(null, avatar)}
+        >
             <img src={avatar.image} alt={avatar.name} className=""/>
-            <div className="cyber-tile bg-slate-500 mt-4">
-                <p className="text-back">{avatar.name}</p>
+            <div className="cyber-tile-small bg-slate-500 mt-2 text-[10px]">
+                <p className="text-black">{avatar.name}</p>
                 <div className="flex gap-2">
                     <p>ATK: {avatar.attack}</p>
                     <p>DEF: {avatar.defense}</p>

@@ -40,14 +40,18 @@ export function Login() {
         ">
           Cyber Net Cards
         </h1>
-        <input type="text" placeholder='Email' className='w-full px-1 py-2 rounded border-none' 
-          value={username} 
-          onChange={(e)=> setUsername(e.target.value)}
-        />
-        <input type="password" placeholder='Password' className='w-full px-1 py-2 rounded border-none'
-          value={password} 
-          onChange={(e)=> setPassword(e.target.value)}
-        />
+        <div className='cyber-input'>
+          <input type="text" placeholder='Email' className='w-full px-1 py-2  border-none' 
+            value={username} 
+            onChange={(e)=> setUsername(e.target.value)}
+          />
+        </div>
+        <div className='cyber-input'>
+          <input type="password" placeholder='Password' className='w-full px-1 py-2  border-none'
+            value={password} 
+            onChange={(e)=> setPassword(e.target.value)}
+          />
+        </div>
         <Link to='/signup' className='text-blue-500 hover:text-blue-700 text-center'>
             Don't have an account? Sign up
         </Link>

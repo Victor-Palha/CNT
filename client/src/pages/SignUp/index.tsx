@@ -48,30 +48,42 @@ export function SignUp(){
             ">
             Cyber Net Cards
             </h1>
-            <input 
-                type="text" placeholder='Username' className='w-full px-1 py-2 rounded border-none' 
-                value={username} 
-                onChange={(e)=> setUsername(e.target.value)}
-                required
-            />
-            <input 
-                type="email" placeholder='Email' className='w-full px-1 py-2 rounded border-none' 
-                value={email} 
-                onChange={(e)=> setEmail(e.target.value)}
-                required
-            />
-            <input 
-                type="password" placeholder='Password' className='w-full px-1 py-2 rounded border-none'
-                value={password} 
-                onChange={(e)=> setPassword(e.target.value)}
-                required
-            />
-            <input 
-                type="password" placeholder='Confirm Password' className='w-full px-1 py-2 rounded border-none'
-                value={confirmPass} 
-                onChange={(e)=> setConfirmPass(e.target.value)}
-                required
-            />
+            <div className="cyber-input">
+
+                <input 
+                    type="text" placeholder='Username' className='w-full px-1 py-2 rounded border-none' 
+                    value={username} 
+                    onChange={(e)=> setUsername(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="cyber-input">
+
+                <input 
+                    type="email" placeholder='Email' className='w-full px-1 py-2 rounded border-none' 
+                    value={email} 
+                    onChange={(e)=> setEmail(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="cyber-input">
+
+                <input 
+                    type="password" placeholder='Password' className='w-full px-1 py-2 rounded border-none'
+                    value={password} 
+                    onChange={(e)=> setPassword(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="cyber-input">
+
+                <input 
+                    type="password" placeholder='Confirm Password' className='w-full px-1 py-2 rounded border-none'
+                    value={confirmPass} 
+                    onChange={(e)=> setConfirmPass(e.target.value)}
+                    required
+                />
+            </div>
             <Link to='/login' className='text-blue-500 hover:text-blue-700 text-center'>
                 Already have an account? Login
             </Link>

@@ -28,8 +28,8 @@ export class DecksPrismaRepository implements DecksRepository{
     async fetchDecks(search: string): Promise<Deck[]> {
         const decks = await prisma.deck.findMany({
             where: {
-                name: {
-                    contains: search
+                player_id: {
+                    equals: search
                 }
             }
         })
