@@ -16,7 +16,11 @@ const serverFactory = (handler: any, opts: any) => {
 }
 
 const server = fastify({serverFactory});
-const io = new Server(server.server);
+const io = new Server(server.server, {
+    cors: {
+        origin: "*"
+    }
+});
 
 server.register(cors)
 server.register(fastifyJwt, {

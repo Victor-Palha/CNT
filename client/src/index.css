@@ -2,27 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: BlenderProBook;
-  font-style: normal;
-  font-weight: 400;
-  src: url(fonts/BlenderProBook.woff2) format("woff2");
-}
-
-@font-face {
-  font-family: Oxanium;
-  font-style: normal;
-  font-weight: 400;
-  src: url(fonts/Oxanium.woff2) format('woff2');
-}
-
-@font-face {
-  font-family: Cyberpunk;
-  src: url(fonts/Cyberpunk.otf) format('opentype');
-}
 
 @layer base {
-  /* 
+   /* 
  * cyberpunk-css by alddesign: https://github.com/alddesign/cyberpunk-css 
  * v1.0.0-alpha.3
  * 
@@ -32,7 +14,24 @@
   /*#region fonts*/
 
   /*#endregion*/
-
+  @font-face {
+    font-family: BlenderProBook;
+    font-style: normal;
+    font-weight: 400;
+    src: url(fonts/BlenderProBook.woff2) format("woff2");
+  }
+  
+  @font-face {
+    font-family: Oxanium;
+    font-style: normal;
+    font-weight: 400;
+    src: url(fonts/Oxanium.woff2) format('woff2');
+  }
+  
+  @font-face {
+    font-family: Cyberpunk;
+    src: url(fonts/Cyberpunk.otf) format('opentype');
+  }
   /*#region top level elements*/
   :root {
     --root-font-size: 18px;
@@ -915,13 +914,13 @@
   .code,
   code,
   .code-block {
-    background-color: var(--dark);
+    background-color: rgb(17, 24, 39);
     color: var(--cyan);
     padding: .3rem .4rem .2rem .4rem;
     font-family: Oxanium !important;
     font-size: .75rem;
   }
-
+  
   .code-block {
     clip-path: polygon(0 0, 0 100%, calc(100% - 20px) 100%, 100% calc(100% - 20px), 100% 0);
     display: block;
@@ -1343,7 +1342,6 @@ Note: Inline svg shit doesnt work sometimes. Make sure to optimize it with https
       max-width: 100%;
     }
   }
-
   html {
     background-color: var(--dark)
   }

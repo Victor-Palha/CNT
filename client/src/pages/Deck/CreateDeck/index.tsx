@@ -56,17 +56,21 @@ export function CreateDeck(){
             alert("Seu deck só pode ter 22 cartas")
             return
         }
-        if(cardsSelected.filter((cardSelected)=>cardSelected.id_card === card.id_card).length === 3){
+        const cardsRepeat = cardsSelected.filter((cardSelected)=>cardSelected.id_card === card.id_card)
+        if(cardsRepeat.length >= 3){
             alert("Você só pode adicionar 3 copias de uma carta")
             return
+        }else{
+            setCardsSelected([...cardsSelected, card])
         }
-        setCardsSelected([...cardsSelected, card])
     }
+
     function removeCardFromDeck(e:React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, card: CardsProps){
         e.preventDefault()
         // Quando uma carta for removida, somente a primeira copia será removida
         const cardsRemove:CardsProps[] = cardsSelected.filter((cardSelect) => cardSelect.id_card === card.id_card)
         const otherCards:CardsProps[] = cardsSelected.filter((cardSelect) => cardSelect.id_card !== card.id_card)
+
 
         if(cardsRemove.length === 0){
             alert("Você não pode remover uma carta que não existe")
@@ -184,12 +188,12 @@ export function CreateDeck(){
                         </div>
                     )}
                     <div className="flex flex-wrap gap-2 mt-10">
-                        {cardsSelected.map((card) => (
+                        {cardsSelected.map((card, index) => (
                             <CardModel 
                                 card={card} 
                                 handleCard={removeCardFromDeck}
                                 handleCardInfo={handleInfoCards}
-                                key={card.id_card + new Date().getMilliseconds().toString()}
+                                key={card.id_card+index}
                             />
                         ))}
                     </div>
@@ -208,19 +212,19 @@ export function CreateDeck(){
                     <div className="flex flex-wrap gap-2">
                         {avatars.map((avatar) => (
                             <AvatarModel 
-                            avatar={avatar} 
-                            cards={cards} 
-                            key={avatar.id_avatar}
-                            handleAvatar={addAvatarToDeck}
-                            handleAvatarInfo={handleInfoCards}    
+                                avatar={avatar} 
+                                cards={cards} 
+                                key={avatar.id_avatar}
+                                handleAvatar={addAvatarToDeck}
+                                handleAvatarInfo={handleInfoCards}    
                             />
                         ))}
                         {cards.map((card) => (
                             <CardModel 
-                            card={card} 
-                            key={card.id_card} 
-                            handleCard={addCardToDeck}
-                            handleCardInfo={handleInfoCards}
+                                card={card} 
+                                key={card.id_card} 
+                                handleCard={addCardToDeck}
+                                handleCardInfo={handleInfoCards}
                             />
                         ))}
                         {cards.length === 0 && avatars.length === 0 && (

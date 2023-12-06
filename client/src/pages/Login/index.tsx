@@ -4,7 +4,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { authContext } from '../../context/authContext'
 
 export function Login() {
-  const {isAuth, setIsAuth} = useContext(authContext)
+  const {isAuth, setIsAuth, SavePlayerInformation} = useContext(authContext)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -17,10 +17,11 @@ export function Login() {
       // console.log(res.status)
       if(res.status === 201){
         localStorage.setItem('@token:cnt', res.data.token)
+        SavePlayerInformation(res.data.player)
         setIsAuth(true)
       }
     }).catch(err => {
-      console.log(err)
+      alert(err.response.data.message)
     })
   }
 

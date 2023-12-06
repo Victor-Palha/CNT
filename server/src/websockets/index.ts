@@ -5,8 +5,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("A user disconnected");
     })
-    socket.on("chat_message", (msg) => {
-        console.log("message: " + msg);
-        io.emit("chat_message", msg);
+    socket.on("joinRoom", (data) => {
+        console.log(data);
     })
 })

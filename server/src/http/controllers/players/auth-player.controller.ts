@@ -22,9 +22,16 @@ export async function authPlayerController(req:FastifyRequest, res: FastifyReply
                 sub: player.id_player
             }
         })
+
+
         
         return res.status(201).send({
-            token
+            token,
+            player: {
+                id_player: player.id_player,
+                username: player.username,
+                email: player.email,
+            }
         });
     } catch (error) {
         return res.status(400).send({

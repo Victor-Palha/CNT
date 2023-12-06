@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 // player_id
 // : 
 // "ffb31
-interface MyDeck{
+export interface MyDeck{
     avatar_id: string,
     id_deck: string,
     name: string,

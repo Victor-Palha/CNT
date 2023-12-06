@@ -6,6 +6,8 @@ import { Avatar } from "./pages/Avatar";
 import { Card } from "./pages/Card";
 import { Deck } from "./pages/Deck";
 import { CreateDeck } from "./pages/Deck/CreateDeck";
+import { Rooms } from "./pages/Rooms";
+import { Confront } from "./pages/Confront";
 export function Router(){
     return (
         <BrowserRouter>
@@ -16,6 +18,8 @@ export function Router(){
                 <Route path="/deck/create" element={<CreateDeck/>} />
                 <Route path="/avatar" element={<Avatar/>} />
                 <Route path="/card" element={<Card/>} />
+                <Route path="/confront/rooms" element={<Rooms/>}/>
+                <Route path="/confront/:player_id/:deck_id/:room_id" element={<Confront/>}/>
                 <Route path="/" element={<Home/>} />
             </Routes>
         </BrowserRouter>
