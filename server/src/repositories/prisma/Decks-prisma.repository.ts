@@ -1,5 +1,5 @@
 import { Deck, Prisma } from "@prisma/client";
-import { CreateDeckRequest, DecksRepository } from "../Decks.repository";
+import { CreateDeckRequest, DeckWithCards, DecksRepository } from "../Decks.repository";
 import { prisma } from "../../../lib/prisma";
 
 export class DecksPrismaRepository implements DecksRepository{
@@ -37,13 +37,30 @@ export class DecksPrismaRepository implements DecksRepository{
         return decks;
     }
 
-    async getDeckById(id: string): Promise<Deck | null> {
-        const deck = await prisma.deck.findUnique({
+    async getDeckById(id: string): Promise<DeckWithCards> {
+        const queryDeck = await prisma.deck.findUnique({
             where: {
                 id_deck: id
+            },
+            include: {
+                CardsDeck: {
+                    include: {
+                        cards: true
+                    }
+                }
             }
         })
 
-        return deck;
+        return {
+            deck: {
+                id_deck: queryDeck?.id_deck,
+                name: queryDeck?.name,
+            },
+            cards: queryDeck?.CardsDeck.map((card) => {
+                return card.cards
+            }),
+            avatar_id: queryDeck?.avatar_id
+
+        };
     }
 }

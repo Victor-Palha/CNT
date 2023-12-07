@@ -1,24 +1,23 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { io } from "socket.io-client"
 export function Confront(){
     const {player_id, deck_id, room_id} = useParams()
+
     const socket = io("http://localhost:3000",{
         autoConnect: true
     })
 
-    useEffect(()=>{
+    socket.emit("joinRoom",{
+        player_id,
+        deck_id,
+        room_id
+    })
 
-        socket.emit("joinRoom",{
-            player_id,
-            deck_id,
-            room_id
-        })
-
-        socket.on("joinedRoom", (data)=>{
-            console.log(data)
-        })
-    }, [])
+    socket.once("playersDeck", (data)=>{
+        console.log(data)
+    })
+    
     return (
         <main>
             <h1>Confronto</h1>
