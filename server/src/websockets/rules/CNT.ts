@@ -15,6 +15,7 @@ export interface DeckPlayer extends Omit<DeckWithCards, "avatar_id"> {
 export class CNT{
     private deckPrisma = new DecksPrismaRepository()
     private avatarPrisma = new AvatarPrismaRepository()
+    private playerPrisma = new PlayerPrismaRepository()
 
     protected deck: DeckPlayer = {} as DeckPlayer;
     protected cards: Cards[] | undefined = [];
@@ -35,6 +36,11 @@ export class CNT{
         };
         this.avatar = avatar;
         this.cards = deck.cards;
+    }
+
+    static async GetPlayer(player_id: string){
+        const player = await new PlayerPrismaRepository().getPlayerById(player_id)
+        return player?.username
     }
 
     public takeInfo(){
