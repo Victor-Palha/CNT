@@ -200,7 +200,7 @@ export function CreateDeck(){
                 </form>
                 </MagicMotion>
                 {/* Cards from DB */}
-                <MagicMotion>
+                
                 <div className="gap-4 max-h-[90vh] overflow-x-hidden">
                     <h1 className="cyber-h">Cartas</h1>
                     <form className="cyber-input my-4">
@@ -234,7 +234,7 @@ export function CreateDeck(){
                         )}
                     </div>
                 </div>
-                </MagicMotion>
+                
             </div>  
         </>
     )

@@ -54,6 +54,7 @@ export type PrepareRoom = {
     players: {
         socket_id: string;
         player: string;
+        ready: boolean;
     }[]
     messages: {
         playerName: string;

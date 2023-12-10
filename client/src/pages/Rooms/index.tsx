@@ -68,7 +68,7 @@ export function Rooms(){
                                 <tr key={room.room_id}>
                                     <td>{room.room_id}</td>
                                     <td>{room.room_name}</td>
-                                    <td>{room.players.length}/4</td>
+                                    <td>{room.players.length}/2</td>
                                     <td>
                                         <button className="cyber-button-small bg-red fg-white" onClick={()=>joinRoom(room.room_id)}>
                                             <p>Entrar</p>

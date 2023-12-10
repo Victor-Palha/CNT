@@ -1343,6 +1343,6 @@ Note: Inline svg shit doesnt work sometimes. Make sure to optimize it with https
     }
   }
   html {
-    background-color: var(--dark)
+    @apply bg-gray-800
   }
 }
