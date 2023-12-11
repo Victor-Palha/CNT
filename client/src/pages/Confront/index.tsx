@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { PrepareRoom, confrontContext } from "../../context/confrontContext"
-import { MagicMotion } from "react-magic-motion"
 import { Player } from "../../context/authContext"
 import instance from "../../lib/axios"
 
@@ -48,6 +47,11 @@ export function Confront(){
         setReady(ready)
     }
 
+    async function leaveRoom(){
+        socket && socket.emit("leave_Room", room_id)
+        window.location.href = "/confront/rooms"
+    }
+
     useEffect(()=>{
         console.log(room_id)
         socket && socket.emit("room_Info", room_id)
@@ -63,10 +67,12 @@ export function Confront(){
 
     if(socket){
         return (
-            
             <main>
+                {room.inConfront && (
+                    <Navigate to={`/confront/${room_id}/game`}/>
+                )}
                 <header className="cyber-razor-bottom bg-black p-4 z-0">
-                    <button className="cyber-button-small bg-red">
+                    <button className="cyber-button-small bg-red" onClick={leaveRoom}>
                         Desconectar
                         <span className="glitchtext">Fracote</span>
                     </button>
@@ -115,11 +121,18 @@ export function Confront(){
                                 />
                                 <label htmlFor="Ready">Preparado</label>
                             </div>
+                            {player && player.id_player === room.host && ready && (
+                                <button className="cyber-button-small bg-red mt-4">
+                                    Iniciar
+                                    <span className="glitchtext">Danger</span>
+                                </button>
+                            
+                            )}
                         </div>
                     </div>
                 )}
                 <div className="cyber-razor-top bg-black bottom-0 left-0">
-                    <MagicMotion>
+                    
                     <div className="w-full code-block h-[200px] overflow-scroll first:text-red-500 cyber-glitch-2">
                         {messages && messages.map((message, index) => (
                             <div 
@@ -131,7 +144,6 @@ export function Confront(){
                             </div>
                         ))}
                     </div>
-                    </MagicMotion>
                 
                     <textarea
                         value={message}

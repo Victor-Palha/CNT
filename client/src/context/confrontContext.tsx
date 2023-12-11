@@ -51,6 +51,7 @@ export type Room = {
 export type PrepareRoom = {
     room_id: string;
     room_name: string;
+    host: string;
     players: {
         socket_id: string;
         player: string;
@@ -60,6 +61,7 @@ export type PrepareRoom = {
         playerName: string;
         message: string;
     }[]
+    inConfront: boolean;
 }
 
 interface ConfrontContextProps {

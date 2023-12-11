@@ -4,10 +4,7 @@ import { AvatarPrismaRepository } from "../../repositories/prisma/Avatar-prisma.
 import { DecksPrismaRepository } from "../../repositories/prisma/Decks-prisma.repository"
 import { PlayerPrismaRepository } from "../../repositories/prisma/Player-prisma.repository"
 
-// interface CNTInterface{
-//     // player_id: string,
-//     deck_id: string,
-// }
+
 export interface DeckPlayer extends Omit<DeckWithCards, "avatar_id"> {
     avatar: Avatars | null;
 }
@@ -15,13 +12,12 @@ export interface DeckPlayer extends Omit<DeckWithCards, "avatar_id"> {
 export class CNT{
     private deckPrisma = new DecksPrismaRepository()
     private avatarPrisma = new AvatarPrismaRepository()
-    private playerPrisma = new PlayerPrismaRepository()
 
     protected deck: DeckPlayer = {} as DeckPlayer;
     protected cards: Cards[] | undefined = [];
     protected avatar: Avatars | null = null;
 
-    async getDeck(deck_id: string){
+    public async getDeck(deck_id: string){
         const deck = await this.deckPrisma.getDeckById(deck_id)
         const avatar = await this.avatarPrisma.getAvatarById(deck.avatar_id as string)
 

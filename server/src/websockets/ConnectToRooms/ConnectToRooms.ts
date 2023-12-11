@@ -5,15 +5,18 @@ import { randomUUID } from "crypto";
 interface PrepareRoom{
     room_id: string;
     room_name: string;
+    host: string;
     players: {
         socket_id: string;
         player: string;
         ready: boolean;
+        deck_id: string;
     }[]
     messages: {
         playerName: string;
         message: string;
     }[]
+    inConfront: boolean;
 }
 
 
@@ -38,10 +41,15 @@ type SendMessageData = {
     message: string;
 }
 
+type StartConfrontData = {
+    room_id: string;
+    player_id: string;
+}
+
 export class ConnectToRooms{
     
-    constructor(private gameRooms: Server){}
-    private prepareRooms: PrepareRoom[] = []
+    constructor(protected gameRooms: Server){}
+    protected prepareRooms: PrepareRoom[] = []
 
     async init(){
         this.gameRooms.on("connection", (socket)=>{
@@ -60,7 +68,8 @@ export class ConnectToRooms{
                 const player = {
                     socket_id: socket.id,
                     player: await CNT.GetPlayer(player_id) as string,
-                    ready: false
+                    ready: false,
+                    deck_id: ""
                 }
 
                 const room_id = randomUUID()
@@ -68,11 +77,13 @@ export class ConnectToRooms{
                 const room: PrepareRoom = {
                     room_id,
                     room_name: room_name,
+                    host: player_id,
                     players: [player],
                     messages: [{
                         playerName: "sudo ssh root@"+room_name+" -p 22",
                         message: `${player.player} criou a sala ${room_name}`
-                    }]
+                    }],
+                    inConfront: false
                 }
 
                 socket.join(room_id)
@@ -101,7 +112,8 @@ export class ConnectToRooms{
                 const player = {
                     socket_id: socket.id,
                     player: await CNT.GetPlayer(player_id) as string,
-                    ready: false
+                    ready: false,
+                    deck_id: ""
                 }
 
                 roomAlreadyExists.players.push(player)
@@ -115,6 +127,39 @@ export class ConnectToRooms{
                 })
 
                 this.emitRooms()
+            })
+
+            socket.on("leave_Room", (room_id: string)=>{
+                const room = this.GetRoomInformation(room_id)
+                console.log(room)
+                if(!room){
+                    return
+                }
+                room.messages.push({
+                    playerName: "cat /var/log/messages_"+room.room_name+".log",
+                    message: `${room.players.find((player) => player.socket_id === socket.id)?.player} saiu da sala ${room.room_name}`
+                })
+                room.players = room.players.filter((player) => player.socket_id !== socket.id)
+                
+                socket.leave(room_id)
+                console.log(room)
+                this.emitRooms()
+                this.gameRooms.to(room_id).emit("room_Info", room)
+            })
+
+
+            socket.on("choose_Deck", (data)=>{
+                const {room_id, deck_id} = data
+
+                const room = this.GetRoomInformation(room_id)
+                if(!room){
+                    return
+                }
+                room.players.map((player)=>{
+                    if(player.socket_id === socket.id){
+                        player.deck_id = deck_id
+                    }
+                })
             })
 
             socket.on("room_Info", (room_id: string)=>{
@@ -155,6 +200,18 @@ export class ConnectToRooms{
         
                 this.gameRooms.to(room_id).emit("new_Message", room.messages)
             })
+
+            socket.on("start_Confront", ({room_id}: StartConfrontData)=>{
+                const room = this.GetRoomInformation(room_id)
+                if(!room){
+                    return
+                }
+                if(room.players.length === 2){
+                    room.inConfront = true
+                    this.gameRooms.to(room_id).emit("start_Confront", room)
+                }
+                
+            })
         })
     }
 
@@ -162,7 +219,7 @@ export class ConnectToRooms{
         this.gameRooms.emit("rooms", this.prepareRooms)
     }
 
-    private GetRoomInformation(room_id: string){
+    protected GetRoomInformation(room_id: string){
             const room = this.prepareRooms.find((room) => room.room_id === room_id)
             if(room){
                 return room
