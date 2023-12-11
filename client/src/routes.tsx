@@ -30,7 +30,7 @@ export function Router(){
                         <Confront/>
                     </ConfrontProvider>
                     }/>
-                <Route path="/confront/:room_id/game" element={
+                <Route path="/confront/:room_id/:deck_id/game" element={
                     <Game/>
                 }/>
                 <Route path="/" element={<Home/>} />

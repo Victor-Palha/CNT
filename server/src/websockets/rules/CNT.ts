@@ -10,12 +10,14 @@ export interface DeckPlayer extends Omit<DeckWithCards, "avatar_id"> {
 }
 
 export class CNT{
-    private deckPrisma = new DecksPrismaRepository()
-    private avatarPrisma = new AvatarPrismaRepository()
-
     protected deck: DeckPlayer = {} as DeckPlayer;
     protected cards: Cards[] | undefined = [];
     protected avatar: Avatars | null = null;
+
+    constructor(
+        private deckPrisma = new DecksPrismaRepository(), 
+        private avatarPrisma = new AvatarPrismaRepository()
+    ){}
 
     public async getDeck(deck_id: string){
         const deck = await this.deckPrisma.getDeckById(deck_id)
@@ -41,5 +43,9 @@ export class CNT{
 
     public takeInfo(){
         return this.deck
+    }
+
+    public getAvatar(){
+        return this.avatar
     }
 }

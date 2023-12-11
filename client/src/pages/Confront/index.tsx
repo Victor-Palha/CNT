@@ -23,8 +23,9 @@ export function Confront(){
     const [myDecks, setMyDecks] = useState<MyDecks[]>([])
     const [message, setMessage] = useState<string>("")
     const [messages, setMessages] = useState<{playerName: string, message:string}[]>([])
+    const [chooseDeck, setChooseDeck] = useState<string>("")
 
-    async function sendMessage(e: React.KeyboardEvent<HTMLTextAreaElement>){
+    function sendMessage(e: React.KeyboardEvent<HTMLTextAreaElement>){
         if(e.key === "Enter"){
             e.preventDefault()
             socket && socket.emit("send_Message", {message, room_id})
@@ -42,14 +43,23 @@ export function Confront(){
         setMyDecks(response.data.decks)
     }
 
-    async function handleReady(ready: boolean){
+    function handleChooseDeck(id_deck: string){
+        socket && socket.emit("choose_Deck", {id_deck, room_id})
+        setChooseDeck(id_deck)
+    }
+
+    function handleReady(ready: boolean){
         socket && socket.emit("player_Ready", {ready, room_id, socket_id: socket.id})
         setReady(ready)
     }
 
-    async function leaveRoom(){
+    function leaveRoom(){
         socket && socket.emit("leave_Room", room_id)
         window.location.href = "/confront/rooms"
+    }
+
+    function startGame(){
+        socket && socket.emit("start_Game", room_id)
     }
 
     useEffect(()=>{
@@ -69,7 +79,7 @@ export function Confront(){
         return (
             <main>
                 {room.inConfront && (
-                    <Navigate to={`/confront/${room_id}/game`}/>
+                    <Navigate to={`/confront/${room_id}/${chooseDeck}/game`}/>
                 )}
                 <header className="cyber-razor-bottom bg-black p-4 z-0">
                     <button className="cyber-button-small bg-red" onClick={leaveRoom}>
@@ -104,7 +114,9 @@ export function Confront(){
                                 Configurações
                             </h3>
                             <div className="cyber-select">
-                                <select>
+                                <select onChange={(e)=>{
+                                    handleChooseDeck(e.target.value)
+                                }}>
                                     <option value="">Selecione um deck</option>
                                     {myDecks && myDecks.map((deck, index) => (
                                         <option key={index} value={deck.id_deck}>{deck.name}</option>
@@ -122,11 +134,10 @@ export function Confront(){
                                 <label htmlFor="Ready">Preparado</label>
                             </div>
                             {player && player.id_player === room.host && ready && (
-                                <button className="cyber-button-small bg-red mt-4">
+                                <button className="cyber-button-small bg-red mt-4" onClick={startGame}>
                                     Iniciar
                                     <span className="glitchtext">Danger</span>
                                 </button>
-                            
                             )}
                         </div>
                     </div>

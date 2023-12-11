@@ -16,12 +16,15 @@ const serverFactory = (handler: any, opts: any) => {
 }
 
 const server = fastify({serverFactory});
+
+// Socket.io Config
 const io = new Server(server.server, {
     cors: {
         origin: "*"
     }
 });
 
+// Server Config
 server.register(cors)
 server.register(fastifyJwt, {
     secret: env.jwtSecret,
