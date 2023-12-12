@@ -58,6 +58,8 @@ export class Confront{
 
         this.confrontRoom.room_id = room_id;
         this.confrontRoom.players = preparePlayers;
+
+        return this.confrontRoom
     }
 
     get getRoom(){
@@ -82,17 +84,3 @@ export class Confront{
         return deck;
       }
 }
-
-// const players: Players[] = [
-//     {
-//         player_id: "574b7e84-c348-4546-aa40-b03f835dff8c",
-//         deck_id: "7f39542d-c3db-4d16-bbb2-13e5b0b97b17"
-//     },
-//     {
-//         player_id: "c62ed47f-d1eb-4f51-bbe3-9f395bbc5bb0",
-//         deck_id: "e3268b98-0f21-444c-b415-3be21f94a0fb"
-//     }
-// ]
-
-// const confront = new Confront(new CNT())
-// confront.PrepareField(players)

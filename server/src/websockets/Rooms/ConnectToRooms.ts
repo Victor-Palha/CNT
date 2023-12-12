@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { CNT } from "../rules/CNT";
 import { randomUUID } from "crypto";
-import { Confront } from "../rules/Confront";
+import { Confront, ConfrontRoom } from "../rules/Confront";
 
 interface PrepareRoom{
     room_id: string;
@@ -44,7 +44,7 @@ type SendMessageData = {
 
 export class ConnectToRooms{
     private prepareRooms: PrepareRoom[] = []
-    protected confrontRooms: Confront[] = []
+    public confrontRooms: ConfrontRoom[] = []
 
     protected gameRooms: Server
 
@@ -132,7 +132,6 @@ export class ConnectToRooms{
 
             socket.on("leave_Room", (room_id: string)=>{
                 const room = this.GetRoomInformation(room_id)
-                console.log(room)
                 if(!room){
                     return
                 }
@@ -143,17 +142,17 @@ export class ConnectToRooms{
                 room.players = room.players.filter((player) => player.socket_id !== socket.id)
                 
                 socket.leave(room_id)
-                console.log(room)
+
                 this.emitRooms()
                 this.gameRooms.to(room_id).emit("room_Info", room)
             })
 
             socket.on("choose_Deck", (data)=>{
                 const {room_id, deck_id} = data
-
                 const room = this.GetRoomInformation(room_id)
                 if(!room){
                     return
+
                 }
                 room.players.map((player)=>{
                     if(player.socket_id === socket.id){
@@ -201,27 +200,71 @@ export class ConnectToRooms{
                 this.gameRooms.to(room_id).emit("new_Message", room.messages)
             })
 
-            socket.on("start_Game", (room_id: string)=>{
+            socket.on("start_Game", async (room_id: string)=>{
                 const room = this.GetRoomInformation(room_id)
                 if(!room){
                     return
                 }
+                
                 if(room.players.length === 2){
                     const isSomePlayersNotReady = room.players.some(player => player.ready === false)
                     const isSomePlayerWithoutDeck = room.players.some(player => player.deck_id === "")
 
                     if(!isSomePlayersNotReady && !isSomePlayerWithoutDeck){
                         room.inConfront = true
-                        this.gameRooms.to(room_id).emit("room_Info", room)
-                        this.prepareRooms = this.prepareRooms.filter((room) => room.room_id !== room_id)
-
                         const confront = new Confront(new CNT())
-                        confront.PrepareField(room.players, room_id)
 
-                        this.confrontRooms.push(confront)
+                        await confront.PrepareField(room.players, room_id).then((res)=>{
+                            this.confrontRooms = [...this.confrontRooms, res]
+                            // this.prepareRooms = this.prepareRooms.filter((room) => room.room_id !== room_id)
+                        }).then(()=>{
+                            this.gameRooms.to(room_id).emit("room_Info", room)
+                        })
                     }
+                    
                 }
                 
+            })
+            // Game
+            socket.on("join_Game", (data)=>{
+                const {room_id, player_id} = data
+                const room = this.findGameRoom(room_id)
+
+                if(!room){
+                    console.log("room not found")
+                    return
+                }
+
+                const player = room.players.find((player)=>{
+                    if(player.player === player_id){
+                        return player
+                    }
+                })
+                const enemy = room.players.find((player)=>{
+                   if(player.player !== player_id){
+                        return player
+                   }
+                })
+                
+                if(!player || !enemy){
+                    console.log("player not found")
+                    return
+                }
+
+                const deal_Cards = {
+                    player: {
+                        hand: player.hand,
+                        avatar: player.avatar,
+                        deck: player.deck.length,
+                    },
+                    enemy: {
+                        hand: enemy.hand.length,
+                        avatar: enemy.avatar,
+                        deck: enemy.deck.length,
+                    }
+                }
+
+                socket.emit("deal_Cards", deal_Cards)
             })
         })
     }
@@ -236,6 +279,20 @@ export class ConnectToRooms{
                 return room
             }
             return null
+    }
+
+    private findGameRoom(room_id: string){
+        console.log(this.confrontRooms)
+        const room = this.confrontRooms.find((room)=>{
+            if(room.room_id === room_id){
+                return room
+            }
+        })
+        console.log(room)
+        if(room){
+            return room
+        }
+        return null
     }
     
 }

@@ -1,36 +1,51 @@
 import { Server } from "socket.io";
 import { ConnectToRooms } from "../Rooms/ConnectToRooms";
 
-export class Game extends ConnectToRooms{
-    constructor(gameRooms: Server){
-        super(gameRooms)
-    }
+export class Game{
+    constructor(
+        public gameRooms: Server, 
+        public confrontRooms: ConnectToRooms
+    ){}
 
     async initGame(){
         this.gameRooms.of("/game").on("connection", (players)=>{
-            players.on("join_Game", (socket)=>{
-                const {room_id, player_id} = socket
+            players.on("join_Game", (data)=>{
+                const {room_id, player_id} = data
                 const room = this.findGameRoom(room_id)
+                console.log(room)
                 
                 if(!room){
-                    players.emit("room_not_found")
+                    console.log("room not found")
                     return
                 }
 
-                const player = room.getRoom.players.find((player)=>{player.player === player_id})
-                if(!player){
-                    players.emit("player_not_found")
+                const player = room.players.find((player)=>{player.player === player_id})
+                const enemy = room.players.find((player)=>{player.player !== player_id})
+                if(!player || !enemy){
+                    console.log("player not found")
                     return
                 }
 
-                players.join(room_id)
-                socket.emit("deal_Cards", player.hand)
+                const deal_Cards = {
+                    player: {
+                        hand: player.hand,
+                        avatar: player.avatar,
+                        deck: player.deck.length,
+                    },
+                    enemy: {
+                        hand: enemy.hand.length,
+                        avatar: enemy.avatar,
+                        deck: enemy.deck.length,
+                    }
+                }
+
+                players.emit("deal_Cards", deal_Cards)
             })
         })
     }
 
     private findGameRoom(room_id: string){
-        const room = this.confrontRooms.find((room)=>{room.getRoom.room_id === room_id})
+        const room = this.confrontRooms.confrontRooms.find((room)=>{room.room_id === room_id})
         return room
     }
 }

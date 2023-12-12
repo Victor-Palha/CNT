@@ -1,8 +1,24 @@
 import { useContext, useEffect, useState } from "react"
 import { Navigate, useParams } from "react-router-dom"
-import { PrepareRoom, confrontContext } from "../../context/confrontContext"
+import { confrontContext } from "../../context/confrontContext"
 import { Player } from "../../context/authContext"
 import instance from "../../lib/axios"
+
+type PrepareRoom = {
+    room_id: string;
+    room_name: string;
+    host: string;
+    players: {
+        socket_id: string;
+        player: string;
+        ready: boolean;
+    }[]
+    messages: {
+        playerName: string;
+        message: string;
+    }[]
+    inConfront: boolean;
+}
 
 type MyDecks = {
     id_deck: string;
@@ -43,9 +59,9 @@ export function Confront(){
         setMyDecks(response.data.decks)
     }
 
-    function handleChooseDeck(id_deck: string){
-        socket && socket.emit("choose_Deck", {id_deck, room_id})
-        setChooseDeck(id_deck)
+    function handleChooseDeck(deck_id: string){
+        socket && socket.emit("choose_Deck", {deck_id, room_id})
+        setChooseDeck(deck_id)
     }
 
     function handleReady(ready: boolean){
@@ -63,10 +79,8 @@ export function Confront(){
     }
 
     useEffect(()=>{
-        console.log(room_id)
         socket && socket.emit("room_Info", room_id)
             .on("room_Info", (room: PrepareRoom)=>{
-                console.log(room)
                 setRoom(room)
                 setMessages(room.messages)
             }).on("new_Message", (message)=>{
@@ -80,6 +94,9 @@ export function Confront(){
             <main>
                 {room.inConfront && (
                     <Navigate to={`/confront/${room_id}/${chooseDeck}/game`}/>
+                )}
+                {!room && (
+                    <Navigate to={`/confront/rooms`}/>
                 )}
                 <header className="cyber-razor-bottom bg-black p-4 z-0">
                     <button className="cyber-button-small bg-red" onClick={leaveRoom}>
@@ -163,9 +180,6 @@ export function Confront(){
                         className="w-full min-h-[10vh] max-h-[10vh] bg-gray-800 focus:outline-none p-4 text-white"
                     />
                 </div>
-                    
-                    
-                
             </main>
         )
     }
