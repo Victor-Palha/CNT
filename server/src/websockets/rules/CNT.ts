@@ -3,13 +3,15 @@ import { DeckWithCards } from "../../repositories/Decks.repository";
 import { AvatarPrismaRepository } from "../../repositories/prisma/Avatar-prisma.repository";
 import { DecksPrismaRepository } from "../../repositories/prisma/Decks-prisma.repository"
 import { PlayerPrismaRepository } from "../../repositories/prisma/Player-prisma.repository"
+import { CntRepository } from "./CNTRepository";
 
 
 export interface DeckPlayer extends Omit<DeckWithCards, "avatar_id"> {
     avatar: Avatars | null;
 }
 
-export class CNT{
+export class CNT implements CntRepository{
+    private _id: string = ""
     protected deck: DeckPlayer = {} as DeckPlayer;
     protected cards: Cards[] | undefined = [];
     protected avatar: Avatars | null = null;
@@ -19,7 +21,7 @@ export class CNT{
         private avatarPrisma = new AvatarPrismaRepository()
     ){}
 
-    public async getDeck(deck_id: string){
+    public async getDeck(deck_id: string): Promise<DeckPlayer | undefined>{
         const deck = await this.deckPrisma.getDeckById(deck_id)
         const avatar = await this.avatarPrisma.getAvatarById(deck.avatar_id as string)
 
@@ -34,6 +36,9 @@ export class CNT{
         };
         this.avatar = avatar;
         this.cards = deck.cards;
+
+        return this.deck;
+        
     }
 
     static async GetPlayer(player_id: string){
@@ -41,11 +46,30 @@ export class CNT{
         return player?.username
     }
 
-    public takeInfo(){
+    public resetAttributes(){
+        this._id = ""
+        this.deck = {} as DeckPlayer
+        this.cards = []
+        this.avatar = null
+    }
+
+    get takeInfo(){
         return this.deck
     }
 
-    public getAvatar(){
+    get getAvatar(){
         return this.avatar
+    }
+
+    get getDeckCards(){
+        return this.cards
+    }
+
+    set id(id: string){
+        this._id = id
+    }
+
+    get id(){
+        return this._id
     }
 }

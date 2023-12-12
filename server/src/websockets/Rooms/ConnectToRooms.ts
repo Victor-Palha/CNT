@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { CNT } from "../rules/CNT";
 import { randomUUID } from "crypto";
+import { Confront } from "../rules/Confront";
 
 interface PrepareRoom{
     room_id: string;
@@ -42,7 +43,9 @@ type SendMessageData = {
 }
 
 export class ConnectToRooms{
-    protected prepareRooms: PrepareRoom[] = []
+    private prepareRooms: PrepareRoom[] = []
+    protected confrontRooms: Confront[] = []
+
     protected gameRooms: Server
 
     constructor(gameRooms: Server){
@@ -210,8 +213,12 @@ export class ConnectToRooms{
                     if(!isSomePlayersNotReady && !isSomePlayerWithoutDeck){
                         room.inConfront = true
                         this.gameRooms.to(room_id).emit("room_Info", room)
-                        socket.in(room_id).disconnectSockets()
                         this.prepareRooms = this.prepareRooms.filter((room) => room.room_id !== room_id)
+
+                        const confront = new Confront(new CNT())
+                        confront.PrepareField(room.players, room_id)
+
+                        this.confrontRooms.push(confront)
                     }
                 }
                 
@@ -223,7 +230,7 @@ export class ConnectToRooms{
         this.gameRooms.emit("rooms", this.prepareRooms)
     }
 
-    protected GetRoomInformation(room_id: string){
+    private GetRoomInformation(room_id: string){
             const room = this.prepareRooms.find((room) => room.room_id === room_id)
             if(room){
                 return room

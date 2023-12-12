@@ -1,10 +1,10 @@
 import { io } from "../app";
 import { ConnectToRooms } from "./Rooms/ConnectToRooms";
-import { StartConfront } from "./Game/StartConfront";
+import { Game } from "./Game/Game";
 
 
 const gameRooms = new ConnectToRooms(io)
-const confrontRooms = new StartConfront(io)
+const confrontRooms = new Game(io)
 
 gameRooms.init()
-confrontRooms.initConfront()
+confrontRooms.initGame()
