@@ -31,9 +31,11 @@ type Players = {
 
 export class Confront{
     private confrontRoom: ConfrontRoom = {} as ConfrontRoom
+
     constructor(private cnt: CntRepository){}
 
     public async PrepareField(players: Players[], room_id: string) {
+        // Prepara os jogadores para o confronto
         const preparePlayers: PlayerProps[] = await Promise.all(players.map(async (player) => {
             this.cnt.id = player.player;
             const deck = await this.cnt.getDeck(player.deck_id);
@@ -60,7 +62,8 @@ export class Confront{
                         isActivated: false,
                         chain: 0
                     }
-                },{
+                },
+                {
                     id: `${player.player}-2`,
                     card: {} as Cards,
                     empty: true,
@@ -68,7 +71,8 @@ export class Confront{
                         isActivated: false,
                         chain: 0
                     }
-                },{
+                },
+                {
                     id: `${player.player}-3`,
                     card: {} as Cards,
                     empty: true,

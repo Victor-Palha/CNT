@@ -44,7 +44,7 @@ type SendMessageData = {
 
 export class ConnectToRooms{
     private prepareRooms: PrepareRoom[] = []
-    public confrontRooms: ConfrontRoom[] = []
+    public confrontRooms: Confront[] = []
 
     protected gameRooms: Server
 
@@ -214,8 +214,8 @@ export class ConnectToRooms{
                         room.inConfront = true
                         const confront = new Confront(new CNT())
 
-                        await confront.PrepareField(room.players, room_id).then((res)=>{
-                            this.confrontRooms = [...this.confrontRooms, res]
+                        await confront.PrepareField(room.players, room_id).then(()=>{
+                            this.confrontRooms.push(confront)
                             // this.prepareRooms = this.prepareRooms.filter((room) => room.room_id !== room_id)
                         }).then(()=>{
                             this.gameRooms.to(room_id).emit("room_Info", room)
@@ -235,12 +235,12 @@ export class ConnectToRooms{
                     return
                 }
 
-                const player = room.players.find((player)=>{
+                const player = room.getRoom.players.find((player)=>{
                     if(player.player === player_id){
                         return player
                     }
                 })
-                const enemy = room.players.find((player)=>{
+                const enemy = room.getRoom.players.find((player)=>{
                    if(player.player !== player_id){
                         return player
                    }
@@ -278,13 +278,13 @@ export class ConnectToRooms{
                     return
                 }
 
-                const player = room.players.find((player)=>{
+                const player = room.getRoom.players.find((player)=>{
                     if(player.player === player_id){
                         return player
                     }
                 })
 
-                const enemy = room.players.find((player)=>{
+                const enemy = room.getRoom.players.find((player)=>{
                     if(player.player !== player_id){
                         return player
                     }
@@ -295,7 +295,7 @@ export class ConnectToRooms{
                     return
                 }
 
-                room.players.map((player)=>{
+                room.getRoom.players.map((player)=>{
                     if(player.player === player_id){
                         // Set Card in Field
                         player.field.map((field)=>{
@@ -312,25 +312,24 @@ export class ConnectToRooms{
                         }
                     }
                 })
-                console.log(room.players)
 
-                const newField = {
-                    // turnOf: player.isPlayerTurn ? player.player : enemy.player,
-                    player: {
+
+                const myNewField = {
+                        player: player.player,
                         hand: player.hand,
                         avatar: player.avatar,
                         deck: player.deck.length,
                         field: player.field,
-                    },
-                    enemy: {
-                        hand: enemy.hand.length,
-                        avatar: enemy.avatar,
-                        deck: enemy.deck.length,
-                        field: enemy.field,
-                    }
                 }
-                
-                socket.in(room_id).emit("set_Card", newField)
+                const toEnemyNewField = {
+                    hand: player.hand.length,
+                    deck: player.deck.length,
+                    field: player.field,
+                }
+
+                socket.emit("i_Set_Card", myNewField)
+                // this.gameRooms.in(room_id).emit("enemy_Set_Card", toEnemyNewField)
+                socket.broadcast.to(room_id).emit("enemy_Set_Card", toEnemyNewField)
             })
         })
     }
@@ -349,12 +348,11 @@ export class ConnectToRooms{
 
     private findGameRoom(room_id: string){
         const room = this.confrontRooms.find((room)=>{
-            if(room.room_id === room_id){
-                return room
+            if(room.getRoom.room_id === room_id){
+                return room.getRoom
             }
         })
         if(room){
-            // console.log(room)
             return room
         }
         return null
