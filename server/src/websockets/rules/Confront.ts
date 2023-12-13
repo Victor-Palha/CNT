@@ -17,8 +17,10 @@ type PlayerProps = {
         id: string;
         card: Cards;
         empty: boolean;
-        activated: boolean;
-        chain: number
+        activated: {
+            isActivated: boolean;
+            chain: number;
+        }
     }[]
 }
 type Players = {
@@ -50,17 +52,62 @@ export class Confront{
                 avatar: deck?.avatar as Avatars,
                 deck: currentDeck,
                 hand: hand,
-                field: []
+                field: [{
+                    id: `${player.player}-1`,
+                    card: {} as Cards,
+                    empty: true,
+                    activated: {
+                        isActivated: false,
+                        chain: 0
+                    }
+                },{
+                    id: `${player.player}-2`,
+                    card: {} as Cards,
+                    empty: true,
+                    activated: {
+                        isActivated: false,
+                        chain: 0
+                    }
+                },{
+                    id: `${player.player}-3`,
+                    card: {} as Cards,
+                    empty: true,
+                    activated: {
+                        isActivated: false,
+                        chain: 0
+                    }
+                }]
             };
     
             return playerData;
         }));
+
+        // Ordena os jogadores com base nos tipos (OFENSIVO, DEFENSIVO, MODERADO)
+        const sortedPlayers = preparePlayers.sort(
+            (a, b) => this.getAvatarOrder(a.avatar) - this.getAvatarOrder(b.avatar)
+        );
+    
+        // Define a ordem de início com base nos tipos
+        sortedPlayers[0].isPlayerTurn = true;
 
         this.confrontRoom.room_id = room_id;
         this.confrontRoom.players = preparePlayers;
 
         return this.confrontRoom
     }
+
+    private getAvatarOrder(avatar: Avatars): number {
+        switch (avatar.type_avatar) {
+          case "OFENSIVO":
+            return 1;
+          case "DEFENSIVO":
+            return 2;
+          case "MODERADO":
+            return 3;
+          default:
+            return 0;
+        }
+      }
 
     get getRoom(){
         return this.confrontRoom

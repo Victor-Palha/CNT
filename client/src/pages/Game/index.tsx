@@ -32,12 +32,34 @@ export function Game(){
     const [myAvatar, setMyAvatar] = useState<AvatarProps>({} as AvatarProps)
     const [myHand, setMyHand] = useState<Cards[]>([])
     const [myDeck, setMyDeck] = useState<number>(0)
+    const [myField, setMyField] = useState<Field>([])
+    const [isMyTurn, setIsMyTurn] = useState<boolean>(false)
 
+    const [enemyField, setEnemyField] = useState<Field>([])
     const [enemyDeck, setEnemyDeck] = useState<number>(0)
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
 
     const [room, setRoom] = useState<ConfrontRoom>({} as ConfrontRoom)
+
+    // Hand functions / Field functions
+    function handleDragStart(e:React.DragEvent<HTMLDivElement>, id:string){
+        e.dataTransfer.setData("id", id)
+    }
+    function handleSetCards(e:React.DragEvent<HTMLDivElement>){
+        const idFromCard = e.dataTransfer.getData("id")
+        const idFromField = e.currentTarget.id
+
+        const fieldCard = document.getElementById(idFromField);
+
+        fieldCard && (fieldCard.style.backgroundColor = "cyan");
+        socket && socket.emit("set_Card", {
+            room_id,
+            player_id: Me.username,
+            card: myHand.find(card => card.id_card === idFromCard),
+            field_id: idFromField
+        })
+    }
 
     useEffect(()=>{
         socket && socket.emit("join_Game", {
@@ -49,10 +71,24 @@ export function Game(){
             setMyAvatar(room.player.avatar)
             setMyHand(room.player.hand)
             setMyDeck(room.player.deck)
+            setMyField(room.player.field)
+            if(room.turnOf === Me.username){
+                setIsMyTurn(true)
+            }else{
+                setIsMyTurn(false)
+            }
             
+            setEnemyField(room.enemy.field)
             setEnemyAvatar(room.enemy.avatar)
             setEnemyHand(room.enemy.hand)
             setEnemyDeck(room.enemy.deck)
+        }).on("set_Card", (newField: PrepareCards)=>{
+            setMyField(newField.player.field)
+            setMyHand(newField.player.hand)
+            
+            setEnemyField(newField.enemy.field)
+            setEnemyHand(newField.enemy.hand)
+
         })
     }, [socket])
 
@@ -60,18 +96,16 @@ export function Game(){
         <main>
             <div className="flex justify-center mt-[-4rem] w-full items-center absolute z-10">
             {Array.from({ length: enemyHand }, (_, index) => (
-                <div key={index} className="cyber-tile bg-red w-[100px] h-[100px]">
-                    
-                </div>
+                <div key={index} className="cyber-tile bg-red w-[100px] h-[100px]"></div>
             ))}
             </div>
             <div className="mx-32 my-10 bg-gray-900">
                 {/* Enemy Grid */}
-                <div className="p-4">
+                <div className={`p-4 ${isMyTurn === false && "animate-pulse"}`}>
                     <div className="grid grid-cols-3">
-                        <div className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-red-500 border-2"></div>
-                        <div className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-red-500 border-2"></div>
-                        <div className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-red-500 border-2"></div>
+                        {enemyField && enemyField.map((card, index) => (
+                            <div key={index} id={card.id} className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-red-500 border-2"></div>
+                        ))}
                     </div>
                     {enemyAvatar && (
                         <div className="bg-black w-[120px] mx-auto m-4 rotate-180 cyber-tile">
@@ -84,7 +118,7 @@ export function Game(){
                         </div>
                     )}
                 </div>
-                <div className="p-4">
+                <div className={`p-4 ${isMyTurn === true && "animate-pulse"}`}>
                     {/* Player Grid */}
                     {myAvatar && (   
                         <div className="bg-black w-[120px] h-[180px] mx-auto m-4 cyber-tile group">
@@ -97,9 +131,35 @@ export function Game(){
                         </div>
                     )}
                     <div className="grid grid-cols-3 w-full gap-2">
-                        <div className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"></div>
-                        <div className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"></div>
-                        <div className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"></div>
+                        {myField && myField.map((card, index) => (
+                            <div 
+                                key={index} 
+                                id={card.id} 
+                                className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"
+                                onDragLeave={(e)=>{handleSetCards(e)}}
+                            ></div>
+                        ))}
+                        {/* <div 
+                            className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"
+                            id="x1"
+                            onDragLeave={(e)=>{handleSetCards(e)}}
+                        >
+
+                        </div>
+                        <div 
+                            className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"
+                            id="x2"
+                            onDragLeave={(e)=>{handleSetCards(e)}}
+                        >
+
+                        </div>
+                        <div 
+                            className="bg-gray-800 w-[200px] h-[170px] cyber-tile border-2 border-cyan-500"
+                            id="x3"
+                            onDragLeave={(e)=>{handleSetCards(e)}}
+                        >
+
+                        </div> */}
                     </div>
                 </div>
                 <div className="bg-cyan cyber-tile w-[100px] h-[120px] my-[-10rem] absolute right-0 mr-2">
@@ -110,11 +170,17 @@ export function Game(){
             {/* My Hand */}
             <div className="flex justify-center mt-[-7rem] w-full items-center absolute z-10">
                 {myHand && myHand.map((card, index) => (
-                    <div key={index} className="cyber-tile bg-cyan w-[100px] h-[200px] hover:scale-105 cursor-move">
-                        <img src={card.image}/>
+                    <div 
+                        key={index} 
+                        className="cyber-tile bg-cyan w-[100px] h-[200px] hover:scale-105 cursor-move"
+                        draggable
+                        onDragStart={(e)=>{handleDragStart(e, card.id_card)}}
+                        id={card.id_card}
+                    >
+                        <img src={card.image} draggable={false}/>
                         <div className="text-sm flex flex-col bg-gray-900">
                             <span className="text-white">{card.name}</span>
-                            {/* <span className="text-white">{card.description}</span> */}
+                            <span className="text-white">{card.description}</span>
                         </div>
                     </div>
                 ))}
@@ -132,26 +198,33 @@ type ConfrontRoom = {
         avatar: Avatar
         hand: Cards[];
         deck: Cards[];
-        field: {
-            id: string;
-            card: Cards;
-            empty: boolean;
-            activated: boolean;
-            chain: number
-        }[]
+        field: Field
     }[]
 }
 
+type Field = {
+    id: string;
+    card: Cards;
+    empty: boolean;
+    activated: {
+        isActivated: boolean;
+        chain: number;
+    }
+}[]
+
 type PrepareCards = {
+    turnOf: string;
     player: {
         hand: Cards[];
         avatar: Avatar;
         deck: number;
+        field: Field;
     }
     enemy: {
         hand: number,
         avatar: Avatar;
         deck: number;
+        field: Field;
     }
 }
 

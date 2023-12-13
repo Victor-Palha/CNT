@@ -252,19 +252,85 @@ export class ConnectToRooms{
                 }
 
                 const deal_Cards = {
+                    turnOf: player.isPlayerTurn ? player.player : enemy.player,
                     player: {
                         hand: player.hand,
                         avatar: player.avatar,
                         deck: player.deck.length,
+                        field: player.field,
                     },
                     enemy: {
                         hand: enemy.hand.length,
                         avatar: enemy.avatar,
                         deck: enemy.deck.length,
+                        field: enemy.field,
                     }
                 }
 
                 socket.emit("deal_Cards", deal_Cards)
+            })
+
+            socket.on("set_Card", (data)=>{
+                const {room_id, player_id, card, field_id} = data
+
+                const room = this.findGameRoom(room_id)
+                if(!room){
+                    return
+                }
+
+                const player = room.players.find((player)=>{
+                    if(player.player === player_id){
+                        return player
+                    }
+                })
+
+                const enemy = room.players.find((player)=>{
+                    if(player.player !== player_id){
+                        return player
+                    }
+                 })
+
+                if(!player || !enemy){
+                    console.log("player not found")
+                    return
+                }
+
+                room.players.map((player)=>{
+                    if(player.player === player_id){
+                        // Set Card in Field
+                        player.field.map((field)=>{
+                            if(field.id === field_id){
+                                field.card = card
+                                field.empty = false
+                            }
+                        })
+                        // Remove Card from Hand
+                        const indexToRemove = player.hand.findIndex(hand => hand.id_card === card.id_card);
+
+                        if (indexToRemove !== -1) {
+                            player.hand.splice(indexToRemove, 1);
+                        }
+                    }
+                })
+                console.log(room.players)
+
+                const newField = {
+                    // turnOf: player.isPlayerTurn ? player.player : enemy.player,
+                    player: {
+                        hand: player.hand,
+                        avatar: player.avatar,
+                        deck: player.deck.length,
+                        field: player.field,
+                    },
+                    enemy: {
+                        hand: enemy.hand.length,
+                        avatar: enemy.avatar,
+                        deck: enemy.deck.length,
+                        field: enemy.field,
+                    }
+                }
+                
+                socket.in(room_id).emit("set_Card", newField)
             })
         })
     }
@@ -282,14 +348,13 @@ export class ConnectToRooms{
     }
 
     private findGameRoom(room_id: string){
-        console.log(this.confrontRooms)
         const room = this.confrontRooms.find((room)=>{
             if(room.room_id === room_id){
                 return room
             }
         })
-        console.log(room)
         if(room){
+            // console.log(room)
             return room
         }
         return null
