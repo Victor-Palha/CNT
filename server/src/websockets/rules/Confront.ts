@@ -3,8 +3,13 @@ import { CntRepository } from "./CNTRepository";
 
 export interface ConfrontRoom{
     room_id: string;
-    players: PlayerProps[]
+    players: PlayerProps[];
+    state: 0 | 1 | 2 | 3
 }
+// 0 - etapa de compra
+// 1 - etapa de preparação
+// 2 - etapa de ação
+// 3 - Climax
 
 type PlayerProps = {
     player: string;
@@ -96,6 +101,8 @@ export class Confront{
 
         this.confrontRoom.room_id = room_id;
         this.confrontRoom.players = preparePlayers;
+        // O jogo no primeiro turno começa na etapa de preparação
+        this.confrontRoom.state = 1;
 
         return this.confrontRoom
     }
@@ -111,13 +118,9 @@ export class Confront{
           default:
             return 0;
         }
-      }
-
-    get getRoom(){
-        return this.confrontRoom
     }
 
-    shuffle(deck: Cards[]) {
+    private shuffle(deck: Cards[]) {
         let currentIndex = deck.length,  randomIndex;
       
         // While there remain elements to shuffle.
@@ -133,5 +136,15 @@ export class Confront{
         }
       
         return deck;
-      }
+    }
+
+    get getRoom(){
+        return this.confrontRoom
+    }
+
+    public startActionPhase(){
+        const allCardsAreSetted = this.confrontRoom.players.every(field => field.field.every(card => !card.empty))
+        
+        console.log(allCardsAreSetted)
+    }
 }

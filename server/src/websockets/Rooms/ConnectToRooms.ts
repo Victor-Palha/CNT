@@ -299,9 +299,12 @@ export class ConnectToRooms{
                     if(player.player === player_id){
                         // Set Card in Field
                         player.field.map((field)=>{
-                            if(field.id === field_id){
+                            if(field.id === field_id && field.empty === true){
                                 field.card = card
                                 field.empty = false
+                            }else{
+                                socket.emit("error", "Campo já ocupado")
+                                return
                             }
                         })
                         // Remove Card from Hand
@@ -327,10 +330,14 @@ export class ConnectToRooms{
                     field: player.field,
                 }
 
+                room.startActionPhase()
+
                 socket.emit("i_Set_Card", myNewField)
                 // this.gameRooms.in(room_id).emit("enemy_Set_Card", toEnemyNewField)
                 socket.broadcast.to(room_id).emit("enemy_Set_Card", toEnemyNewField)
             })
+
+
         })
     }
 
