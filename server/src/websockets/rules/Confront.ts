@@ -137,14 +137,60 @@ export class Confront{
       
         return deck;
     }
+    
+    private startActionPhase(){
+        const allCardsAreSetted = this.confrontRoom.players.every(field => field.field.every(card => !card.empty))
+        if(allCardsAreSetted){
+            this.confrontRoom.state = 2
+        }
+    }
+
+    public setCardOnField(playerName: string, card: Cards, field_id: string){
+        this.confrontRoom.players.map(player => {
+            if(player.player === playerName){
+                // Set Card in Field
+                player.field.map((field)=>{
+                    if(field.id === field_id){
+                        if(!field.empty){
+                            throw new Error('Campo já ocupado')
+                        }
+                        field.card = card
+                        field.empty = false
+                    }
+                })
+                // Remove Card from Hand
+                const indexToRemove = player.hand.findIndex(hand => hand.id_card === card.id_card);
+
+                if (indexToRemove !== -1) {
+                    player.hand.splice(indexToRemove, 1);
+                }
+            }
+        })
+        this.startActionPhase()
+    }
+
+    public ativateCard(playerName: string, field_id: string){
+        const cardActivated = this.confrontRoom.players.map(player => {
+            if(player.player === playerName){
+                // Get Card in Field
+                const card = player.field.find(field => field.id === field_id)
+                if(!card){
+                    throw new Error('Campo não encontrado')
+                }
+
+                // Activate Card
+                card.activated.isActivated = true
+                if(card.card.type_card === "HABILIDADE" || card.card.type_card === "HABILIDADE_UNICA"){
+                    card.activated.chain = 1
+                }
+                return card.card
+            }
+        })
+
+        return cardActivated
+    }
 
     get getRoom(){
         return this.confrontRoom
-    }
-
-    public startActionPhase(){
-        const allCardsAreSetted = this.confrontRoom.players.every(field => field.field.every(card => !card.empty))
-        
-        console.log(allCardsAreSetted)
     }
 }

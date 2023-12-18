@@ -291,31 +291,15 @@ export class ConnectToRooms{
                  })
 
                 if(!player || !enemy){
-                    console.log("player not found")
                     return
                 }
 
-                room.getRoom.players.map((player)=>{
-                    if(player.player === player_id){
-                        // Set Card in Field
-                        player.field.map((field)=>{
-                            if(field.id === field_id && field.empty === true){
-                                field.card = card
-                                field.empty = false
-                            }else{
-                                socket.emit("error", "Campo já ocupado")
-                                return
-                            }
-                        })
-                        // Remove Card from Hand
-                        const indexToRemove = player.hand.findIndex(hand => hand.id_card === card.id_card);
-
-                        if (indexToRemove !== -1) {
-                            player.hand.splice(indexToRemove, 1);
-                        }
-                    }
-                })
-
+                try {
+                    room.setCardOnField(player_id, card, field_id)
+                } catch (error) {
+                    console.log(error)
+                    socket.emit("error", error)
+                }
 
                 const myNewField = {
                         player: player.player,
@@ -324,17 +308,37 @@ export class ConnectToRooms{
                         deck: player.deck.length,
                         field: player.field,
                 }
+
                 const toEnemyNewField = {
                     hand: player.hand.length,
                     deck: player.deck.length,
                     field: player.field,
                 }
 
-                room.startActionPhase()
-
                 socket.emit("i_Set_Card", myNewField)
-                // this.gameRooms.in(room_id).emit("enemy_Set_Card", toEnemyNewField)
                 socket.broadcast.to(room_id).emit("enemy_Set_Card", toEnemyNewField)
+
+                if(room.getRoom.state === 2){
+                    this.gameRooms.in(room_id).emit("start_Action_Phase", true)
+                }
+            })
+
+            socket.on("activate_Card", (data)=>{
+                const {room_id, player_id, field_id} = data
+
+                const room = this.findGameRoom(room_id)
+                if(!room){
+                    return
+                }
+
+                try {
+                    const cardActivated = room.ativateCard(player_id, field_id)
+                    
+
+                } catch (error) {
+                    console.log(error)
+                    socket.emit("error", error)
+                }
             })
 
 

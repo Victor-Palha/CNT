@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Player } from "../../context/authContext"
 import { confrontContext } from "../../context/confrontContext"
+import { ToastContainer, toast } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css';
 
 type AvatarProps = {
     id_avatar: string;
@@ -77,7 +79,7 @@ export function Game(){
             player_id: Me.username,
         })
         .on("deal_Cards", (room: PrepareCards)=>{
-            console.log(room)
+            toast.info("Fase de preparação iniciada!")
             setMyAvatar(room.player.avatar)
             setMyHand(room.player.hand)
             setMyDeck(room.player.deck)
@@ -103,9 +105,11 @@ export function Game(){
             setEnemyField(newField.field as Field)
             setEnemyHand(newField.hand as number)
             setEnemyDeck(newField.deck)
-        }
-            
-        )
+        })
+        .on("start_Action_Phase", (itsActionPhase: boolean)=> {
+            itsActionPhase && toast.info("Fase de ação iniciada!")
+            isMyTurn ? toast.info("Sua vez de jogar!") : toast.info("Vez do oponente jogar!")
+        })
     }, [socket])
 
     return (
@@ -186,6 +190,18 @@ export function Game(){
                     </div>
                 ))}
             </div>
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
         </main>
     )
 }
