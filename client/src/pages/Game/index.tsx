@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Player } from "../../context/authContext"
-import { confrontContext } from "../../context/confrontContext"
 import { ToastContainer, toast } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css';
+import { Socket, io } from "socket.io-client"
 
 type AvatarProps = {
     id_avatar: string;
@@ -24,11 +24,12 @@ type AvatarProps = {
 export function Game(){
 
     // Core information
-    const {socket} = useContext(confrontContext)
+    const [socket, setSocket] = useState<Socket | undefined>()
+
     let Me = localStorage.getItem('@player:cnt') as any
     Me = Me ? JSON.parse(Me) as Player : null
 
-    const {room_id, deck_id} = useParams()
+    const {room_id} = useParams()
 
     // States
     const [myAvatar, setMyAvatar] = useState<AvatarProps>({} as AvatarProps)
@@ -43,8 +44,6 @@ export function Game(){
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
 
-    const [room, setRoom] = useState<ConfrontRoom>({} as ConfrontRoom)
-
     // Hand functions / Field functions
     function handleDragStart(e:React.DragEvent<HTMLDivElement>, id:string){
         // e.preventDefault()
@@ -55,36 +54,31 @@ export function Game(){
     function handleSetCards(e:React.DragEvent<HTMLDivElement>){
         const idFromCard = setCard
         const idFromField = e.currentTarget.id
-
         console.log(idFromCard, idFromField)
-
-
-        // const fieldCard = document.getElementById(idFromField);
-
-        // fieldCard && (fieldCard.style.backgroundColor = "cyan");
 
         if (idFromCard) {
             socket && socket.emit("set_Card", {
                 room_id,
-                player_id: Me.username,
-                card: myHand.find(card => card.id_card === idFromCard),
+                player_id: Me.id_player,
+                card: myHand.find(card => card._id === idFromCard),
                 field_id: idFromField
             })
         }
     }
 
-    useEffect(()=>{
-        socket && socket.emit("join_Game", {
+    useEffect(()=>{        
+        socket && socket.emit("init_Game", {
             room_id,
-            player_id: Me.username,
+            player_id: Me.id_player,
         })
         .on("deal_Cards", (room: PrepareCards)=>{
             toast.info("Fase de preparação iniciada!")
             setMyAvatar(room.player.avatar)
+            console.log(room.player.hand)
             setMyHand(room.player.hand)
             setMyDeck(room.player.deck)
             setMyField(room.player.field)
-            if(room.turnOf === Me.username){
+            if(room.turnOf === Me.id_player){
                 setIsMyTurn(true)
             }else{
                 setIsMyTurn(false)
@@ -99,7 +93,6 @@ export function Game(){
             setMyHand(newField.hand as Cards[])
             setMyDeck(newField.deck)
             setMyField(newField.field as Field)
-            setMyAvatar(newField.avatar)
         })
         .on("enemy_Set_Card", (newField: SetCards)=>{
             setEnemyField(newField.field as Field)
@@ -111,6 +104,11 @@ export function Game(){
             isMyTurn ? toast.info("Sua vez de jogar!") : toast.info("Vez do oponente jogar!")
         })
     }, [socket])
+
+    useEffect(()=>{
+        const socket = io("http://localhost:3000/game")
+        setSocket(socket)
+    }, [])
 
     return (
         <main>
@@ -124,7 +122,7 @@ export function Game(){
                 <div className={`p-4 ${isMyTurn === false && "animate-pulse"}`}>
                     <div className="grid grid-cols-3 gap-10">
                         {enemyField && enemyField.map((card, index) => (
-                            <div key={index} id={card.id} className="bg-gray-800 w-full h-[170px] cyber-tile border-red-500 border-2">
+                            <div key={index} id={card.field_id} className="bg-gray-800 w-full h-[170px] cyber-tile border-red-500 border-2">
                                 {!card.empty && <div className="bg-red w-full h-full"></div>}
                             </div>
                         ))}
@@ -156,7 +154,7 @@ export function Game(){
                         {myField && myField.map((card, index) => (
                             <div 
                                 key={index} 
-                                id={card.id} 
+                                id={card.field_id} 
                                 className="bg-gray-800 w-full h-[170px] cyber-tile border-2 border-cyan-500"
                                 onDragOver={(e)=>{e.preventDefault()}}
                                 onDrop={(e)=>{handleSetCards(e)}}
@@ -178,9 +176,9 @@ export function Game(){
                         key={index} 
                         className="cyber-tile bg-cyan w-[100px] h-[200px] hover:scale-105 cursor-move"
                         draggable={true}
-                        onDragStart={(e)=>{handleDragStart(e, card.id_card)}}
+                        onDragStart={(e)=>{handleDragStart(e, card._id)}}
                         // onDrop={(e)=>{handleSetCards(e)}}
-                        id={card.id_card}
+                        id={card._id}
                     >
                         <img src={card.image} draggable={false}/>
                         <div className="text-sm flex flex-col bg-gray-900">
@@ -206,27 +204,10 @@ export function Game(){
     )
 }
 
-type ConfrontRoom = {
-    room_id: string;
-    players: {
-        player: string;
-        socket_id: string;
-        isPlayerTurn: boolean;
-        avatar: Avatar
-        hand: Cards[];
-        deck: Cards[];
-        field: Field
-    }[]
-}
-
 type Field = {
-    id: string;
-    card: Cards;
+    field_id: string;
     empty: boolean;
-    activated: {
-        isActivated: boolean;
-        chain: number;
-    }
+    card: Cards | null;
 }[]
 
 type PrepareCards = {
@@ -253,38 +234,6 @@ type SetCards = {
     avatar: Avatar
 }
 
-// export interface DeckWithCards{
-//     deck: {
-//         id_deck: string | undefined;
-//         name: string | undefined;
-//     } | null;
-//     cards: {
-//         id_card: string;
-//         name: string;
-//         description: string;
-//         image: string;
-//         set_card: string;
-//         type_card: "OFENSIVA" | "DEFENSIVA" | "HABILIDADE" | "HABILIDADE_UNICA";
-//         list: number;
-//         created_at: Date;
-//         updated_at: Date;
-//     } | undefined;
-//     avatar: {
-//         id_avatar: string;
-//         name: string;
-//         description: string;
-//         image: string;
-//         set_avatar: string;
-//         unique_ability: string;
-//         passive_ability: string | null;
-//         hit_points: number;
-//         attack: number;
-//         defense: number;
-//         type_avatar: "OFENSIVO" | "DEFENSIVO" | "MODERADO";
-//         created_at: Date;
-//         updated_at: Date;
-//     }
-// }
 type Avatar = {
         id_avatar: string;
         name: string;
@@ -301,7 +250,7 @@ type Avatar = {
         updated_at: Date;
 }
 type Cards = {
-        id_card: string;
+        _id: string;
         name: string;
         description: string;
         image: string;

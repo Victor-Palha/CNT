@@ -6,8 +6,8 @@ type Rooms = {
     room_id: string;
     player_host: Player;
     player_guest: Player;
-    turnOwner: string;
-    room_status: 0 | 1 | 2 | 3;
+    turnOwner?: string;
+    room_status?: 0 | 1 | 2 | 3;
     // 0 - etapa de compra
     // 1 - etapa de preparação
     // 2 - etapa de ação
@@ -38,7 +38,7 @@ export class Room {
         this.player_host.shuffleDeck();
         this.player_guest.shuffleDeck();
 
-        for(let i = 0; i < 5; i++){
+        for(let i = 0; i < 4; i++){
             this.player_host.drawCard();
             this.player_guest.drawCard();
         }
@@ -147,7 +147,7 @@ export class Room {
           }
     }
 
-    private getPlayerById(id: string){
+    public getPlayerById(id: string){
         const player = [this.player_host, this.player_guest].find(player => player.id === id);
         const opponent = [this.player_host, this.player_guest].find(player => player.id !== id);
         if(!player || !opponent){
@@ -157,5 +157,15 @@ export class Room {
             player,
             opponent
         };
+    }
+
+    public getRoom(){
+        return {
+            room_id: this.room_id,
+            player_host: this.player_host,
+            player_guest: this.player_guest,
+            turnOwner: this.turnOwner,
+            room_status: this.room_status
+        }
     }
 }

@@ -1,3 +1,4 @@
+import { Avatar } from "../Avatares/Avatar";
 import { Card } from "../Cards/Card";
 
 type Players = {
@@ -7,7 +8,7 @@ type Players = {
     player_deck: Card[];
     player_hand: Card[];
     player_hit_points: number;
-    player_field: Field[];
+    player_field?: Field[];
 }
 
 type Field = {
@@ -34,15 +35,15 @@ export class Player{
         this.player_hit_points = player_hit_points;
 
         this.player_field = [{
-            field_id: `${this.player_id}-1`,
+            field_id: `${this.player_name}-1`,
             card: null,
             empty: true
         }, {
-            field_id: `${this.player_id}-2`,
+            field_id: `${this.player_name}-2`,
             card: null,
             empty: true
         }, {
-            field_id: `${this.player_id}-3`,
+            field_id: `${this.player_name}-3`,
             card: null,
             empty: true
         }]
@@ -75,7 +76,9 @@ export class Player{
             field.empty = false;
         }
 
-        const index = this.player_hand.findIndex(hand => hand.id_card === card.id_card);
+        const index = this.player_hand.findIndex(hand =>{ 
+            if(hand.id_card === card.id_card) return hand;
+        });
 
         if(index >= 0){
             this.player_hand.splice(index, 1);
@@ -100,5 +103,13 @@ export class Player{
 
     get id(){
         return this.player_id;
+    }
+
+    get hand(){
+        return this.player_hand;
+    }
+
+    get deck(){
+        return this.player_deck;
     }
 }

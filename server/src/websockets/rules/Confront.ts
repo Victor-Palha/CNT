@@ -1,5 +1,5 @@
 import { Avatars, Cards } from "@prisma/client";
-import { CntRepository } from "./CNTRepository";
+import { CNT } from "./CNT";
 
 export interface ConfrontRoom{
     room_id: string;
@@ -37,7 +37,7 @@ type Players = {
 export class Confront{
     private confrontRoom: ConfrontRoom = {} as ConfrontRoom
 
-    constructor(private cnt: CntRepository){}
+    constructor(private cnt: CNT){}
 
     public async PrepareField(players: Players[], room_id: string) {
         // Prepara os jogadores para o confronto

@@ -150,7 +150,7 @@ export function Confront(){
                                 />
                                 <label htmlFor="Ready">Preparado</label>
                             </div>
-                            {player && player.id_player === room.host && ready && (
+                            {player && player.username === room.host && ready && (
                                 <button className="cyber-button-small bg-red mt-4" onClick={startGame}>
                                     Iniciar
                                     <span className="glitchtext">Danger</span>

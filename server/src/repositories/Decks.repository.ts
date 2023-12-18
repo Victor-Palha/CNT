@@ -8,12 +8,13 @@ export interface CreateDeckRequest{
 }
 
 export interface DeckWithCards{
+    player_id: string;
     deck: {
-        id_deck: string | undefined;
-        name: string | undefined;
-    } | null;
-    cards: Cards[] | undefined;
-    avatar_id: string | undefined;
+        id_deck: string;
+        name: string;
+    };
+    cards: Cards[];
+    avatar_id: string;
 }
 export interface DecksRepository{
     createDeck({player_id, avatar_id, cards, deck_name}: CreateDeckRequest): Promise<Deck>;

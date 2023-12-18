@@ -51,15 +51,20 @@ export class DecksPrismaRepository implements DecksRepository{
             }
         })
 
+        if(!queryDeck){
+            throw new Error("Deck not found");
+        }
+        
         return {
+            player_id: queryDeck.player_id,
             deck: {
-                id_deck: queryDeck?.id_deck,
-                name: queryDeck?.name,
+                id_deck: queryDeck.id_deck,
+                name: queryDeck.name,
             },
-            cards: queryDeck?.CardsDeck.map((card) => {
+            cards: queryDeck.CardsDeck.map((card) => {
                 return card.cards
             }),
-            avatar_id: queryDeck?.avatar_id
+            avatar_id: queryDeck.avatar_id
 
         };
     }
