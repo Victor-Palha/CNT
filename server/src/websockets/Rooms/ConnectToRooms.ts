@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
-import { CNT } from "../rules/CNT";
+import { CNT } from "../db-connection/CNT";
 import { randomUUID } from "crypto";
-import { Confront } from "../rules/Confront";
 import { EventEmitter } from "node:events";
 
 interface PrepareRoom{
@@ -45,7 +44,7 @@ type SendMessageData = {
 
 export class ConnectToRooms extends EventEmitter{
     private prepareRooms: PrepareRoom[] = []
-    public confrontRooms: Confront[] = []
+    // public confrontRooms: Confront[] = []
 
     protected gameRooms: Server
 
@@ -225,138 +224,9 @@ export class ConnectToRooms extends EventEmitter{
                         this.on("room_created", ()=>{
                             this.gameRooms.to(room_id).emit("room_Info", room)
                         })
-
-                        // const confront = new Confront(new CNT())
-                        
-                        // await confront.PrepareField(room.players, room_id).then(()=>{
-                        //     this.confrontRooms.push(confront)
-                        // // this.prepareRooms = this.prepareRooms.filter((room) => room.room_id !== room_id)
-                        // }).then(()=>{
-                        //     this.gameRooms.to(room_id).emit("room_Info", room)
-                        // })
                     }
-                    
                 }
-                
             })
-            // Game
-            
-            // socket.on("join_Game", (data)=>{
-            //     const {room_id, player_id} = data
-            //     const room = this.findGameRoom(room_id)
-
-            //     if(!room){
-            //         console.log("room not found")
-            //         return
-            //     }
-
-            //     const player = room.getRoom.players.find((player)=>{
-            //         if(player.player === player_id){
-            //             return player
-            //         }
-            //     })
-            //     const enemy = room.getRoom.players.find((player)=>{
-            //        if(player.player !== player_id){
-            //             return player
-            //        }
-            //     })
-                
-            //     if(!player || !enemy){
-            //         console.log("player not found")
-            //         return
-            //     }
-
-            //     const deal_Cards = {
-            //         turnOf: player.isPlayerTurn ? player.player : enemy.player,
-            //         player: {
-            //             hand: player.hand,
-            //             avatar: player.avatar,
-            //             deck: player.deck.length,
-            //             field: player.field,
-            //         },
-            //         enemy: {
-            //             hand: enemy.hand.length,
-            //             avatar: enemy.avatar,
-            //             deck: enemy.deck.length,
-            //             field: enemy.field,
-            //         }
-            //     }
-
-            //     socket.emit("deal_Cards", deal_Cards)
-            // })
-
-            // socket.on("set_Card", (data)=>{
-            //     const {room_id, player_id, card, field_id} = data
-
-            //     const room = this.findGameRoom(room_id)
-            //     if(!room){
-            //         return
-            //     }
-
-            //     const player = room.getRoom.players.find((player)=>{
-            //         if(player.player === player_id){
-            //             return player
-            //         }
-            //     })
-
-            //     const enemy = room.getRoom.players.find((player)=>{
-            //         if(player.player !== player_id){
-            //             return player
-            //         }
-            //      })
-
-            //     if(!player || !enemy){
-            //         return
-            //     }
-
-            //     try {
-            //         room.setCardOnField(player_id, card, field_id)
-            //     } catch (error) {
-            //         console.log(error)
-            //         socket.emit("error", error)
-            //     }
-
-            //     const myNewField = {
-            //             player: player.player,
-            //             hand: player.hand,
-            //             avatar: player.avatar,
-            //             deck: player.deck.length,
-            //             field: player.field,
-            //     }
-
-            //     const toEnemyNewField = {
-            //         hand: player.hand.length,
-            //         deck: player.deck.length,
-            //         field: player.field,
-            //     }
-
-            //     socket.emit("i_Set_Card", myNewField)
-            //     socket.broadcast.to(room_id).emit("enemy_Set_Card", toEnemyNewField)
-
-            //     if(room.getRoom.state === 2){
-            //         this.gameRooms.in(room_id).emit("start_Action_Phase", true)
-            //     }
-            // })
-
-            // socket.on("activate_Card", (data)=>{
-            //     const {room_id, player_id, field_id} = data
-
-            //     const room = this.findGameRoom(room_id)
-            //     if(!room){
-            //         return
-            //     }
-
-            //     try {
-            //         const cardActivated = room.ativateCard(player_id, field_id)
-                    
-
-            //     } catch (error) {
-            //         console.log(error)
-            //         socket.emit("error", error)
-            //     }
-            // })
-
-
         })
     }
 
@@ -371,17 +241,4 @@ export class ConnectToRooms extends EventEmitter{
             }
             return null
     }
-
-    private findGameRoom(room_id: string){
-        const room = this.confrontRooms.find((room)=>{
-            if(room.getRoom.room_id === room_id){
-                return room.getRoom
-            }
-        })
-        if(room){
-            return room
-        }
-        return null
-    }
-    
 }

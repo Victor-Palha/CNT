@@ -78,6 +78,7 @@ export class Room {
         }
 
         // Lógica para ativar a carta | Se a carta for de habilidade, adicionar na fila de espera | **adicionar Habilidade Unica na pilha de efeitos**
+        card.ativateCard = true;
         if(card.type !== "HABILIDADE"){
             this.applyImmediateEffect(card, player, opponent);
         }else{
@@ -157,6 +158,11 @@ export class Room {
             player,
             opponent
         };
+    }
+
+    public startActionPhase(){
+        console.log("Action Phase");
+        this.room_status = 2;
     }
 
     public getRoom(){

@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
 import { Room } from "../core/Room/Room";
 import { ConnectToRooms } from "../Rooms/ConnectToRooms";
-import { CNT, DeckPlayer } from "../rules/CNT";
-import { Player } from "../core/Players/Player";
+import { CNT, DeckPlayer } from "../db-connection/CNT";
+import { Field, Player } from "../core/Players/Player";
 import { Card } from "../core/Cards/Card";
 import { Avatar } from "../core/Avatares/Avatar";
 import { Avatars } from "@prisma/client";
@@ -40,7 +40,7 @@ export class Game{
             const host = new Player({
                 player_avatar: new Avatar(playerHost.avatar as Avatars),
                 player_deck: playerHost.cards.map(card => {
-                    return new Card(card)
+                    return new Card({activate:false, ...card})
                 }),
                 player_hand: [],
                 player_hit_points: 35,
@@ -51,7 +51,7 @@ export class Game{
             const guest = new Player({
                 player_avatar: new Avatar(playerGuest.avatar as Avatars),
                 player_deck: playerGuest.cards.map(card => {
-                    return new Card(card)
+                    return new Card({activate:false, ...card})
                 }),
                 player_hand: [],
                 player_hit_points: 35,
@@ -110,7 +110,7 @@ export class Game{
                     throw new Error("Room not found");
                 }
 
-                const {player} = room.getPlayerById(player_id)
+                const {player, opponent} = room.getPlayerById(player_id)
 
                 player.setCardOnField(new Card({
                     id_card: card._id,
@@ -133,6 +133,40 @@ export class Game{
 
                 players.emit("i_Set_Card", myNewField)
                 players.broadcast.to(room_id).emit("enemy_Set_Card", enemyNewField)
+
+                if(this.startActionPhase(player.field, opponent.field)){
+                    this.gameSocket.of("/game").to(room_id).emit("start_Action_Phase")
+                }
+            })
+
+            players.on("activate_Card", (data)=>{
+                const {field_id, room_id, player_id} = data
+                const room = this.findRoom(room_id);
+                if(!room){
+                    throw new Error("Room not found");
+                }
+                room.activeCard(field_id, player_id)
+
+                const {player, opponent} = room.getPlayerById(player_id)
+
+                const myNewField = {
+                    player: player.id,
+                    hand: player.hand,
+                    avatar: player.avatar,
+                    field: player.field,
+                    deck: player.deck.length,
+                }
+
+                const enemyNewField = {
+                    player: player.id,
+                    hand: player.hand.length,
+                    avatar: player.avatar,
+                    field: player.field,
+                    deck: player.deck.length,
+                }
+
+                players.emit("i_Activate_Card", myNewField)
+                players.broadcast.to(room_id).emit("enemy_Activate_Card", enemyNewField)
             })
         })
     }
@@ -141,7 +175,13 @@ export class Game{
     private findRoom(room_id: string){
         return this.Rooms.find(room => {
             if(room.room_id === room_id) return room
-        }
-        );
+        });
+    }
+
+    private startActionPhase(field_host: Field[], field_guest: Field[]){
+        const fields = [...field_host, ...field_guest]
+        const allCardsAreSetted = fields.every(field => field.empty != true)
+        
+        return allCardsAreSetted
     }
 }

@@ -1,3 +1,4 @@
+import { Avatar } from "../../../Avatares/Avatar";
 import { CardEffect } from "../Card-Effect";
 
 export class Estimulante_A implements CardEffect {

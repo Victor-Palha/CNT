@@ -11,7 +11,7 @@ type Players = {
     player_field?: Field[];
 }
 
-type Field = {
+export type Field = {
     field_id: string,
     card: Card | null,
     empty: boolean

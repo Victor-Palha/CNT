@@ -31,6 +31,12 @@ export function Game(){
 
     const {room_id} = useParams()
 
+    const [phase, setPhase] = useState<number>(1)
+    // 0 - Compra
+    // 1 - Preparação
+    // 2 - Ação
+    // 3 - Climax
+
     // States
     const [myAvatar, setMyAvatar] = useState<AvatarProps>({} as AvatarProps)
     const [myHand, setMyHand] = useState<Cards[]>([])
@@ -64,6 +70,10 @@ export function Game(){
                 field_id: idFromField
             })
         }
+    }
+
+    function ativateCard(field_id: string){
+        socket && socket.emit("activate_Card", {field_id, room_id, player_id: Me.id_player})
     }
 
     useEffect(()=>{        
@@ -103,6 +113,21 @@ export function Game(){
             itsActionPhase && toast.info("Fase de ação iniciada!")
             isMyTurn ? toast.info("Sua vez de jogar!") : toast.info("Vez do oponente jogar!")
         })
+        .on("start_Action_Phase", ()=>{
+            setPhase(2)
+        })
+        .on("i_Activate_Card", (newField: SetCards)=>{
+            setMyField(newField.field as Field)
+            setMyAvatar(newField.avatar)
+            setMyDeck(newField.deck)
+            setMyHand(newField.hand as Cards[])
+        })
+        .on("enemy_Activate_Card", (newField: SetCards)=>{
+            setEnemyField(newField.field as Field)
+            setEnemyAvatar(newField.avatar)
+            setEnemyDeck(newField.deck)
+            setEnemyHand(newField.hand as number)
+        })
     }, [socket])
 
     useEffect(()=>{
@@ -123,7 +148,12 @@ export function Game(){
                     <div className="grid grid-cols-3 gap-10">
                         {enemyField && enemyField.map((card, index) => (
                             <div key={index} id={card.field_id} className="bg-gray-800 w-full h-[170px] cyber-tile border-red-500 border-2">
-                                {!card.empty && <div className="bg-red w-full h-full"></div>}
+                                {!card.empty && !card.card?.activate && <div className="bg-red w-full h-full"></div>}
+                                {card.card?.activate && (
+                                    <div>
+                                        <img src={card.card.image} className="object-fill max-h-[170px] opacity-50 rotate-180"/>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -159,6 +189,14 @@ export function Game(){
                                 onDragOver={(e)=>{e.preventDefault()}}
                                 onDrop={(e)=>{handleSetCards(e)}}
                             >
+                                {phase === 2 && isMyTurn && (
+                                    <button 
+                                        className="z-30 absolute bg-yellow p-2 cursor-pointer"
+                                        onClick={()=>{ativateCard(card.field_id)}}    
+                                    >    
+                                        Ativar Carta
+                                    </button>
+                                )}
                                 {card.card && <img src={card.card.image} className="object-fill max-h-[170px] opacity-50"/>}
                             </div>
                         ))}
@@ -189,6 +227,7 @@ export function Game(){
                 ))}
             </div>
             <ToastContainer
+                // limit={1}
                 position="top-center"
                 autoClose={3000}
                 hideProgressBar={false}
@@ -257,6 +296,7 @@ type Cards = {
         set_card: string;
         type_card: "OFENSIVA" | "DEFENSIVA" | "HABILIDADE" | "HABILIDADE_UNICA";
         list: number;
+        activate: boolean;
         created_at: Date;
         updated_at: Date;
 }

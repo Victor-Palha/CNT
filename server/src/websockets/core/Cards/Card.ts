@@ -11,6 +11,7 @@ type Cards = {
     set_card: string;
     type_card: "OFENSIVA" | "DEFENSIVA" | "HABILIDADE" | "HABILIDADE_UNICA";
     list: number;
+    activate: boolean;
 }
 
 export class Card{
@@ -23,6 +24,7 @@ export class Card{
     private list: number;
     private turnsRemaining: number = 1;
     private effect: CardEffect;
+    private activate: boolean = false;
 
 
     constructor({id_card, name, description, image, set_card, type_card, list}: Cards){
@@ -65,5 +67,9 @@ export class Card{
 
     get type(){
         return this.type_card;
+    }
+
+    set ativateCard(value: boolean){
+        this.activate = value;
     }
 }
