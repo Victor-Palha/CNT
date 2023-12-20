@@ -1,30 +1,7 @@
 import { useContext, useEffect, useState } from "react"
-<<<<<<< HEAD
-import { Link, useNavigate } from "react-router-dom"
-import { Player } from "../../context/authContext"
-import { confrontContext } from "../../context/confrontContext"
-=======
 import { Link, Navigate, useNavigate } from "react-router-dom"
 import { authContext } from "../../context/authContext"
 import { PrepareRoom, confrontContext } from "../../context/confrontContext"
->>>>>>> 690aa80 (Refactore UI)
-
-interface PrepareRoom{
-    room_id: string;
-    room_name: string;
-    host: string;
-    players: {
-        socket_id: string;
-        player: string;
-        ready: boolean;
-        deck_id: string;
-    }[]
-    messages: {
-        playerName: string;
-        message: string;
-    }[]
-    inConfront: boolean;
-}
 
 export function Rooms(){
     const navigate = useNavigate()

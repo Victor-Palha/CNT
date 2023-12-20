@@ -122,6 +122,7 @@ export class Game{
                     hand: player.hand,
                     field: player.field,
                     deck: player.deck.length,
+                    turnOf: room.turnOwnerPlayer,
                 }
 
                 const enemyNewField = {
@@ -129,6 +130,7 @@ export class Game{
                     hand: player.hand.length,
                     field: player.field,
                     deck: player.deck.length,
+                    turnOf: room.turnOwnerPlayer
                 }
 
                 players.emit("i_Set_Card", myNewField)
@@ -155,6 +157,7 @@ export class Game{
                     avatar: player.avatar,
                     field: player.field,
                     deck: player.deck.length,
+                    turnOf: room.turnOwnerPlayer,
                 }
 
                 const enemyNewField = {
@@ -163,6 +166,7 @@ export class Game{
                     avatar: player.avatar,
                     field: player.field,
                     deck: player.deck.length,
+                    turnOf: room.turnOwnerPlayer,
                 }
 
                 players.emit("i_Activate_Card", myNewField)

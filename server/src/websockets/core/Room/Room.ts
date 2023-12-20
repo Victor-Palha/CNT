@@ -62,6 +62,7 @@ export class Room {
                 this.turnOwner = this.player_guest.id;
             }
         }
+        console.log("Turn Owner: ", this.turnOwner);
 
         return this;
     }
@@ -173,5 +174,9 @@ export class Room {
             turnOwner: this.turnOwner,
             room_status: this.room_status
         }
+    }
+
+    get turnOwnerPlayer(){
+        return this.turnOwner
     }
 }

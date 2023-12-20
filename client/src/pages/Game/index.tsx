@@ -3,12 +3,9 @@ import { useParams } from "react-router-dom"
 import { Player } from "../../context/authContext"
 import { ToastContainer, toast } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css';
-<<<<<<< HEAD
-import { Socket, io } from "socket.io-client"
-=======
 import { MyField } from "./MyField"
 import { OponentField } from "./OponentField"
->>>>>>> 690aa80 (Refactore UI)
+import { Socket, io } from "socket.io-client";
 
 type AvatarProps = {
     id_avatar: string;
@@ -65,10 +62,6 @@ export function Game(){
     function handleSetCards(e:React.DragEvent<HTMLDivElement>){
         const idFromCard = setCard
         const idFromField = e.currentTarget.id
-<<<<<<< HEAD
-        console.log(idFromCard, idFromField)
-=======
->>>>>>> 690aa80 (Refactore UI)
 
         if (idFromCard) {
             socket && socket.emit("set_Card", {
@@ -119,9 +112,7 @@ export function Game(){
         })
         .on("start_Action_Phase", (itsActionPhase: boolean)=> {
             itsActionPhase && toast.info("Fase de ação iniciada!")
-            isMyTurn ? toast.info("Sua vez de jogar!") : toast.info("Vez do oponente jogar!")
-        })
-        .on("start_Action_Phase", ()=>{
+            isMyTurn === true ? toast.info("Sua vez de jogar!") : toast.info("Vez do oponente jogar!")
             setPhase(2)
         })
         .on("i_Activate_Card", (newField: SetCards)=>{
@@ -129,12 +120,22 @@ export function Game(){
             setMyAvatar(newField.avatar)
             setMyDeck(newField.deck)
             setMyHand(newField.hand as Cards[])
+            if(newField.turnOf === Me.id_player){
+                setIsMyTurn(true)
+            }else{
+                setIsMyTurn(false)
+            }
         })
         .on("enemy_Activate_Card", (newField: SetCards)=>{
             setEnemyField(newField.field as Field)
             setEnemyAvatar(newField.avatar)
             setEnemyDeck(newField.deck)
             setEnemyHand(newField.hand as number)
+            if(newField.turnOf === Me.id_player){
+                setIsMyTurn(true)
+            }else{
+                setIsMyTurn(false)
+            }
         })
     }, [socket])
 
@@ -145,97 +146,6 @@ export function Game(){
 
     return (
         <main>
-<<<<<<< HEAD
-            <div className="flex justify-center mt-[-4rem] w-full items-center absolute z-10">
-            {Array.from({ length: enemyHand }, (_, index) => (
-                <div key={index} className="cyber-tile bg-red w-[100px] h-[100px]"></div>
-            ))}
-            </div>
-            <div className="mx-36 my-12 bg-gray-900">
-                {/* Enemy Grid */}
-                <div className={`p-4 ${isMyTurn === false && "animate-pulse"}`}>
-                    <div className="grid grid-cols-3 gap-10">
-                        {enemyField && enemyField.map((card, index) => (
-                            <div key={index} id={card.field_id} className="bg-gray-800 w-full h-[170px] cyber-tile border-red-500 border-2">
-                                {!card.empty && !card.card?.activate && <div className="bg-red w-full h-full"></div>}
-                                {card.card?.activate && (
-                                    <div>
-                                        <img src={card.card.image} className="object-fill max-h-[170px] opacity-50 rotate-180"/>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    {enemyAvatar && (
-                        <div className="bg-black w-[120px] mx-auto m-4 rotate-180 cyber-tile">
-                            <img src={enemyAvatar.image}/>
-                            <div className="text-white rotate-180 flex items-center justify-center">
-                                <span>ATK: {enemyAvatar.attack}</span>
-                                <span>HP: {enemyAvatar.hit_points}</span>
-                                <span>DEF: {enemyAvatar.defense}</span>
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <div className={`p-4 ${isMyTurn === true && "animate-pulse"}`}>
-                    {/* Player Grid */}
-                    {myAvatar && (   
-                        <div className="bg-black w-[120px] h-[180px] mx-auto m-4 cyber-tile">
-                            <img src={myAvatar.image}/>
-                            <div className="text-white flex items-center justify-center">
-                                <span>ATK: {myAvatar.attack}</span>
-                                <span>HP: {myAvatar.hit_points}</span>
-                                <span>DEF: {myAvatar.defense}</span>
-                            </div>
-                        </div>
-                    )}
-                    <div className="grid grid-cols-3 w-full gap-10">
-                        {myField && myField.map((card, index) => (
-                            <div 
-                                key={index} 
-                                id={card.field_id} 
-                                className="bg-gray-800 w-full h-[170px] cyber-tile border-2 border-cyan-500"
-                                onDragOver={(e)=>{e.preventDefault()}}
-                                onDrop={(e)=>{handleSetCards(e)}}
-                            >
-                                {phase === 2 && isMyTurn && (
-                                    <button 
-                                        className="z-30 absolute bg-yellow p-2 cursor-pointer"
-                                        onClick={()=>{ativateCard(card.field_id)}}    
-                                    >    
-                                        Ativar Carta
-                                    </button>
-                                )}
-                                {card.card && <img src={card.card.image} className="object-fill max-h-[170px] opacity-50"/>}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="bg-cyan cyber-tile w-[100px] h-[120px] my-[-10rem] absolute right-0 mr-2">
-                    <p>{myDeck}</p><br />
-                    <p>DECK</p>
-                </div>
-            </div>
-            {/* My Hand */}
-            <div className="flex justify-center mt-[-7rem] w-full items-center absolute z-10">
-                {myHand && myHand.length > 0 && myHand.map((card, index) => (
-                    <div 
-                        key={index} 
-                        className="cyber-tile bg-cyan w-[100px] h-[200px] hover:scale-105 cursor-move"
-                        draggable={true}
-                        onDragStart={(e)=>{handleDragStart(e, card._id)}}
-                        // onDrop={(e)=>{handleSetCards(e)}}
-                        id={card._id}
-                    >
-                        <img src={card.image} draggable={false}/>
-                        <div className="text-sm flex flex-col bg-gray-900">
-                            <span className="text-white">{card.name}</span>
-                            <span className="text-white">{card.description}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-=======
                 <OponentField 
                     enemyAvatar={enemyAvatar}
                     enemyField={enemyField}
@@ -244,16 +154,19 @@ export function Game(){
                 />
                 <MyField 
                     handleDragStart={handleDragStart} 
-                    handleSetCards={handleSetCards} 
-                    isMyTurn 
+                    handleSetCards={handleSetCards}
+                    ativateCard={ativateCard}
+                    isMyTurn={isMyTurn}
                     myAvatar={myAvatar} 
                     myDeck={myDeck} 
                     myField={myField} 
                     myHand={myHand}
+                    phase={phase}
                 />
->>>>>>> 690aa80 (Refactore UI)
+
+
             <ToastContainer
-                // limit={1}
+                limit={1}
                 position="top-center"
                 autoClose={3000}
                 hideProgressBar={false}
@@ -269,7 +182,7 @@ export function Game(){
     )
 }
 
-type Field = {
+export type Field = {
     field_id: string;
     empty: boolean;
     card: Cards | null;
@@ -297,9 +210,10 @@ type SetCards = {
     field: Field,
     deck: number,
     avatar: Avatar
+    turnOf: string
 }
 
-type Avatar = {
+export type Avatar = {
         id_avatar: string;
         name: string;
         description: string;
@@ -314,7 +228,7 @@ type Avatar = {
         created_at: Date;
         updated_at: Date;
 }
-type Cards = {
+export type Cards = {
         _id: string;
         name: string;
         description: string;
