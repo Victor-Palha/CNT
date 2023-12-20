@@ -151,6 +151,7 @@ export function Game(){
                     enemyField={enemyField}
                     enemyHand={enemyHand}
                     isMyTurn={isMyTurn}
+                    enemyDeck={enemyDeck}
                 />
                 <MyField 
                     handleDragStart={handleDragStart} 
