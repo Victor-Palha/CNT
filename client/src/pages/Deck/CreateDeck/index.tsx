@@ -165,17 +165,19 @@ export function CreateDeck(){
                 {/* Cards to create Deck */}
                 <MagicMotion>
                 <form onSubmit={(e)=>makeDeck(e)} className="bg-gray-900 cyber-tile-big pt-4">
-                    <div className="cyber-input flex items-center mb-10">
-                        <input type="text" className="" placeholder="Meu novo deck"
-                            value={deckName}
-                            onChange={(e) => setDeckName(e.target.value)}
-                        />
+                    <div className="flex items-center mb-10 flex-wrap justify-center">
                         {avatarSelected && (
                             <button className={"cyber-button-small"} disabled={deckName === ""}>
                                 Salvar deck
                                 <span className="glitchtext"></span>
                             </button>
                         )}
+                        <div className="cyber-input text-white">
+                            <input type="text" className="" placeholder="Meu novo deck"
+                                value={deckName}
+                                onChange={(e) => setDeckName(e.target.value)}
+                            />
+                        </div>
                     </div>
                     {avatarSelected && (
                         <div className="flex justify-center">

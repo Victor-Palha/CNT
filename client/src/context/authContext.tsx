@@ -12,7 +12,6 @@ export const authContext = createContext({} as AuthContextProps)
 export interface Player{
     id_player: string,
     username: string,
-    email: string,
 }
 interface AuthProviderProps {
     children: React.ReactNode

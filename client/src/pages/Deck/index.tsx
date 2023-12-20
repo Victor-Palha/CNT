@@ -40,23 +40,23 @@ export function Deck(){
     return (
         <>
             <Header/>
-            <div className="flex flex-col justify-center pt-20 items-center gap-10">
+            <div className="flex flex-col justify-center pt-20 items-center gap-10 ">
                 <h1 className="text-2xl font-bold text-blue-500">Decks</h1>
-                <div className="flex cyber-tile-big w-full border-2 border-yellow-400 h-[50vh] p-4 gap-2">
+                <div className="flex cyber-tile-big w-full p-4 gap-2 flex-wrap justify-center items-center">
+                    <Link to={"/deck/create"} className="">
+                        <div className="cyber-tile-small cyber-glitch-1 bg-black flex justify-center items-center text-white flex-col border-2 border-red-400">
+                                <RxCardStackPlus className="w-10 h-10 text-blue-500"/>
+                                <p>Criar novo Deck</p>
+                        </div>
+                    </Link>
                     {myDecks.map((deck)=>(
                         <Link to={"/deck/"+deck.id_deck} key={deck.id_deck}>
-                            <div className="cyber-tile-small cyber-glitch-1 bg-black flex justify-center items-center text-white flex-col">
+                            <div className="cyber-tile-small cyber-glitch-1 bg-black flex justify-center items-center text-white flex-col border-yellow-400 border-2">
                                 <TbCardsFilled className="w-10 h-10 text-blue-500"/>
                                 <p>{deck.name}</p>
                             </div>
                         </Link>
                     ))}
-                    <Link to={"/deck/create"} className="">
-                        <div className="cyber-tile-small cyber-glitch-1 bg-black flex justify-center items-center text-white flex-col">
-                                <RxCardStackPlus className="w-10 h-10 text-blue-500"/>
-                                <p>Criar novo Deck</p>
-                        </div>
-                    </Link>
                 </div>
             </div>
         </>

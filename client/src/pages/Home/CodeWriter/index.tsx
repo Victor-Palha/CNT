@@ -9,26 +9,14 @@ activateNeuroThread(NCHM)
 // SynthoKinetic Quantum Encryption Algorithm key generation
 generateEncryptionKey(SKQEA)
 \t
-// DigiSpectra Holo-Quantum Framework initialization
-initializeHoloQuantumFramework(DSHQF)
-\t
-// NanoNeural Quantum Resonance Processor boot-up
-bootNanoNeuralProcessor(NNQRP)
-\t
 // CyberGenomic Quantum Biometrics scan
 userIdentity = scanQuantumBiometrics(CGQB)
-\t
-// QuantumSpatial Temporal Harmonization Module synchronization
-synchronizeTemporalHarmony(QSTHM)
 \t
 // MegaQuark Quantum Neural Fabric activation
 activateMegaQuarkFabric(MQQNF)
 \t
 // NanoChrono Quantum Entanglement Synchronization start
 startQuantumEntanglementSynchronization(NCQES)
-\t
-// Displaying a futuristic greeting message
-consoleFutur("Greetings, denizens of the quantum realm! The megaquarks resonate, and the holo-quantum framework echoes: Hello, World!")
 `;
 
 export function CodeWriter() {

@@ -4,7 +4,7 @@
 
 
 @layer base {
-   /* 
+/* 
  * cyberpunk-css by alddesign: https://github.com/alddesign/cyberpunk-css 
  * v1.0.0-alpha.3
  * 
@@ -873,6 +873,7 @@
     clip-path: var(--og-clip-path);
     padding: var(--tile-padding);
     padding-bottom: var(--tile-edges);
+    max-width: 100%;
   }
 
   .cyber-tile img,
@@ -1191,17 +1192,19 @@ Note: Inline svg shit doesnt work sometimes. Make sure to optimize it with https
     font-size: .85rem;
   }
 
-  .cyber-input::before,
-  .cyber-input-long::before,
-  .cyber-input-full::before,
-  .cyber-select::before,
-  .cyber-select-long::before,
-  .cyber-select-full::before {
+  .cyber-input::after,
+  .cyber-input-long::after,
+  .cyber-input-full::after,
+  .cyber-select::after,
+  .cyber-select-long::after,
+  .cyber-select-full::after {
     content: 'X';
     color: transparent;
-    position: absolute;
+    /* position: relative; */
+    margin-top: -1.75rem;
     display: block;
-    width: var(--input-width);
+    /* width: 100%; */
+    /* width: var(--input-width); */
     padding: var(--input-padding-top) var(--input-padding-right) var(--input-padding-bot) var(--input-padding-left);
     clip-path: polygon(0 calc(100% - 10px), 10px 100%, 100% 100%, 100% calc(100% - 8px), calc(100% - 20px) calc(100% - 8px), calc(100% - 20px - 8px) calc(100% - 2px), 11px calc(100% - 2px), 0 calc(100% - 13px));
     background-color: var(--ac);
@@ -1329,11 +1332,14 @@ Note: Inline svg shit doesnt work sometimes. Make sure to optimize it with https
 
   /*#endregion*/
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 1200px) {
     :root {
       --root-font-size: 14px;
     }
-
+    .cyber-h{
+      font-size: 0.5rem;
+      width: 100%;
+    }
     .cyber-tile {
       max-width: 100%;
     }

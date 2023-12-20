@@ -1,7 +1,13 @@
 import { useContext, useEffect, useState } from "react"
+<<<<<<< HEAD
 import { Link, useNavigate } from "react-router-dom"
 import { Player } from "../../context/authContext"
 import { confrontContext } from "../../context/confrontContext"
+=======
+import { Link, Navigate, useNavigate } from "react-router-dom"
+import { authContext } from "../../context/authContext"
+import { PrepareRoom, confrontContext } from "../../context/confrontContext"
+>>>>>>> 690aa80 (Refactore UI)
 
 interface PrepareRoom{
     room_id: string;
@@ -22,9 +28,8 @@ interface PrepareRoom{
 
 export function Rooms(){
     const navigate = useNavigate()
-    const {socket} = useContext(confrontContext)
-    let player = localStorage.getItem('@player:cnt') as any
-    player = player ? JSON.parse(player) as Player : null
+    const {socket, player} = useContext(confrontContext)
+    const {isAuth} = useContext(authContext)
 
     const [rooms, setRooms] = useState<PrepareRoom[]>([])
 
@@ -34,7 +39,7 @@ export function Rooms(){
         e.preventDefault()
         if(nameRoom === "") return
 
-        socket && socket.emit("create_Room", {
+        player && socket && socket.emit("create_Room", {
             room_name: nameRoom,
             player_id: player.id_player,
         }).on("room_created", (room_id) =>{
@@ -43,7 +48,7 @@ export function Rooms(){
     }
 
     async function joinRoom(room_id: string){
-        socket && socket.emit("join_Room", {
+        player && socket && socket.emit("join_Room", {
             room_id,
             player_id: player.id_player,
         }).on("room_joined", (room_id) =>{
@@ -61,6 +66,9 @@ export function Rooms(){
     return (
         
         <main>
+            {!isAuth && (
+                <Navigate to='/login'/>
+            )}
             <header className="cyber-razor-bottom bg-black flex justify-center">
                 <Link to="/">
                     <h1 className="text-5xl p-4 text-blue-500 ">
@@ -98,9 +106,9 @@ export function Rooms(){
                     </table>
                 </div>
                 <div className="h-[80vh] p-10 text-white cyber-glitch-0">
-                    <h1 className="cyber-h">Criar sala</h1>
-                    <p className="m-2">Escolha um nome e seu deck</p>
-                    <form className="flex gap-4" onSubmit={(e)=>createRoom(e)}>
+                    <h1 className="cyber-h">Criar sistema Nexus</h1>
+                    <p className="m-2">Escolha um nome para seu sistema Nexus</p>
+                    <form className="flex gap-4 flex-wrap" onSubmit={(e)=>createRoom(e)}>
                         <div className="flex flex-col gap-4">
                             <div className="cyber-input">
                                 <input type="text" placeholder="Nome da sala" 
@@ -110,7 +118,7 @@ export function Rooms(){
                             </div>
                         </div>
                         {nameRoom != "" && (
-                            <button className="cyber-button bg-red fg-yellow">Criar Sala</button>
+                            <button type="submit" className="cyber-button bg-red fg-yellow">Criar Sala</button>
                         )}
                             
                     </form>

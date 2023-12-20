@@ -37,14 +37,16 @@ export function SignUp(){
     }
     return (
         <div className='flex h-screen justify-center items-center'>
-        <form className='max-w-md flex flex-col gap-4' onSubmit={(e)=>signUp(e)}>
+        <form className='max-w-md flex flex-col gap-4 text-white' onSubmit={(e)=>signUp(e)}>
             <h1 className="
-            text-4xl
+            text-xl
             font-bold
             text-center
             text-blue-500
             transition
             hover:text-blue-700
+            cyberpunk-font-og
+            cyber-glitch-0
             ">
             Cyber Net Cards
             </h1>

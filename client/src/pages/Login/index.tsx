@@ -30,16 +30,18 @@ export function Login() {
       {isAuth && (
         <Navigate to='/'/>
       )}
-      <form className='max-w-md flex flex-col gap-4' onSubmit={(e)=>login(e)}>
+      <form className='max-w-md flex flex-col gap-4 text-white' onSubmit={(e)=>login(e)}>
         <h1 className="
-          text-4xl
+          text-xl
           font-bold
           text-center
           text-blue-500
           transition
           hover:text-blue-700
+          cyberpunk-font-og
+          cyber-glitch-0
         ">
-          Cyber Net Cards
+          Cyber-Net-Cards
         </h1>
         <div className='cyber-input'>
           <input type="text" placeholder='Email' className='w-full px-1 py-2  border-none' 

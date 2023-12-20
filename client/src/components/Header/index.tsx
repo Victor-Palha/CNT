@@ -6,8 +6,6 @@ export function Header(){
             <Link to={"/"} className="text-4xl cyberpunk-font">CNT</Link>
             <nav className="flex gap-4">
                 <Link to={"/deck"}>Decks</Link>
-                <Link to={"/card"}>Add Card</Link>
-                <Link to={"/avatar"}>Add Avatar</Link>
                 <Link to={"/rules"}>Regras</Link>
                 <button>Signout</button>
             </nav>

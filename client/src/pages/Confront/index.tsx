@@ -1,24 +1,8 @@
 import { useContext, useEffect, useState } from "react"
 import { Navigate, useParams } from "react-router-dom"
-import { confrontContext } from "../../context/confrontContext"
+import { PrepareRoom, confrontContext } from "../../context/confrontContext"
 import { Player } from "../../context/authContext"
 import instance from "../../lib/axios"
-
-type PrepareRoom = {
-    room_id: string;
-    room_name: string;
-    host: string;
-    players: {
-        socket_id: string;
-        player: string;
-        ready: boolean;
-    }[]
-    messages: {
-        playerName: string;
-        message: string;
-    }[]
-    inConfront: boolean;
-}
 
 type MyDecks = {
     id_deck: string;

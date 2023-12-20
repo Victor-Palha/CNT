@@ -3,7 +3,12 @@ import { useParams } from "react-router-dom"
 import { Player } from "../../context/authContext"
 import { ToastContainer, toast } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css';
+<<<<<<< HEAD
 import { Socket, io } from "socket.io-client"
+=======
+import { MyField } from "./MyField"
+import { OponentField } from "./OponentField"
+>>>>>>> 690aa80 (Refactore UI)
 
 type AvatarProps = {
     id_avatar: string;
@@ -60,7 +65,10 @@ export function Game(){
     function handleSetCards(e:React.DragEvent<HTMLDivElement>){
         const idFromCard = setCard
         const idFromField = e.currentTarget.id
+<<<<<<< HEAD
         console.log(idFromCard, idFromField)
+=======
+>>>>>>> 690aa80 (Refactore UI)
 
         if (idFromCard) {
             socket && socket.emit("set_Card", {
@@ -137,6 +145,7 @@ export function Game(){
 
     return (
         <main>
+<<<<<<< HEAD
             <div className="flex justify-center mt-[-4rem] w-full items-center absolute z-10">
             {Array.from({ length: enemyHand }, (_, index) => (
                 <div key={index} className="cyber-tile bg-red w-[100px] h-[100px]"></div>
@@ -226,6 +235,23 @@ export function Game(){
                     </div>
                 ))}
             </div>
+=======
+                <OponentField 
+                    enemyAvatar={enemyAvatar}
+                    enemyField={enemyField}
+                    enemyHand={enemyHand}
+                    isMyTurn={isMyTurn}
+                />
+                <MyField 
+                    handleDragStart={handleDragStart} 
+                    handleSetCards={handleSetCards} 
+                    isMyTurn 
+                    myAvatar={myAvatar} 
+                    myDeck={myDeck} 
+                    myField={myField} 
+                    myHand={myHand}
+                />
+>>>>>>> 690aa80 (Refactore UI)
             <ToastContainer
                 // limit={1}
                 position="top-center"
