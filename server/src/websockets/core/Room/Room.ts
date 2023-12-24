@@ -134,6 +134,14 @@ export class Room {
                 applyEffect: card.cardEffect.applyEffect
             });
         }
+        // If all cards are activated, start climax phase
+        const allCardsAreActivated = (player_field: Field[], opponent_field: Field[]) => {
+            const fields = [...player_field, ...opponent_field];
+            return fields.every(field => field.card?.activateCard === true);
+        }
+        if(allCardsAreActivated(player.field, opponent.field)){
+            this.startClimaxPhase();
+        }
 
         this.turnOwner = opponent.id;
     }
