@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { MyField } from "./MyField"
 import { OponentField } from "./OponentField"
 import { Socket, io } from "socket.io-client";
+import { Dialog } from "./Dialog";
 
 type AvatarProps = {
     id_avatar: string;
@@ -34,6 +35,8 @@ export function Game(){
     const {room_id} = useParams()
 
     const [phase, setPhase] = useState<number>(1)
+    const [dialog, setDialog] = useState<boolean>(false)
+    const [cardDialog, setCardDialog] = useState<Cards | Avatar | undefined>(undefined)
     // 0 - Compra
     // 1 - Preparação
     // 2 - Ação
@@ -51,6 +54,12 @@ export function Game(){
     const [enemyDeck, setEnemyDeck] = useState<number>(0)
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
+
+    // Dialog
+    function handleDialog(card: Cards | Avatar | undefined){
+        setDialog(!dialog)
+        setCardDialog(card)
+    }
 
     // Hand functions / Field functions
     function handleDragStart(e:React.DragEvent<HTMLDivElement>, id:string){
@@ -77,15 +86,23 @@ export function Game(){
         socket && socket.emit("activate_Card", {field_id, room_id, player_id: Me.id_player})
     }
 
+    function skipTurn(){
+        socket && socket.emit("skip_Turn", {room_id, player_id: Me.id_player})
+    }
+
     useEffect(()=>{        
         socket && socket.emit("init_Game", {
             room_id,
             player_id: Me.id_player,
         })
+        .on("room_Not_Found", ()=> {
+            toast.error("Sala não encontrada!")
+            window.location.href = "/confront/rooms"
+        })
         .on("deal_Cards", (room: PrepareCards)=>{
             toast.info("Fase de preparação iniciada!")
+            setPhase(room.gameState)
             setMyAvatar(room.player.avatar)
-            console.log(room.player.hand)
             setMyHand(room.player.hand)
             setMyDeck(room.player.deck)
             setMyField(room.player.field)
@@ -110,10 +127,9 @@ export function Game(){
             setEnemyHand(newField.hand as number)
             setEnemyDeck(newField.deck)
         })
-        .on("start_Action_Phase", (itsActionPhase: boolean)=> {
-            itsActionPhase && toast.info("Fase de ação iniciada!")
-            isMyTurn === true ? toast.info("Sua vez de jogar!") : toast.info("Vez do oponente jogar!")
-            setPhase(2)
+        .on("start_Action_Phase", (itsActionPhase: number)=> {
+            itsActionPhase === 2 && toast.info("Fase de ação iniciada!")
+            setPhase(itsActionPhase)
         })
         .on("i_Activate_Card", (newField: SetCards)=>{
             setMyField(newField.field as Field)
@@ -137,6 +153,18 @@ export function Game(){
                 setIsMyTurn(false)
             }
         })
+        .on("skip_Turn", (data)=>{
+            const {turnOf} = data
+            if(turnOf === Me.id_player){
+                setIsMyTurn(true)
+            }else{
+                setIsMyTurn(false)
+            }
+        })
+        .on("start_Climax_Phase", (itsClimaxPhase: number)=> {
+            itsClimaxPhase === 3 && toast.info("Fase de climax iniciada!")
+            setPhase(itsClimaxPhase)
+        })
     }, [socket])
 
     useEffect(()=>{
@@ -153,10 +181,26 @@ export function Game(){
                     isMyTurn={isMyTurn}
                     enemyDeck={enemyDeck}
                 />
+                <div className="w-full justify-center items-center flex">
+                    <div className="rounded-full bg-yellow p-4 m-2 shadow-black shadow-inner">
+                        {phase === 0 && <p>Fase de Compra</p>}
+                        {phase === 1 && <p>Fase de Preparação</p>}
+                        {phase === 2 && <p>Fase de Ação</p>}
+                        {phase === 2 && isMyTurn && (
+                        <>
+                            <p>Sua Vez</p>
+                            <button className="font-bold text-red-500" onClick={()=>skipTurn()}>Pular vez</button>
+                        </>
+                        )}
+                        {phase === 2 && !isMyTurn && <p>Vez do oponente</p>}
+                        {phase === 3 && "Climax"}
+                    </div>
+                </div>
                 <MyField 
                     handleDragStart={handleDragStart} 
                     handleSetCards={handleSetCards}
                     ativateCard={ativateCard}
+                    dialog={handleDialog}
                     isMyTurn={isMyTurn}
                     myAvatar={myAvatar} 
                     myDeck={myDeck} 
@@ -164,7 +208,9 @@ export function Game(){
                     myHand={myHand}
                     phase={phase}
                 />
-
+                {dialog && (
+                    <Dialog open={dialog} card={cardDialog} close={handleDialog}/>
+                )}
 
             <ToastContainer
                 limit={1}
@@ -190,6 +236,7 @@ export type Field = {
 }[]
 
 type PrepareCards = {
+    gameState: number
     turnOf: string;
     player: {
         hand: Cards[];
@@ -206,6 +253,7 @@ type PrepareCards = {
 }
 
 type SetCards = {
+    gameState: number;
     player: string,
     hand: Cards[] | number,
     field: Field,

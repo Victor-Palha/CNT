@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import fastifyJwt from "@fastify/jwt";
+import fastifyStatic from "@fastify/static";
 import cors from "@fastify/cors";
 import {createServer} from "node:http"
 import { Server } from "socket.io";
@@ -31,6 +32,11 @@ server.register(fastifyJwt, {
     sign: {
         expiresIn: "7d"
     }
+})
+// Static Files
+server.register(fastifyStatic, {
+    root: `${__dirname}/../static`,
+    prefix: "/static"
 })
 /* App Routes */
 server.register(PlayerRoutes, {prefix: "/api"})

@@ -52,6 +52,13 @@ export function CreateDeck(){
     function addCardToDeck(e:React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>, card: CardsProps){
         e.preventDefault()
         // Só pode adicionar o máximo de 3 copias de uma carta
+        if(card.type_card === "HABILIDADE_UNICA"){
+            const thisCardIsAlreadyInTheDeck = cardsSelected.filter((cardSelected)=>cardSelected.id_card === card.id_card)
+            if(thisCardIsAlreadyInTheDeck.length > 0){
+                alert("Você só pode adicionar uma copia de uma carta de habilidade única")
+                return
+            }
+        }
         if(cardsSelected.length === 22){
             alert("Seu deck só pode ter 22 cartas")
             return

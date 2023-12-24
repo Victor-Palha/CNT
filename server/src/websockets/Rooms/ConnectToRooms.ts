@@ -223,6 +223,8 @@ export class ConnectToRooms extends EventEmitter{
 
                         this.on("room_created", ()=>{
                             this.gameRooms.to(room_id).emit("room_Info", room)
+                            // Delete room after game is created
+                            this.prepareRooms = this.prepareRooms.filter((room) => room.room_id !== room_id)
                         })
                     }
                 }

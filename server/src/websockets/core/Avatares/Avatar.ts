@@ -15,19 +15,6 @@ type Avatars = {
 }
 
 export class Avatar{
-    // id_avatar: string;
-    // name: string;
-    // description: string;
-    // image: string;
-    // set_avatar: string;
-    // unique_ability: string;
-    // passive_ability: string | null;
-    // hit_points: number;
-    // attack: number;
-    // defense: number;
-    // type_avatar: $Enums.TypeAvatar;
-    // created_at: Date;
-    // updated_at: Date;
     private id_avatar: string;
     private name: string;
     private description: string;

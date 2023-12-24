@@ -22,7 +22,7 @@ export class Card{
     private set_card: string;
     private type_card: "OFENSIVA" | "DEFENSIVA" | "HABILIDADE" | "HABILIDADE_UNICA";
     private list: number;
-    private turnsRemaining: number = 1;
+    private turnsRemains: number = 1;
     private effect: CardEffect;
     private activate: boolean = false;
 
@@ -42,13 +42,13 @@ export class Card{
         // Lógica para escolher e inicializar o efeito com base no tipo da carta
         switch (this.id_card) {
             case "8eb8961e-b2c1-47fa-8a29-be31d42de60b":
-                this.turnsRemaining = 2;
+                this.turnsRemains = 2;
                 return new RecorteDeCodigo();
             case "4875dcd2-d13d-4425-9c05-1472bdb9466c":
-                this.turnsRemaining = 1;
+                this.turnsRemains = 1;
                 return new Estimulante_A();
             case "af7530ea-a6ce-48cb-9bd7-b71f28cf899e":
-                this.turnsRemaining = 1;
+                this.turnsRemains = 1;
                 return new QuebraDeSeguranca();
 
             // Adicione outros casos para diferentes tipos de carta
@@ -69,7 +69,7 @@ export class Card{
         return this.type_card;
     }
 
-    set ativateCard(value: boolean){
+    set activateCard(value: boolean){
         this.activate = value;
     }
 }

@@ -18,15 +18,11 @@ export function CardModel({card, handleCard, handleCardInfo}: CardModelProps){
     return(
 
         <div 
-            className="flex flex-col cyber-tile-small bg-cyan-600 h-52 w-[30%] overflow-hidden cyber-glitch-1" 
+            className="cursor-pointer w-[30%] cyber-glitch-1" 
             onContextMenu={(e)=>handleCard(e, card)}
             onClick={()=>handleCardInfo(card, null)}
         >
             <img src={card.image} alt={card.name} className=""/>
-            <div className="cyber-tile-small text-[10px] bg-black mt-4">
-                <p className="text-white">{card.name}</p>
-                <p className="text-sm  text-white text-[12px] mt-2">{card.description}</p>
-            </div>
         </div>
 
     )

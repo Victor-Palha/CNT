@@ -23,7 +23,8 @@ export class Player{
     private player_avatar: Avatar;
     private player_deck: Card[];
     private player_hand: Card[];
-    private player_hit_points: number;
+    private player_can_skip_turn: boolean;
+    private player_max_cards_hand: number;
     private player_field: Field[];
 
     constructor({player_id, player_name, player_avatar, player_deck, player_hand, player_hit_points}: Players){
@@ -31,8 +32,11 @@ export class Player{
         this.player_name = player_name;
         this.player_avatar = player_avatar;
         this.player_deck = player_deck;
+        // if skip_turn_count is 1, the player can skip the turn
+        // if skip_turn_count is 0, the player can't skip the turn
+        this.player_can_skip_turn = true;
+        this.player_max_cards_hand = 4;
         this.player_hand = player_hand;
-        this.player_hit_points = player_hit_points;
 
         this.player_field = [{
             field_id: `${this.player_name}-1`,
@@ -71,7 +75,7 @@ export class Player{
     public setCardOnField(card: Card, field_id: string){
         const field = this.player_field.find(field => field.field_id === field_id);
 
-        if(field){
+        if(field && field.empty){
             field.card = card;
             field.empty = false;
         }
@@ -111,5 +115,19 @@ export class Player{
 
     get deck(){
         return this.player_deck;
+    }
+
+    set max_cards_hand(max_cards_in_hand: number){
+        this.player_max_cards_hand = max_cards_in_hand;
+    }
+
+    public skip_turn(){
+        if(this.player_can_skip_turn){
+            this.player_can_skip_turn=false;
+        }
+    }
+
+    get can_skip_turn(){
+        return this.player_can_skip_turn;
     }
 }
