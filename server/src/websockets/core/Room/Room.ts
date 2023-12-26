@@ -166,7 +166,7 @@ export class Room {
         // Lógica para aplicar imediatamente o efeito da carta ao jogador ou oponente
         switch (card.id_card) {
             case "8eb8961e-b2c1-47fa-8a29-be31d42de60b":
-                card.cardEffect?.applyEffect(player.avatar)
+                card.cardEffect?.applyEffect({myAvatar: player.avatar, opponentAvatar: opponent.avatar})
                 return
             case "4875dcd2-d13d-4425-9c05-1472bdb9466c":
                 card.cardEffect?.applyEffect(player.avatar)
