@@ -7,6 +7,7 @@ import { MyField } from "./MyField"
 import { OponentField } from "./OponentField"
 import { Socket, io } from "socket.io-client";
 import { Dialog } from "./Dialog";
+import { GameState } from "./GameState";
 
 type AvatarProps = {
     id_avatar: string;
@@ -192,7 +193,7 @@ export function Game(){
             setEnemyDeck(data.enemy.deck)
         })
         .on("game_End", (data)=>{
-            const {winner, gameState} = data
+            const {winner} = data
             if(winner != null){
                 if(winner === Me.id_player){
                     toast.success("Você ganhou!")
@@ -218,19 +219,7 @@ export function Game(){
                     enemyDeck={enemyDeck}
                 />
                 <div className="w-full justify-center items-center flex">
-                    <div className="rounded-full bg-yellow p-4 m-2 shadow-black shadow-inner">
-                        {phase === 0 && <p>Fase de Compra</p>}
-                        {phase === 1 && <p>Fase de Preparação</p>}
-                        {phase === 2 && <p>Fase de Ação</p>}
-                        {phase === 2 && isMyTurn && (
-                        <>
-                            <p>Sua Vez</p>
-                            <button className="font-bold text-red-500" onClick={()=>skipTurn()}>Pular vez</button>
-                        </>
-                        )}
-                        {phase === 2 && !isMyTurn && <p>Vez do oponente</p>}
-                        {phase === 3 && "Climax"}
-                    </div>
+                    <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn}/>
                 </div>
                 <MyField 
                     handleDragStart={handleDragStart} 

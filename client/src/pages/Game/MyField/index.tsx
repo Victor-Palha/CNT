@@ -14,6 +14,7 @@ type MyFieldProps = {
 }
 
 export function MyField({ myHand, isMyTurn, myField, myAvatar, handleDragStart, handleSetCards, myDeck, ativateCard, phase, dialog}: MyFieldProps) {
+
     return (
         <div className={`p-4 ${isMyTurn === true && "border-b-2 border-l-2 border-r-2 border-cyan-500"} mx-[10%] md:mx-[25%] lg:mx-[35%] bg-gray-900`}>
             {/* Players Avatar */}
@@ -34,7 +35,7 @@ export function MyField({ myHand, isMyTurn, myField, myAvatar, handleDragStart, 
                         <div 
                             key={index} 
                             id={card.field_id} 
-                            className="bg-gray-800 w-full h-[170px] cyber-tile border-2 border-cyan-500"
+                            className={`bg-gray-800 w-full h-[170px] cyber-tile border-2 ${card.card && phase === 2 && !card.card.activate ? "border-2 border-yellow-500" : "border-cyan-500 "}`}
                             onDragOver={(e)=>{e.preventDefault()}}
                             onDrop={(e)=>{handleSetCards(e)}}
                         >
