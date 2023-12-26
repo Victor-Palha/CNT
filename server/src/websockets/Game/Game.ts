@@ -86,7 +86,7 @@ export class Game{
                 }
 
                 const initRoom = room.getRoom()
-                const {player, opponent} = room.getPlayerById(player_id)
+                const {player, opponent} = room.getPlayers(player_id)
 
                 const dealCards = {
                     gameState: room.roomState,
@@ -104,7 +104,7 @@ export class Game{
                         field: opponent.field,
                     }
                 }
-                console.log(players.rooms)
+
                 players.join(room_id)
                 players.emit("deal_Cards", dealCards)
             })
@@ -152,7 +152,7 @@ export class Game{
                 }
                 room.activeCard(field_id, player_id)
 
-                const {player} = room.getPlayerById(player_id)
+                const {player} = room.getPlayers(player_id)
 
                 const myNewField = {
                     player: player.id,
@@ -160,6 +160,7 @@ export class Game{
                     avatar: player.avatar,
                     field: player.field,
                     deck: player.deck.length,
+                    gameState: room.roomState,
                     turnOf: room.turnOwnerPlayer,
                 }
 
@@ -169,6 +170,7 @@ export class Game{
                     avatar: player.avatar,
                     field: player.field,
                     deck: player.deck.length,
+                    gameState: room.roomState,
                     turnOf: room.turnOwnerPlayer,
                 }
 
@@ -182,12 +184,61 @@ export class Game{
                 if(!room){
                     throw new Error("Room not found");
                 }
-                const skipTurn = room.skipTurn(player_id)
-                if(typeof skipTurn === "string"){
-                    this.gameSocket.of("/game").to(room_id).emit("skip_Turn", {turnOf: skipTurn})
-                }else{
-                    this.gameSocket.of("/game").to(room_id).emit("start_Climax_Phase", skipTurn)
+                const {gameState, turnOwner, id} = room.skipTurn(player_id)
+                
+                this.gameSocket.of("/game").to(room_id).emit("skip_Turn", {turnOf: turnOwner, gameState, id})
+            })
+
+            players.on("climax_Phase", (data)=>{
+                const {room_id, player_id} = data;
+                console.log("climax_Phase")
+                const room = this.findRoom(room_id);
+                if(!room){
+                    throw new Error("Room not found");
+                };
+
+                if(player_id !== room.turnOwnerPlayer){
+                    return;
                 }
+                room.climaxPhase()
+                const {player, opponent} = room.getPlayers(player_id)
+
+                const dealPlayersCard = {
+                    winner: room.winnerPlayer,
+                    gameState: room.roomState,
+                    turnOf: room.turnOwnerPlayer,
+                    player: {
+                        hand: player.hand,
+                        avatar: player.avatar,
+                        deck: player.deck.length,
+                        field: player.field,
+                    },
+                    enemy: {
+                        hand: opponent.hand.length,
+                        avatar: opponent.avatar,
+                        deck: opponent.deck.length,
+                        field: opponent.field,
+                    }
+                }
+
+                const dealOpponentsCard = {
+                    gameState: room.roomState,
+                    turnOf: room.turnOwnerPlayer,
+                    player: {
+                        hand: opponent.hand,
+                        avatar: opponent.avatar,
+                        deck: opponent.deck.length,
+                        field: opponent.field,
+                    },
+                    enemy: {
+                        hand: player.hand.length,
+                        avatar: player.avatar,
+                        deck: player.deck.length,
+                        field: player.field,
+                    }
+                }
+                players.emit("climax_Phase_End", dealPlayersCard)
+                players.broadcast.to(room_id).emit("climax_Phase_End", dealOpponentsCard)
             })
         })
     }

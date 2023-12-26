@@ -72,4 +72,8 @@ export class Card{
     set activateCard(value: boolean){
         this.activate = value;
     }
+
+    get isActivate(){
+        return this.activate;
+    }
 }

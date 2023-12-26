@@ -121,6 +121,10 @@ export class Player{
         this.player_max_cards_hand = max_cards_in_hand;
     }
 
+    get max_cards_hand(){
+        return this.player_max_cards_hand;
+    }
+
     public skip_turn(){
         if(this.player_can_skip_turn){
             this.player_can_skip_turn=false;
@@ -129,5 +133,23 @@ export class Player{
 
     get can_skip_turn(){
         return this.player_can_skip_turn;
+    }
+
+    public resetField(){
+        this.player_field.map(field => {
+            if(field.card?.isActivate){
+                this.deck.unshift(field.card);
+                field.card = null;
+                field.empty = true;
+            }else{
+                this.hand.push(field.card as Card);
+                field.card = null;
+                field.empty = true;
+            }
+        });
+        this.player_can_skip_turn = true;
+        while(this.hand.length < this.max_cards_hand){
+            this.drawCard();
+        }
     }
 }

@@ -54,7 +54,6 @@ export function Game(){
     const [enemyDeck, setEnemyDeck] = useState<number>(0)
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
-
     // Dialog
     function handleDialog(card: Cards | Avatar | undefined){
         setDialog(!dialog)
@@ -89,6 +88,15 @@ export function Game(){
     function skipTurn(){
         socket && socket.emit("skip_Turn", {room_id, player_id: Me.id_player})
     }
+    // Climax
+    function climaxPhase(id: any){
+        socket && socket.emit("climax_Phase", {room_id: id, player_id: Me.id_player})
+    }
+    function winner(id: any){
+        if(id != "" && id === Me.id_player){
+            alert("Você venceu!")
+        }
+    }
 
     useEffect(()=>{        
         socket && socket.emit("init_Game", {
@@ -100,7 +108,6 @@ export function Game(){
             window.location.href = "/confront/rooms"
         })
         .on("deal_Cards", (room: PrepareCards)=>{
-            toast.info("Fase de preparação iniciada!")
             setPhase(room.gameState)
             setMyAvatar(room.player.avatar)
             setMyHand(room.player.hand)
@@ -128,7 +135,6 @@ export function Game(){
             setEnemyDeck(newField.deck)
         })
         .on("start_Action_Phase", (itsActionPhase: number)=> {
-            itsActionPhase === 2 && toast.info("Fase de ação iniciada!")
             setPhase(itsActionPhase)
         })
         .on("i_Activate_Card", (newField: SetCards)=>{
@@ -141,6 +147,10 @@ export function Game(){
             }else{
                 setIsMyTurn(false)
             }
+            if(newField.gameState === 3 && newField.turnOf === Me.id_player){
+                climaxPhase(room_id)
+            }
+            setPhase(newField.gameState)
         })
         .on("enemy_Activate_Card", (newField: SetCards)=>{
             setEnemyField(newField.field as Field)
@@ -152,18 +162,40 @@ export function Game(){
             }else{
                 setIsMyTurn(false)
             }
+            if(newField.gameState === 3 && newField.turnOf === Me.id_player){
+                climaxPhase(room_id)
+            }
+            setPhase(newField.gameState)
         })
         .on("skip_Turn", (data)=>{
-            const {turnOf} = data
+            const {turnOf, gameState} = data
             if(turnOf === Me.id_player){
                 setIsMyTurn(true)
             }else{
                 setIsMyTurn(false)
             }
+            if(gameState === 3 && turnOf === Me.id_player){
+                climaxPhase(room_id)
+            }
+            setPhase(gameState)
         })
-        .on("start_Climax_Phase", (itsClimaxPhase: number)=> {
-            itsClimaxPhase === 3 && toast.info("Fase de climax iniciada!")
-            setPhase(itsClimaxPhase)
+        .on("climax_Phase_End", (data: PrepareCards)=>{
+            setPhase(data.gameState)
+            setMyAvatar(data.player.avatar)
+            setMyHand(data.player.hand)
+            setMyDeck(data.player.deck)
+            setMyField(data.player.field)
+            if(data.turnOf === Me.id_player){
+                setIsMyTurn(true)
+            }else{
+                setIsMyTurn(false)
+            }
+            
+            setEnemyField(data.enemy.field)
+            setEnemyAvatar(data.enemy.avatar)
+            setEnemyHand(data.enemy.hand)
+            setEnemyDeck(data.enemy.deck)
+            winner(data.winner)
         })
     }, [socket])
 
@@ -236,6 +268,7 @@ export type Field = {
 }[]
 
 type PrepareCards = {
+    winner: string;
     gameState: number
     turnOf: string;
     player: {

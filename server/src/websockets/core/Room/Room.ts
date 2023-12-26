@@ -1,3 +1,4 @@
+import { Avatar } from "../Avatares/Avatar";
 import { Card } from "../Cards/Card";
 import { CardEffect } from "../Cards/Cards-Effects/Card-Effect";
 import { Field, Player } from "../Players/Player";
@@ -25,6 +26,7 @@ export class Room {
     private turnOwner: string;
     private chainEffects: CardQueue[] = [];
     private room_state: 0 | 1 | 2 | 3;
+    private winner: string = "";
 
     constructor({room_id, player_host, player_guest}: Rooms){
         this.room_id = room_id;
@@ -68,7 +70,7 @@ export class Room {
     }
 
     public setCardOnField(player_id: string, card: any, field_id: string): {player: Player, gameState: number}{
-        const { player, opponent } = this.getPlayerById(player_id);
+        const { player, opponent } = this.getPlayers(player_id);
         // Set card on field of player
         player.setCardOnField(new Card({
             id_card: card._id,
@@ -83,36 +85,43 @@ export class Room {
 
         // If all cards are on field, start action phase
         if(allCardsAreSetted(player.field, opponent.field)){
-            this.startActionPhase();
+            this.changePhase = 2;
         }
 
         return {player, gameState: this.roomState};
     }
 
-    public skipTurn(player_id: string): string | number{
-        if(this.room_state !== 2){
-            throw new Error("You only can skip the turn in action phase");
+    public skipTurn(player_id: string){
+        if (this.room_state !== 2) {
+            throw new Error("You can only skip the turn in the action phase");
         }
-        const { player, opponent } = this.getPlayerById(player_id);
-
-        if(player.can_skip_turn === false){
+    
+        const { player, opponent } = this.getPlayers(player_id);
+    
+        if (!player.can_skip_turn) {
             throw new Error("Player can't skip the turn");
         }
+    
         player.skip_turn();
+    
         // if neither player can skip the turn, the game goes to the next phase
-        if(opponent.can_skip_turn === false){
-            this.startClimaxPhase();
-            return this.roomState;
-        }else{
+        if (!opponent.can_skip_turn) {
+            this.changePhase = 3;
+        } else {
             this.turnOwner = opponent.id;
-            return this.turnOwner;
         }
+    
+        return {
+            turnOwner: this.turnOwner,
+            gameState: this.roomState,
+            id: this.room_id,
+        };
     }
 
     public activeCard(field_id: string, player_id: string): void{
         // get player and opponent instances by id
         // the player who activated the card is the player
-        const { player, opponent } = this.getPlayerById(player_id);
+        const { player, opponent } = this.getPlayers(player_id);
         const field = player.field.find(field => field.field_id === field_id);
         if(!field){
             throw new Error("Field not found");
@@ -137,10 +146,12 @@ export class Room {
         // If all cards are activated, start climax phase
         const allCardsAreActivated = (player_field: Field[], opponent_field: Field[]) => {
             const fields = [...player_field, ...opponent_field];
-            return fields.every(field => field.card?.activateCard === true);
+            const isAllCardsActivated = fields.every(field => field.card?.isActivate === true);
+            return isAllCardsActivated;
         }
         if(allCardsAreActivated(player.field, opponent.field)){
-            this.startClimaxPhase();
+            console.log("All cards are activated");
+            this.changePhase = 3;
         }
 
         this.turnOwner = opponent.id;
@@ -203,7 +214,7 @@ export class Room {
           }
     }
 
-    public getPlayerById(id: string): {player: Player, opponent: Player}{
+    public getPlayers(id: string): {player: Player, opponent: Player}{
         const player = [this.player_host, this.player_guest].find(player => player.id === id);
         const opponent = [this.player_host, this.player_guest].find(player => player.id !== id);
         if(!player || !opponent){
@@ -215,14 +226,8 @@ export class Room {
         };
     }
 
-    private startActionPhase(): void{
-        console.log("Action Phase");
-        this.room_state = 2;
-    }
-
-    private startClimaxPhase(): void{
-        console.log("Climax Phase");
-        this.room_state = 3;
+    set changePhase(value: 0 | 1 | 2 | 3){
+        this.room_state = value;
     }
 
     public getRoom(){
@@ -231,7 +236,7 @@ export class Room {
             player_host: this.player_host,
             player_guest: this.player_guest,
             turnOwner: this.turnOwner,
-            room_state: this.room_state
+            room_state: this.room_state,
         }
     }
 
@@ -241,5 +246,64 @@ export class Room {
 
     get roomState(): number{
         return this.room_state;
+    }
+    /* Climax phase is the last phase of the turn when all cards are activated then
+        is make the calculation from the player's avatar
+        example:
+        player 1: his avatar has 15 of attack and 10 of defense
+        player 2: his avatar has 10 of attack and 15 of defense
+        result: player 1 receive no damage and player 2 receive 5 of damage
+        the damage is calculated by the difference between the attack and defense of the avatars
+        if the difference is 0, no damage is dealt
+        if the difference is greater than 0, the damage is dealt to the opponent
+        if the difference is less than 0, the damage is dealt to the player
+    */
+
+    public climaxPhase(){
+        if (this.roomState !== 3) {
+            throw new Error("You can only start the climax phase when the room state is 3");
+        }
+        
+        const host = { id: this.player_host.id, avatar: this.player_host.avatar };
+        const guest = { id: this.player_guest.id, avatar: this.player_guest.avatar };
+        
+        // damage calculation
+        const hostDamageCaused = host.avatar.atk - guest.avatar.def;
+        const guestDamageCaused = guest.avatar.atk - host.avatar.def;
+        // if the difference is greater than 0, the damage is dealt to the opponent
+        // if the difference is less than 0, the damage is dealt to the player
+        if(guestDamageCaused > 0){
+            host.avatar.changeHitPoints = guestDamageCaused;
+        }else{
+            guest.avatar.changeHitPoints = guestDamageCaused;
+        }
+    
+        if(hostDamageCaused > 0){
+            guest.avatar.changeHitPoints = hostDamageCaused;
+        }else{
+            host.avatar.changeHitPoints = hostDamageCaused;
+        }
+
+        // Check if any player is dead
+        if(host.avatar.hp <= 0){
+            this.winner = guest.id;
+        }else if(guest.avatar.hp <= 0){
+            this.winner = host.id;
+        }
+        
+        // Update room state and turn
+        this.room_state = 0;
+        this.turn += 1;
+        // Reset all cards on field and hand
+        // Cards that was activated are removed from field and put on the end of the deck
+        // Cards that was not activated are removed from field and put on the hand
+        this.player_host.resetField();
+        this.player_guest.resetField();
+
+        this.room_state = 1;
+    }
+
+    get winnerPlayer(){
+        return this.winner;
     }
 }
