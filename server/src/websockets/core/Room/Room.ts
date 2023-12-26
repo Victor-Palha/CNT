@@ -12,6 +12,7 @@ type Rooms = {
     // 1 - etapa de preparação
     // 2 - etapa de ação
     // 3 - Climax
+    sockets: string[];
 }
 
 interface CardQueue extends CardEffect {
@@ -26,14 +27,18 @@ export class Room {
     private turnOwner: string;
     private chainEffects: CardQueue[] = [];
     private room_state: 0 | 1 | 2 | 3;
-    private winner: string = "";
+    private winner: string | null = null;
+    // This sockets represents the sockets that are in the room
+    private sockets: string[] = [];
 
-    constructor({room_id, player_host, player_guest}: Rooms){
+    constructor({room_id, player_host, player_guest, sockets}: Rooms){
         this.room_id = room_id;
         this.player_host = player_host;
         this.player_guest = player_guest;
         this.turnOwner = "";
         this.room_state = 1;
+
+        this.sockets = sockets;
     }
 
     public initGame(): Room{
@@ -305,5 +310,19 @@ export class Room {
 
     get winnerPlayer(){
         return this.winner;
+    }
+
+    get socketsPlayers(){
+        return this.sockets;
+    }
+
+    public newSocketsPlayers(oldSocket: string, newSocket: string){
+        //delete old socket
+        const index = this.sockets.indexOf(oldSocket);
+        if(index > -1){
+            this.sockets.splice(index, 1);
+        }
+        //add new socket
+        this.sockets.push(newSocket);
     }
 }

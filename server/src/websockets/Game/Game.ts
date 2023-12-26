@@ -15,13 +15,10 @@ type NewGame = {
 }
 
 type PlayerInit = {
+    socket_id: string;
     player: string;
     ready: boolean;
     deck_id: string;
-}
-
-interface GameRooms extends Room{
-    sockets: string[];
 }
 
 export class Game{
@@ -37,6 +34,8 @@ export class Game{
     async initGame(){
         this.roomSocket.on("new_Game", async (data)=>{
             const {room_id, player_host, player_guest} = data as NewGame;
+            const socketHost = player_host.socket_id;
+            const socketGuest = player_guest.socket_id;
 
             const playerHost = await new CNT().getDeck(player_host.deck_id) as DeckPlayer;
             const playerGuest = await new CNT().getDeck(player_guest.deck_id) as DeckPlayer;
@@ -63,10 +62,13 @@ export class Game{
                 player_id: playerGuest.player_id,
             })
 
+            const sockets = [socketHost, socketGuest]
+
             const room = new Room({
                 room_id,
                 player_host: host,
                 player_guest: guest,
+                sockets
             })
 
             const roomInitialized = room.initGame();
@@ -88,7 +90,7 @@ export class Game{
                 const initRoom = room.getRoom()
                 const {player, opponent} = room.getPlayers(player_id)
 
-                const dealCards = {
+                const renderGame = {
                     gameState: room.roomState,
                     turnOf: initRoom.turnOwner,
                     player: {
@@ -105,8 +107,21 @@ export class Game{
                     }
                 }
 
-                players.join(room_id)
-                players.emit("deal_Cards", dealCards)
+                const socketsConnects = room.socketsPlayers
+                console.log(socketsConnects)
+                socketsConnects.map((socket) => {
+                    // If socket is the same as the player who is connecting, just send the data to him
+                    if(players.id === socket && player_id === player.id){
+                        players.emit("deal_Cards", renderGame)
+                    }
+                    // If is a new socket but the player is already connected, send the data to him and replace the socket
+                    else{
+                        
+                        room.newSocketsPlayers(socket, players.id)
+                        players.join(room_id)
+                        players.emit("deal_Cards", renderGame)
+                    }
+                })
             })
 
             players.on("set_Card", (data)=>{
@@ -204,7 +219,6 @@ export class Game{
                 const {player, opponent} = room.getPlayers(player_id)
 
                 const dealPlayersCard = {
-                    winner: room.winnerPlayer,
                     gameState: room.roomState,
                     turnOf: room.turnOwnerPlayer,
                     player: {
@@ -239,6 +253,11 @@ export class Game{
                 }
                 players.emit("climax_Phase_End", dealPlayersCard)
                 players.broadcast.to(room_id).emit("climax_Phase_End", dealOpponentsCard)
+                // If the game ends send the winner
+                if(room.winnerPlayer !== null){
+                    this.gameSocket.of("/game").to(room_id).emit("game_End", {winner: room.winnerPlayer, gameState: room.roomState})
+                
+                }
             })
         })
     }

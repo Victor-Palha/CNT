@@ -92,11 +92,6 @@ export function Game(){
     function climaxPhase(id: any){
         socket && socket.emit("climax_Phase", {room_id: id, player_id: Me.id_player})
     }
-    function winner(id: any){
-        if(id != "" && id === Me.id_player){
-            alert("Você venceu!")
-        }
-    }
 
     useEffect(()=>{        
         socket && socket.emit("init_Game", {
@@ -195,7 +190,16 @@ export function Game(){
             setEnemyAvatar(data.enemy.avatar)
             setEnemyHand(data.enemy.hand)
             setEnemyDeck(data.enemy.deck)
-            winner(data.winner)
+        })
+        .on("game_End", (data)=>{
+            const {winner, gameState} = data
+            if(winner != null){
+                if(winner === Me.id_player){
+                    toast.success("Você ganhou!")
+                }else{
+                    toast.error("Você perdeu!")
+                }
+            }
         })
     }, [socket])
 
