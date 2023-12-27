@@ -55,6 +55,26 @@ export function Game(){
     const [enemyDeck, setEnemyDeck] = useState<number>(0)
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
+    // Render Game
+    function renderGame({gameState, turnOf, player, enemy}: RenderGame){
+        if(gameState === 3 && turnOf === Me.id_player){
+            climaxPhase(room_id)
+        }
+        setPhase(gameState)
+        setMyAvatar(player.avatar)
+        setMyHand(player.hand)
+        setMyDeck(player.deck)
+        setMyField(player.field)
+        if(turnOf === Me.id_player){
+            setIsMyTurn(true)
+        }else{
+            setIsMyTurn(false)
+        }
+        setEnemyField(enemy.field)
+        setEnemyAvatar(enemy.avatar)
+        setEnemyHand(enemy.hand)
+        setEnemyDeck(enemy.deck)
+    }
     // Dialog
     function handleDialog(card: Cards | Avatar | undefined){
         setDialog(!dialog)
@@ -103,65 +123,23 @@ export function Game(){
             toast.error("Sala não encontrada!")
             window.location.href = "/confront/rooms"
         })
-        .on("deal_Cards", (room: PrepareCards)=>{
-            setPhase(room.gameState)
-            setMyAvatar(room.player.avatar)
-            setMyHand(room.player.hand)
-            setMyDeck(room.player.deck)
-            setMyField(room.player.field)
-            if(room.turnOf === Me.id_player){
-                setIsMyTurn(true)
-            }else{
-                setIsMyTurn(false)
-            }
-            
-            setEnemyField(room.enemy.field)
-            setEnemyAvatar(room.enemy.avatar)
-            setEnemyHand(room.enemy.hand)
-            setEnemyDeck(room.enemy.deck)
+        .on("deal_Cards", (room: RenderGame)=>{
+            renderGame(room)
         })
-        .on("i_Set_Card", (newField: SetCards)=>{
-            setMyHand(newField.hand as Cards[])
-            setMyDeck(newField.deck)
-            setMyField(newField.field as Field)
+        .on("i_Set_Card", (newField: RenderGame)=>{
+            renderGame(newField)
         })
-        .on("enemy_Set_Card", (newField: SetCards)=>{
-            setEnemyField(newField.field as Field)
-            setEnemyHand(newField.hand as number)
-            setEnemyDeck(newField.deck)
+        .on("enemy_Set_Card", (newField: RenderGame)=>{
+            renderGame(newField)
         })
         .on("start_Action_Phase", (itsActionPhase: number)=> {
             setPhase(itsActionPhase)
         })
-        .on("i_Activate_Card", (newField: SetCards)=>{
-            setMyField(newField.field as Field)
-            setMyAvatar(newField.avatar)
-            setMyDeck(newField.deck)
-            setMyHand(newField.hand as Cards[])
-            if(newField.turnOf === Me.id_player){
-                setIsMyTurn(true)
-            }else{
-                setIsMyTurn(false)
-            }
-            if(newField.gameState === 3 && newField.turnOf === Me.id_player){
-                climaxPhase(room_id)
-            }
-            setPhase(newField.gameState)
+        .on("i_Activate_Card", (newField: RenderGame)=>{
+            renderGame(newField)
         })
-        .on("enemy_Activate_Card", (newField: SetCards)=>{
-            setEnemyField(newField.field as Field)
-            setEnemyAvatar(newField.avatar)
-            setEnemyDeck(newField.deck)
-            setEnemyHand(newField.hand as number)
-            if(newField.turnOf === Me.id_player){
-                setIsMyTurn(true)
-            }else{
-                setIsMyTurn(false)
-            }
-            if(newField.gameState === 3 && newField.turnOf === Me.id_player){
-                climaxPhase(room_id)
-            }
-            setPhase(newField.gameState)
+        .on("enemy_Activate_Card", (newField: RenderGame)=>{
+            renderGame(newField)
         })
         .on("skip_Turn", (data)=>{
             const {turnOf, gameState} = data
@@ -175,22 +153,8 @@ export function Game(){
             }
             setPhase(gameState)
         })
-        .on("climax_Phase_End", (data: PrepareCards)=>{
-            setPhase(data.gameState)
-            setMyAvatar(data.player.avatar)
-            setMyHand(data.player.hand)
-            setMyDeck(data.player.deck)
-            setMyField(data.player.field)
-            if(data.turnOf === Me.id_player){
-                setIsMyTurn(true)
-            }else{
-                setIsMyTurn(false)
-            }
-            
-            setEnemyField(data.enemy.field)
-            setEnemyAvatar(data.enemy.avatar)
-            setEnemyHand(data.enemy.hand)
-            setEnemyDeck(data.enemy.deck)
+        .on("climax_Phase_End", (data: RenderGame)=>{
+            renderGame(data)
         })
         .on("game_End", (data)=>{
             const {winner} = data
@@ -254,13 +218,7 @@ export function Game(){
     )
 }
 
-export type Field = {
-    field_id: string;
-    empty: boolean;
-    card: Cards | null;
-}[]
-
-type PrepareCards = {
+type RenderGame = {
     winner: string;
     gameState: number
     turnOf: string;
@@ -276,16 +234,6 @@ type PrepareCards = {
         deck: number;
         field: Field;
     }
-}
-
-type SetCards = {
-    gameState: number;
-    player: string,
-    hand: Cards[] | number,
-    field: Field,
-    deck: number,
-    avatar: Avatar
-    turnOf: string
 }
 
 export type Avatar = {
@@ -315,3 +263,9 @@ export type Cards = {
         created_at: Date;
         updated_at: Date;
 }
+
+export type Field = {
+    field_id: string;
+    empty: boolean;
+    card: Cards | null;
+}[]

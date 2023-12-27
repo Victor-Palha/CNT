@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import { Room } from "../core/Room/Room";
 import { ConnectToRooms } from "../Rooms/ConnectToRooms";
 import { CNT, DeckPlayer } from "../db-connection/CNT";
-import { Player } from "../core/Players/Player";
+import { Field, Player } from "../core/Players/Player";
 import { Card } from "../core/Cards/Card";
 import { Avatar } from "../core/Avatares/Avatar";
 import { Avatars } from "@prisma/client";
@@ -87,39 +87,23 @@ export class Game{
                     return;
                 }
 
-                const initRoom = room.getRoom()
-                const {player, opponent} = room.getPlayers(player_id)
+                const {player} = room.getPlayers(player_id)
 
-                const renderGame = {
-                    gameState: room.roomState,
-                    turnOf: initRoom.turnOwner,
-                    player: {
-                        hand: player.hand,
-                        avatar: player.avatar,
-                        deck: player.deck.length,
-                        field: player.field,
-                    },
-                    enemy: {
-                        hand: opponent.hand.length,
-                        avatar: opponent.avatar,
-                        deck: opponent.deck.length,
-                        field: opponent.field,
-                    }
-                }
+                const {to_player} = this.renderGame(room, player_id)
 
                 const socketsConnects = room.socketsPlayers
-                console.log(socketsConnects)
+                
                 socketsConnects.map((socket) => {
                     // If socket is the same as the player who is connecting, just send the data to him
                     if(players.id === socket && player_id === player.id){
-                        players.emit("deal_Cards", renderGame)
+                        players.emit("deal_Cards", to_player)
                     }
                     // If is a new socket but the player is already connected, send the data to him and replace the socket
                     else{
                         
                         room.newSocketsPlayers(socket, players.id)
                         players.join(room_id)
-                        players.emit("deal_Cards", renderGame)
+                        players.emit("deal_Cards", to_player)
                     }
                 })
             })
@@ -131,28 +115,13 @@ export class Game{
                     throw new Error("Room not found");
                 }
 
-                const {player, gameState} = room.setCardOnField(player_id, card, field_id)
+                const {gameState} = room.setCardOnField(player_id, card, field_id)
 
-                const myNewField = {
-                    gameState,
-                    player: player.id,
-                    hand: player.hand,
-                    field: player.field,
-                    deck: player.deck.length,
-                    turnOf: room.turnOwnerPlayer,
-                }
+                const {to_player, to_enemy} = this.renderGame(room, player_id)
 
-                const enemyNewField = {
-                    gameState,
-                    player: player.id,
-                    hand: player.hand.length,
-                    field: player.field,
-                    deck: player.deck.length,
-                    turnOf: room.turnOwnerPlayer
-                }
+                players.emit("i_Set_Card", to_player)
 
-                players.emit("i_Set_Card", myNewField)
-                players.broadcast.to(room_id).emit("enemy_Set_Card", enemyNewField)
+                players.broadcast.to(room_id).emit("enemy_Set_Card", to_enemy)
 
                 if(gameState === 2){
                     this.gameSocket.of("/game").to(room_id).emit("start_Action_Phase", gameState)
@@ -167,30 +136,10 @@ export class Game{
                 }
                 room.activeCard(field_id, player_id)
 
-                const {player} = room.getPlayers(player_id)
+                const {to_player, to_enemy} = this.renderGame(room, player_id)
 
-                const myNewField = {
-                    player: player.id,
-                    hand: player.hand,
-                    avatar: player.avatar,
-                    field: player.field,
-                    deck: player.deck.length,
-                    gameState: room.roomState,
-                    turnOf: room.turnOwnerPlayer,
-                }
-
-                const enemyNewField = {
-                    player: player.id,
-                    hand: player.hand.length,
-                    avatar: player.avatar,
-                    field: player.field,
-                    deck: player.deck.length,
-                    gameState: room.roomState,
-                    turnOf: room.turnOwnerPlayer,
-                }
-
-                players.emit("i_Activate_Card", myNewField)
-                players.broadcast.to(room_id).emit("enemy_Activate_Card", enemyNewField)
+                players.emit("i_Activate_Card", to_player)
+                players.broadcast.to(room_id).emit("enemy_Activate_Card", to_enemy)
             })
 
             players.on("skip_Turn", (data)=>{
@@ -216,43 +165,10 @@ export class Game{
                     return;
                 }
                 room.climaxPhase()
-                const {player, opponent} = room.getPlayers(player_id)
+                const {to_player, to_enemy} = this.renderGame(room, player_id)
 
-                const dealPlayersCard = {
-                    gameState: room.roomState,
-                    turnOf: room.turnOwnerPlayer,
-                    player: {
-                        hand: player.hand,
-                        avatar: player.avatar,
-                        deck: player.deck.length,
-                        field: player.field,
-                    },
-                    enemy: {
-                        hand: opponent.hand.length,
-                        avatar: opponent.avatar,
-                        deck: opponent.deck.length,
-                        field: opponent.field,
-                    }
-                }
-
-                const dealOpponentsCard = {
-                    gameState: room.roomState,
-                    turnOf: room.turnOwnerPlayer,
-                    player: {
-                        hand: opponent.hand,
-                        avatar: opponent.avatar,
-                        deck: opponent.deck.length,
-                        field: opponent.field,
-                    },
-                    enemy: {
-                        hand: player.hand.length,
-                        avatar: player.avatar,
-                        deck: player.deck.length,
-                        field: player.field,
-                    }
-                }
-                players.emit("climax_Phase_End", dealPlayersCard)
-                players.broadcast.to(room_id).emit("climax_Phase_End", dealOpponentsCard)
+                players.emit("climax_Phase_End", to_player)
+                players.broadcast.to(room_id).emit("climax_Phase_End", to_enemy)
                 // If the game ends send the winner
                 if(room.winnerPlayer !== null){
                     this.gameSocket.of("/game").to(room_id).emit("game_End", {winner: room.winnerPlayer, gameState: room.roomState})
@@ -266,5 +182,69 @@ export class Game{
         return this.Rooms.find(room => {
             if(room.room_id === room_id) return room
         });
+    }
+
+    // Gets the room state and send states from the game to the players
+    private renderGame(room: Room, player_id: string): GameRender{
+        const {player, opponent} = room.getPlayers(player_id)
+
+        const playerRender = {
+            gameState: room.roomState,
+            turnOf: room.turnOwnerPlayer,
+            player: {
+                hand: player.hand,
+                avatar: player.avatar,
+                deck: player.deck.length,
+                field: player.field,
+            },
+            enemy: {
+                hand: opponent.hand.length,
+                avatar: opponent.avatar,
+                deck: opponent.deck.length,
+                field: opponent.field,
+            }
+        }
+
+        const opponentRender = {
+            gameState: room.roomState,
+            turnOf: room.turnOwnerPlayer,
+            player: {
+                hand: opponent.hand,
+                avatar: opponent.avatar,
+                deck: opponent.deck.length,
+                field: opponent.field,
+            },
+            enemy: {
+                hand: player.hand.length,
+                avatar: player.avatar,
+                deck: player.deck.length,
+                field: player.field,
+            }
+        }
+        return {
+            to_player: playerRender,
+            to_enemy: opponentRender
+        };
+    }
+}
+type GameRender = {
+    to_player: PlayerRender;
+    to_enemy: PlayerRender;
+}
+
+type PlayerRender = {
+    gameState: number;
+    turnOf: string;
+    player: {
+        hand: Card[];
+        avatar: Avatar;
+        deck: number;
+        field: Field[];
+    };
+    enemy: {
+        hand: number;
+        avatar: Avatar;
+        deck: number;
+        field: Field[];
     }
 }
