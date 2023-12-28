@@ -44,6 +44,7 @@ export function Game(){
     // 3 - Climax
 
     // States
+    const [canSkip, setCanSkip] = useState<boolean>(false)
     const [myAvatar, setMyAvatar] = useState<AvatarProps>({} as AvatarProps)
     const [myHand, setMyHand] = useState<Cards[]>([])
     const [myDeck, setMyDeck] = useState<number>(0)
@@ -60,6 +61,7 @@ export function Game(){
         if(gameState === 3 && turnOf === Me.id_player){
             climaxPhase(room_id)
         }
+        setCanSkip(player.canSkip)
         setPhase(gameState)
         setMyAvatar(player.avatar)
         setMyHand(player.hand)
@@ -107,6 +109,10 @@ export function Game(){
     }
 
     function skipTurn(){
+        if(canSkip === false){
+            toast.error("Você não pode pular o turno agora!")
+            return
+        }
         socket && socket.emit("skip_Turn", {room_id, player_id: Me.id_player})
     }
     // Climax
@@ -183,7 +189,7 @@ export function Game(){
                     enemyDeck={enemyDeck}
                 />
                 <div className="w-full justify-center items-center flex">
-                    <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn}/>
+                    <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn} canSkip={canSkip}/>
                 </div>
                 <MyField 
                     handleDragStart={handleDragStart} 
@@ -223,6 +229,7 @@ type RenderGame = {
     gameState: number
     turnOf: string;
     player: {
+        canSkip: boolean;
         hand: Cards[];
         avatar: Avatar;
         deck: number;
