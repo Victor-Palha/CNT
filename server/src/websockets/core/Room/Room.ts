@@ -185,6 +185,24 @@ export class Room {
                     enemy: opponent
                 })
                 return
+            case "fab2f5ec-e1eb-4c48-9c6c-0ca56993e90f":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "e4c24e34-91b9-4e52-a4de-46f66deaefb7":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "672be8c9-11ca-4e24-93f2-96d4f35fcc0f":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
             // Adicione mais casos conforme necessário
         }
     }
@@ -276,8 +294,8 @@ export class Room {
             throw new Error("You can only start the climax phase when the room state is 3");
         }
         
-        const host = { id: this.player_host.id, avatar: this.player_host.avatar };
-        const guest = { id: this.player_guest.id, avatar: this.player_guest.avatar };
+        const host = { id: this.player_host.id, avatar: this.player_host.avatar, damageModify: this.player_host.damageMultiplierValue };
+        const guest = { id: this.player_guest.id, avatar: this.player_guest.avatar, damageModify: this.player_guest.damageMultiplierValue  };
         
         // damage calculation
         const hostDamageCaused = host.avatar.atk - guest.avatar.def;
@@ -285,13 +303,13 @@ export class Room {
         // if the difference is greater than 0, the damage is dealt to the opponent
         // if the difference is less than 0, the damage is dealt to the player
         if(guestDamageCaused > 0){
-            host.avatar.changeHitPoints = guestDamageCaused;
+            host.avatar.changeHitPoints = (guestDamageCaused * guest.damageModify);
         }else{
             guest.avatar.changeHitPoints = guestDamageCaused;
         }
     
         if(hostDamageCaused > 0){
-            guest.avatar.changeHitPoints = hostDamageCaused;
+            guest.avatar.changeHitPoints = (hostDamageCaused * host.damageModify);
         }else{
             host.avatar.changeHitPoints = hostDamageCaused;
         }

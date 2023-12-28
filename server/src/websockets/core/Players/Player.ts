@@ -26,6 +26,7 @@ export class Player{
     private player_can_skip_turn: boolean;
     private player_max_cards_hand: number;
     private player_field: Field[];
+    private damageMultiplier: number = 1;
 
     constructor({player_id, player_name, player_avatar, player_deck, player_hand, player_hit_points}: Players){
         this.player_id = player_id;
@@ -133,6 +134,13 @@ export class Player{
 
     get can_skip_turn(){
         return this.player_can_skip_turn;
+    }
+
+    get damageMultiplierValue(){
+        return this.damageMultiplier;
+    }
+    set damageMultiplierValue(value: number){
+        this.damageMultiplier = value;
     }
 
     public resetField({player, enemy}: ResetField){

@@ -49,6 +49,10 @@ export class Avatar{
         return this.attack;
     }
 
+    set atk(value: number){
+        this.attack = value;
+    }
+
     get def(){
         return this.defense;
     }
@@ -57,7 +61,11 @@ export class Avatar{
     }
 
     set changeHitPoints(value: number){
-        this.hit_points -= value;
+        if(value < 0){
+            this.hit_points = this.hit_points - Math.abs(value);
+        }else{
+            this.hit_points -= value;
+        }
     }
 
     set changeAttack({value, type} : {value: number, type: "increase" | "decrease"}){

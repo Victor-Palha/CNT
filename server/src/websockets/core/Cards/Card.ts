@@ -1,7 +1,10 @@
 import { CardEffect } from "./Cards-Effects/Card-Effect";
+import { ArquivoCorrompido } from "./Cards-Effects/offensives/Arquivo_corrompido";
+import { CtrlZ } from "./Cards-Effects/offensives/Ctrl_z";
 import { Estimulante_A } from "./Cards-Effects/offensives/Estimulante-a";
 import { QuebraDeSeguranca } from "./Cards-Effects/offensives/Quebra-de-seguranca";
 import { RecorteDeCodigo } from "./Cards-Effects/offensives/Recorte-de-codigo";
+import { ReforcarDefesa } from "./Cards-Effects/offensives/Reforcar_defesa";
 
 type Cards = {
     id_card: string;
@@ -55,6 +58,15 @@ export class Card{
             case "af7530ea-a6ce-48cb-9bd7-b71f28cf899e":
                 this.turnsRemains = 1;
                 return new QuebraDeSeguranca();
+            case "fab2f5ec-e1eb-4c48-9c6c-0ca56993e90f":
+                this.turnsRemains = 1;
+                return new ReforcarDefesa();
+            case "672be8c9-11ca-4e24-93f2-96d4f35fcc0f":
+                this.turnsRemains = 1;
+                return new CtrlZ();
+            case "e4c24e34-91b9-4e52-a4de-46f66deaefb7":
+                this.turnsRemains = 1;
+                return new ArquivoCorrompido();
 
             // Adicione outros casos para diferentes tipos de carta
             default:
