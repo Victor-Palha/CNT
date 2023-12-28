@@ -135,12 +135,19 @@ export class Player{
         return this.player_can_skip_turn;
     }
 
-    public resetField(){
+    public resetField({player, enemy}: ResetField){
         this.player_field.map(field => {
             if(field.card?.isActivate){
-                this.deck.unshift(field.card);
-                field.card = null;
-                field.empty = true;
+                // if the card is activate, the card will be deactivated if the turnsRemains is 0
+                field.card.turns--;
+                // if the card is activate and the turnsRemains is 0, the card will be deactivated
+                if(field.card.turns === 0){
+                    this.deck.unshift(field.card);
+                    field.card.cardEffect.revertEffect({player, enemy})
+                    field.card = null;
+                    field.empty = true;
+                }
+                // if the card is activate and the turnsRemains is greater than 0, the card will be kept activate on the field
             }else{
                 this.hand.push(field.card as Card);
                 field.card = null;
@@ -152,4 +159,9 @@ export class Player{
             this.drawCard();
         }
     }
+}
+
+type ResetField = {
+    player: Player;
+    enemy: Player;
 }

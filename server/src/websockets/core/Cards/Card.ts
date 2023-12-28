@@ -35,9 +35,14 @@ export class Card{
         this.set_card = set_card;
         this.type_card = type_card;
         this.list = list;
+        // Inicializa o efeito da carta **EXTREMAMENTE IMPORTANTE**
         this.effect = this.initializeEffect();
     }
 
+    /**
+     * Initializes and returns the effect of the card based on its type.
+     * @returns The initialized card effect.
+     */
     private initializeEffect(): CardEffect {
         // Lógica para escolher e inicializar o efeito com base no tipo da carta
         switch (this.id_card) {
@@ -75,5 +80,13 @@ export class Card{
 
     get isActivate(){
         return this.activate;
+    }
+
+    get turns(){
+        return this.turnsRemains;
+    }
+
+    set turns(value: number){
+        this.turnsRemains = value;
     }
 }

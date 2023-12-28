@@ -1,16 +1,29 @@
 import { Avatar } from "../../../Avatares/Avatar";
-import { CardEffect } from "../Card-Effect";
+import { CardEffect, TargetToEffects } from "../Card-Effect";
 
 export class QuebraDeSeguranca implements CardEffect {
     /*
     Zera a defesa do avatar inimigo mas corta seu dano causado pela metade pelo resto do turno.
     */
-    applyEffect(target: any): void {
-        if(target instanceof Avatar){
-            target.changeDefense = {
-                value: target.atk,
+    applyEffect({enemy}: TargetToEffects): void {
+        if(enemy.avatar instanceof Avatar){
+            enemy.avatar.changeDefense = {
+                value: enemy.avatar.atk,
                 type: "decrease"
             }
         }
+    }
+
+    revertEffect({enemy}: TargetToEffects): void {
+        if(enemy.avatar instanceof Avatar){
+            enemy.avatar.changeDefense = {
+                value: enemy.avatar.atk,
+                type: "increase"
+            }
+        }
+    }
+
+    negateEffect(target: any): void {
+        return
     }
 }

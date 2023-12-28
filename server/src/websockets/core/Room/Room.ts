@@ -76,7 +76,7 @@ export class Room {
 
     public setCardOnField(player_id: string, card: any, field_id: string): {player: Player, gameState: number}{
         const { player, opponent } = this.getPlayers(player_id);
-        // Set card on field of player
+        // Set card on field of player and initialize the card effect
         player.setCardOnField(new Card({
             id_card: card._id,
             ...card
@@ -145,7 +145,9 @@ export class Room {
         }else{
             this.setChainEffects({
                 id_card: card.id_card,
-                applyEffect: card.cardEffect.applyEffect
+                applyEffect: card.cardEffect.applyEffect,
+                revertEffect: card.cardEffect.revertEffect,
+                negateEffect: card.cardEffect.negateEffect
             });
         }
         // If all cards are activated, start climax phase
@@ -166,13 +168,22 @@ export class Room {
         // Lógica para aplicar imediatamente o efeito da carta ao jogador ou oponente
         switch (card.id_card) {
             case "8eb8961e-b2c1-47fa-8a29-be31d42de60b":
-                card.cardEffect?.applyEffect({myAvatar: player.avatar, opponentAvatar: opponent.avatar})
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
                 return
             case "4875dcd2-d13d-4425-9c05-1472bdb9466c":
-                card.cardEffect?.applyEffect(player.avatar)
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
                 return
             case "af7530ea-a6ce-48cb-9bd7-b71f28cf899e":
-                card.cardEffect?.applyEffect(opponent.avatar)
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
                 return
             // Adicione mais casos conforme necessário
         }
@@ -219,6 +230,12 @@ export class Room {
           }
     }
 
+    /**
+     * Retrieves the players in the room based on the provided player ID.
+     * @param id - The ID of the player to retrieve.
+     * @returns An object containing the player and opponent.
+     * @throws Error if the player or opponent is not found.
+     */
     public getPlayers(id: string): {player: Player, opponent: Player}{
         const player = [this.player_host, this.player_guest].find(player => player.id === id);
         const opponent = [this.player_host, this.player_guest].find(player => player.id !== id);
@@ -233,16 +250,6 @@ export class Room {
 
     set changePhase(value: 0 | 1 | 2 | 3){
         this.room_state = value;
-    }
-
-    public getRoom(){
-        return {
-            room_id: this.room_id,
-            player_host: this.player_host,
-            player_guest: this.player_guest,
-            turnOwner: this.turnOwner,
-            room_state: this.room_state,
-        }
     }
 
     get turnOwnerPlayer(): string{
@@ -302,8 +309,14 @@ export class Room {
         // Reset all cards on field and hand
         // Cards that was activated are removed from field and put on the end of the deck
         // Cards that was not activated are removed from field and put on the hand
-        this.player_host.resetField();
-        this.player_guest.resetField();
+        this.player_host.resetField({
+            player: this.player_host,
+            enemy: this.player_guest
+        });
+        this.player_guest.resetField({
+            player: this.player_guest,
+            enemy: this.player_host
+        });
 
         this.room_state = 1;
     }
