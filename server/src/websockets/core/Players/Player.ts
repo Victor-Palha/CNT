@@ -7,7 +7,6 @@ type Players = {
     player_avatar: Avatar;
     player_deck: Card[];
     player_hand: Card[];
-    player_hit_points: number;
     player_field?: Field[];
 }
 
@@ -27,8 +26,9 @@ export class Player{
     private player_max_cards_hand: number;
     private player_field: Field[];
     private damageMultiplier: number = 1;
+    private selfDamageMultiplier: number = 1;
 
-    constructor({player_id, player_name, player_avatar, player_deck, player_hand, player_hit_points}: Players){
+    constructor({player_id, player_name, player_avatar, player_deck, player_hand}: Players){
         this.player_id = player_id;
         this.player_name = player_name;
         this.player_avatar = player_avatar;
@@ -141,6 +141,14 @@ export class Player{
     }
     set damageMultiplierValue(value: number){
         this.damageMultiplier = value;
+    }
+
+    get selfDamageMultiplierValue(){
+        return this.selfDamageMultiplier;
+    }
+
+    set selfDamageMultiplierValue(value: number){
+        this.selfDamageMultiplier = value;
     }
 
     public resetField({player, enemy}: ResetField){

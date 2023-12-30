@@ -60,6 +60,10 @@ export class Avatar{
         return this.hit_points;
     }
 
+    set hp(value: number){
+        this.hit_points = value;
+    }
+
     set changeHitPoints(value: number){
         if(value < 0){
             this.hit_points = this.hit_points - Math.abs(value);

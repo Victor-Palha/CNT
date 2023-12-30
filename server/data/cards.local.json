@@ -112,7 +112,7 @@
   {
     "id_card": "ae3e91cf-0d58-4fce-970a-b29ed5329e28",
     "name": "Backup",
-    "description": "Todo o dano causado a você será convertido em pontos de vida neste turno.",
+    "description": "Todo o dano causado a você após a ativação dessa carta será convertido em pontos de vida neste turno.",
     "image": "http://localhost:3000/static/Backup.png",
     "set_card": "EXPLORADORES DE DADOS",
     "type_card": "DEFENSIVA",

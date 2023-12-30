@@ -1,4 +1,10 @@
 import { CardEffect } from "./Cards-Effects/Card-Effect";
+import { Backup } from "./Cards-Effects/defensives/Backup";
+import { BloquearAcesso } from "./Cards-Effects/defensives/Bloquear_acesso";
+import { CtrlX } from "./Cards-Effects/defensives/Ctrl_x";
+import { EstimulanteB } from "./Cards-Effects/defensives/Estimulante-b";
+import { ProtegerSistema } from "./Cards-Effects/defensives/Proteger-sistema";
+import { Firewall } from "./Cards-Effects/defensives/firewall";
 import { ArquivoCorrompido } from "./Cards-Effects/offensives/Arquivo_corrompido";
 import { CtrlZ } from "./Cards-Effects/offensives/Ctrl_z";
 import { Estimulante_A } from "./Cards-Effects/offensives/Estimulante-a";
@@ -67,6 +73,24 @@ export class Card{
             case "e4c24e34-91b9-4e52-a4de-46f66deaefb7":
                 this.turnsRemains = 1;
                 return new ArquivoCorrompido();
+            case "f8bda8f6-7f20-4d48-9b30-8232dd492032":
+                this.turnsRemains = 1;
+                return new Firewall();
+            case "66c20126-4341-42dc-a154-78c70dbcb556":
+                this.turnsRemains = 1;
+                return new CtrlX();
+            case "98277fc4-6ad8-4807-ac2c-069725ee81b6":
+                this.turnsRemains = 1;
+                return new EstimulanteB();
+            case "7b5037ea-083a-4591-9209-23e6f3f0540f":
+                this.turnsRemains = 1;
+                return new BloquearAcesso();
+            case "ae3e91cf-0d58-4fce-970a-b29ed5329e28":
+                this.turnsRemains = 1;
+                return new Backup();
+            case "b1c698dc-02c9-4789-a278-de1fe59da5b0":
+                this.turnsRemains = 1;
+                return new ProtegerSistema();
 
             // Adicione outros casos para diferentes tipos de carta
             default:

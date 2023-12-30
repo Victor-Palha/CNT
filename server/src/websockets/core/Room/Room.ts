@@ -203,6 +203,42 @@ export class Room {
                     enemy: opponent
                 })
                 return
+            case "f8bda8f6-7f20-4d48-9b30-8232dd492032":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "66c20126-4341-42dc-a154-78c70dbcb556":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "98277fc4-6ad8-4807-ac2c-069725ee81b6":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "7b5037ea-083a-4591-9209-23e6f3f0540f":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "ae3e91cf-0d58-4fce-970a-b29ed5329e28":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
+            case "b1c698dc-02c9-4789-a278-de1fe59da5b0":
+                card.cardEffect?.applyEffect({
+                    player,
+                    enemy: opponent
+                })
+                return
             // Adicione mais casos conforme necessário
         }
     }
@@ -294,8 +330,8 @@ export class Room {
             throw new Error("You can only start the climax phase when the room state is 3");
         }
         
-        const host = { id: this.player_host.id, avatar: this.player_host.avatar, damageModify: this.player_host.damageMultiplierValue };
-        const guest = { id: this.player_guest.id, avatar: this.player_guest.avatar, damageModify: this.player_guest.damageMultiplierValue  };
+        const host = { id: this.player_host.id, avatar: this.player_host.avatar, damageModify: this.player_host.damageMultiplierValue, selfDamageModify: this.player_host.selfDamageMultiplierValue };
+        const guest = { id: this.player_guest.id, avatar: this.player_guest.avatar, damageModify: this.player_guest.damageMultiplierValue, selfDamageModify: this.player_guest.selfDamageMultiplierValue  };
         
         // damage calculation
         const hostDamageCaused = host.avatar.atk - guest.avatar.def;
@@ -305,13 +341,13 @@ export class Room {
         if(guestDamageCaused > 0){
             host.avatar.changeHitPoints = (guestDamageCaused * guest.damageModify);
         }else{
-            guest.avatar.changeHitPoints = guestDamageCaused;
+            guest.avatar.changeHitPoints = guestDamageCaused * guest.selfDamageModify;
         }
     
         if(hostDamageCaused > 0){
             guest.avatar.changeHitPoints = (hostDamageCaused * host.damageModify);
         }else{
-            host.avatar.changeHitPoints = hostDamageCaused;
+            host.avatar.changeHitPoints = (hostDamageCaused * host.selfDamageModify);
         }
 
         // Check if any player is dead

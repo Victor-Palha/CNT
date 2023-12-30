@@ -11,7 +11,7 @@ export class QuebraDeSeguranca implements CardEffect {
             this._previousDefense = enemy.avatar.def;
             player.damageMultiplierValue = 0.5;
             enemy.avatar.changeDefense = {
-                value: enemy.avatar.def,
+                value: this._previousDefense,
                 type: "decrease"
             }
         }

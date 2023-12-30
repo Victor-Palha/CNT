@@ -16,7 +16,7 @@ export class CtrlZ implements CardEffect {
     revertEffect({player, enemy}: TargetToEffects): void {
         const damage = this._previousHPEnemy - enemy.avatar.hp;
         if(damage > 0){
-            player.avatar.changeHitPoints = Math.ceil(damage/2);
+            player.avatar.hp += Math.ceil(damage/2);
         }
         if(player.avatar){
             player.avatar.changeAttack = {
