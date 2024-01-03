@@ -5,12 +5,12 @@ export class Formatar implements CardEffect{
     applyEffect({player, enemy}: TargetToEffects): void {
         player.avatar.hp -= 7
         enemy.field.forEach((card)=>{
-            card.card?.cardEffect.negateEffect(false)
+            if(card.card){
+                card.card.negatedCard = true
+            }
         })
     }
-    negateEffect(target: any): void {
-        return
-    }
+
     revertEffect(target: any): void {
         return
     }

@@ -165,4 +165,24 @@ export class Card{
         this.negated = value;
     }
 
+    get name_card(){
+        return this.name;
+    }
+
+    get description_card(){
+        return this.description;
+    }
+
+    get image_card(){
+        return this.image;
+    }
+
+    get set(){
+        return this.set_card;
+    }
+
+    get list_card(){
+        return this.list;
+    }
+
 }

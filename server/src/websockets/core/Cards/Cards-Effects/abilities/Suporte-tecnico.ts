@@ -13,9 +13,7 @@ export class SuporteTecnico implements CardEffect{
         }
         player.drawCard()
     }
-    negateEffect(target: any): void {
-        return
-    }
+
     revertEffect({player}: TargetToEffects): void {
         player.avatar.changeAttack = {
             type: "decrease",

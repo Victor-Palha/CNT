@@ -8,16 +8,25 @@ export class CtrlF implements CardEffect{
         //find target
         const tgt = player.deck.find(card => card.id_card === target)
         if(tgt){
-            this.targetFromDeck = tgt
-            
+            const card = new Card({
+                id_card: tgt.id_card,
+                name: tgt.name_card,
+                description: tgt.description_card,
+                image: tgt.image_card,
+                set_card: tgt.set,
+                type_card: tgt.type,
+                list: tgt.list_card,
+                activate: false
+            })
+            this.targetFromDeck = card
+
+            card.cardEffect.applyEffect({player, enemy, target})
         }
     }
 
-    negateEffect(): void {
-        return
-    }
-
-    revertEffect(): void {
-        return
+    revertEffect({player, enemy, target}: TargetToEffects): void {
+        if(this.targetFromDeck){
+            this.targetFromDeck.cardEffect.revertEffect({player, enemy, target})
+        }
     }
 }

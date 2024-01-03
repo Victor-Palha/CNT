@@ -1,5 +1,4 @@
 import { Card } from "../Cards/Card";
-import { CardEffect } from "../Cards/Cards-Effects/Card-Effect";
 import { Field, Player } from "../Players/Player";
 
 type Rooms = {
@@ -14,9 +13,9 @@ type Rooms = {
     sockets: string[];
 }
 
-interface CardQueue extends CardEffect {
-    // id_card: string;
-    target: string | null; // id do alvo
+interface CardQueue {
+    field_id: string;
+    target: string | null;
     player: Player;
     enemy: Player;
 }
@@ -114,8 +113,9 @@ export class Room {
         player.skip_turn();
     
         // if neither player can skip the turn, the game goes to the next phase
-        // and if after the skip all cards from opponent are already actived
-        const opponentActivatedAllCards = opponent.field.every(field => field.card?.isActivate)
+        // and if after the skip all cards from opponent are already activated
+        const opponentField = opponent.field.filter((field)=> !field.empty);
+        const opponentActivatedAllCards = opponentField.every(field => field.card !== null && field.card.isActivate);
         if (!opponent.can_skip_turn || opponentActivatedAllCards) {
             this.changePhase = 3;
         } else {
@@ -131,7 +131,7 @@ export class Room {
 
     public activeCard(field_id: string, player_id: string, target?: string){
         // get player and opponent instances by id
-        // the player who activated the card is the player
+        // the player who activated the card is the 'player'
         const { player, opponent } = this.getPlayers(player_id);
         const field = player.field.find(field => field.field_id === field_id);
         if(!field){
@@ -144,131 +144,31 @@ export class Room {
         if(card.activateCard === true){
             throw new Error("Card already activated");
         }
-        // Lógica para ativar a carta | Se a carta for de habilidade ou habilidade unica, adicionar na fila de espera
+        // Set card as activated
         card.activateCard = true;
-        if(card.type === "OFENSIVA" || card.type === "DEFENSIVA"){
-            this.applyImmediateEffect(card, player, opponent);
-            // If all cards are activated and if its not cards on chain queue, start climax phase
-            const allCardsAreActivated = (player_field: Field[], opponent_field: Field[]) => {
-                const fields = [...player_field, ...opponent_field];
-                const isAllCardsActivated = fields.every(field => field.card?.isActivate === true);
-                return isAllCardsActivated;
-            }
-            if(allCardsAreActivated(player.field, opponent.field) && this.chainEffects.length === 0 || !opponent.can_skip_turn){
-                console.log("All cards are activated");
-                this.changePhase = 3;
-            }
-
-            this.turnOwner = opponent.id;
-
-            return false;
+        
+        // the card effect must go to the queue until be resolved
+        this.chain = true;
+        this.setChainEffects({
+            field_id: field.field_id,
+            target: target ? target : null,
+            player: player,
+            enemy: opponent,
+        });
+        // Possible response to ability card
+        const cardFromField = opponent.field.filter((field)=>{
+            return !field.empty && field.card && !field.card.isActivate;
+        })
+        //if there is a possible response, return the options
+        const abilityCards = cardFromField.filter((card) => {
+            return card.card && card.card.type === "HABILIDADE" ||  card.card && card.card.type === "HABILIDADE_UNICA";
+        });
+        if(abilityCards.length > 0){
+            return abilityCards;
         }
-        // If is Ability or Unique Ability the effect must go to the queue until be resolved
-        else{
-            this.chain = true;
-            this.setChainEffects({
-                applyEffect: card.cardEffect.applyEffect,
-                revertEffect: card.cardEffect.revertEffect,
-                negateEffect: card.cardEffect.negateEffect,
-                target: target ? target : null,
-                player: player,
-                enemy: opponent
-            });
-            // Possible response to ability card
-            const cardFromField = opponent.field.filter((field)=>{
-                return !field.empty && field.card && !field.card.isActivate;
-            })
-            //if there is a possible response, return the options
-            const abilityCards = cardFromField.filter((card) => {
-                return card.card?.type === "HABILIDADE" || card.card?.type === "HABILIDADE_UNICA";
-            });
-            if(abilityCards.length > 0){
-                return abilityCards;
-            }
-            
-            //Else just resolve Chain
-            this.resolveChain()
-            return false
-        }
-    }
-
-    private applyImmediateEffect(card: Card, player: Player, opponent: Player): void {
-        // Lógica para aplicar imediatamente o efeito da carta ao jogador ou oponente
-        switch (card.id_card) {
-            case "8eb8961e-b2c1-47fa-8a29-be31d42de60b":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "4875dcd2-d13d-4425-9c05-1472bdb9466c":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "af7530ea-a6ce-48cb-9bd7-b71f28cf899e":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "fab2f5ec-e1eb-4c48-9c6c-0ca56993e90f":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "e4c24e34-91b9-4e52-a4de-46f66deaefb7":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "672be8c9-11ca-4e24-93f2-96d4f35fcc0f":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "f8bda8f6-7f20-4d48-9b30-8232dd492032":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "66c20126-4341-42dc-a154-78c70dbcb556":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "98277fc4-6ad8-4807-ac2c-069725ee81b6":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "7b5037ea-083a-4591-9209-23e6f3f0540f":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "ae3e91cf-0d58-4fce-970a-b29ed5329e28":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            case "b1c698dc-02c9-4789-a278-de1fe59da5b0":
-                card.cardEffect?.applyEffect({
-                    player,
-                    enemy: opponent
-                })
-                return
-            // Adicione mais casos conforme necessário
-        }
+        //Else just resolve Chain
+        this.resolveChain()
+        return false;
     }
 
     private setChainEffects(cardEffect: CardQueue): void{
@@ -281,30 +181,25 @@ export class Room {
             // pass turn in the end of chain to the enemy of the player who started the chain.
             if(this.chainEffects.length === 1){
                 this.turnOwner = this.chainEffects[0].enemy.id
+                if(!this.chainEffects[0].enemy.can_skip_turn || this.chainEffects[0].enemy.field.every(field => field.card !== null && field.card.isActivate)){
+                    this.changePhase = 3;
+                }
             }
             const effect = this.chainEffects.pop(); // Remove o último efeito da fila
             if (effect) {
-                // Lógica para aplicar o efeito
-                // switch (effect.id_card) {
-                //     case "8eb8961e-b2c1-47fa-8a29-be31d42de60b":
-                //         effect.applyEffect({});
-                //     case "4875dcd2-d13d-4425-9c05-1472bdb9466c":
-                //         effect.applyEffect({});
-                //     case "af7530ea-a6ce-48cb-9bd7-b71f28cf899e":
-                //         effect.applyEffect({});
-                //     default:
-                //         console.log("Card isn`t ready 😰")
-                //     // Adicione mais casos conforme necessário
-                // }
-                effect.applyEffect({
-                    player: effect.player,
-                    enemy: effect.enemy,
-                    target: effect.target
-                });
+                const field = effect.player.field.find(field => field.field_id === effect.field_id) as Field;
+                const cardFromField = field.card;
+                if(cardFromField){
+                    !cardFromField.isNegated && cardFromField.cardEffect.applyEffect({
+                        player: effect.player,
+                        enemy: effect.enemy,
+                        target: effect.target
+                    })
+                }
             }
         }
     }
-    // todo: adicionar evento para resolver corrente de efeitos
+
     public resolveChain() {
         this.resolveChainEffects();
         this.chain = false;
@@ -321,12 +216,6 @@ export class Room {
           }
     }
 
-    /**
-     * Retrieves the players in the room based on the provided player ID.
-     * @param id - The ID of the player to retrieve.
-     * @returns An object containing the player and opponent.
-     * @throws Error if the player or opponent is not found.
-     */
     public getPlayers(id: string): {player: Player, opponent: Player}{
         const player = [this.player_host, this.player_guest].find(player => player.id === id);
         const opponent = [this.player_host, this.player_guest].find(player => player.id !== id);
@@ -350,17 +239,6 @@ export class Room {
     get roomState(): number{
         return this.room_state;
     }
-    /* Climax phase is the last phase of the turn when all cards are activated then
-        is make the calculation from the player's avatar
-        example:
-        player 1: his avatar has 15 of attack and 10 of defense
-        player 2: his avatar has 10 of attack and 15 of defense
-        result: player 1 receive no damage and player 2 receive 5 of damage
-        the damage is calculated by the difference between the attack and defense of the avatars
-        if the difference is 0, no damage is dealt
-        if the difference is greater than 0, the damage is dealt to the opponent
-        if the difference is less than 0, the damage is dealt to the player
-    */
 
     public climaxPhase(){
         if (this.roomState !== 3) {

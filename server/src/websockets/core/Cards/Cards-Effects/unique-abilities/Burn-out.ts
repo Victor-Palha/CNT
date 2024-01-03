@@ -14,10 +14,6 @@ export class BurnOut implements CardEffect{
         player.avatar.hp += 4 
     }
 
-    negateEffect(target: any): void {
-        return
-    }
-
     revertEffect({player, enemy}: TargetToEffects): void {
         enemy.avatar.changeDefense = {
             type: "increase",

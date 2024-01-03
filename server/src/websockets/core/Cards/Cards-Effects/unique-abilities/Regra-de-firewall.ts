@@ -5,12 +5,10 @@ export class RegraDeFirewall implements CardEffect{
     applyEffect({enemy, target}: TargetToEffects): void {
         const findTarget = enemy.field.find(card => card.field_id === target)
         if(findTarget){
-            findTarget.card?.cardEffect.negateEffect(false)
+            if(findTarget.card){
+                findTarget.card.negatedCard = true
+            }
         }
-    }
-
-    negateEffect(target: any): void {
-        return
     }
 
     revertEffect(target: any): void {

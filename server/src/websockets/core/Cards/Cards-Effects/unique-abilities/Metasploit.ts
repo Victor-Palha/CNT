@@ -13,10 +13,6 @@ export class Metasploit implements CardEffect{
         }
     }
 
-    negateEffect(target: any): void {
-        return
-    }
-
     revertEffect({player, enemy}: TargetToEffects): void {
         enemy.avatar.changeAttack = {
             type: "increase",
