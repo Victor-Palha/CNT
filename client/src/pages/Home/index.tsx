@@ -3,12 +3,14 @@ import { authContext } from "../../context/authContext"
 import { Link, Navigate } from "react-router-dom"
 import { Header } from "../../components/Header"
 import { CodeWriter } from "./CodeWriter"
+// WP
+import background from "../../assets/wp.png";
 
 
 export function Home(){
     const {isAuth} = useContext(authContext)
     return (
-        <div className="">
+        <div className="bg-fixed bg-center bg-no-repeat bg-cover h-screen" style={{ backgroundImage: `url(${background})` }}>
             {!isAuth && (
                 <Navigate to='/login'/>
             )}

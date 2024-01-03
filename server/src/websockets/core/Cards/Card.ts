@@ -4,15 +4,22 @@ import { BloquearAcesso } from "./Cards-Effects/defensives/Bloquear_acesso";
 import { CtrlX } from "./Cards-Effects/defensives/Ctrl_x";
 import { EstimulanteB } from "./Cards-Effects/defensives/Estimulante-b";
 import { ProtegerSistema } from "./Cards-Effects/defensives/Proteger-sistema";
-import { Firewall } from "./Cards-Effects/defensives/firewall";
+import { Firewall } from "./Cards-Effects/defensives/Firewall";
 import { ArquivoCorrompido } from "./Cards-Effects/offensives/Arquivo_corrompido";
 import { CtrlZ } from "./Cards-Effects/offensives/Ctrl_z";
 import { Estimulante_A } from "./Cards-Effects/offensives/Estimulante-a";
 import { QuebraDeSeguranca } from "./Cards-Effects/offensives/Quebra-de-seguranca";
 import { RecorteDeCodigo } from "./Cards-Effects/offensives/Recorte-de-codigo";
 import { ReforcarDefesa } from "./Cards-Effects/offensives/Reforcar_defesa";
+import { Metasploit } from "./Cards-Effects/unique-abilities/Metasploit";
+import { BurnOut } from "./Cards-Effects/unique-abilities/Burn-out";
+import { RegraDeFirewall } from "./Cards-Effects/unique-abilities/Regra-de-firewall";
+import { Backdoor } from "./Cards-Effects/unique-abilities/Backdoor";
+import { DeletarArquivo } from "./Cards-Effects/abilities/Deletar-arquivo";
+import { Formatar } from "./Cards-Effects/abilities/Formatar";
+import { SuporteTecnico } from "./Cards-Effects/abilities/Suporte-tecnico";
 
-type Cards = {
+export type Cards = {
     id_card: string;
     name: string;
     description: string;
@@ -21,6 +28,11 @@ type Cards = {
     type_card: "OFENSIVA" | "DEFENSIVA" | "HABILIDADE" | "HABILIDADE_UNICA";
     list: number;
     activate: boolean;
+}
+// Target is just a reference to client to know what show in the effect
+type CardTarget = {
+    has: boolean;
+    type: "FIELD" | "DECK" | null
 }
 
 export class Card{
@@ -34,7 +46,11 @@ export class Card{
     private turnsRemains: number = 1;
     private effect: CardEffect;
     private activate: boolean = false;
-
+    private targetCard: CardTarget = {
+        has: false,
+        type: null
+    }
+    private negated: boolean = false;
 
     constructor({id_card, name, description, image, set_card, type_card, list}: Cards){
         this._id = id_card;
@@ -59,39 +75,50 @@ export class Card{
                 this.turnsRemains = 2;
                 return new RecorteDeCodigo();
             case "4875dcd2-d13d-4425-9c05-1472bdb9466c":
-                this.turnsRemains = 1;
                 return new Estimulante_A();
             case "af7530ea-a6ce-48cb-9bd7-b71f28cf899e":
-                this.turnsRemains = 1;
                 return new QuebraDeSeguranca();
             case "fab2f5ec-e1eb-4c48-9c6c-0ca56993e90f":
-                this.turnsRemains = 1;
                 return new ReforcarDefesa();
             case "672be8c9-11ca-4e24-93f2-96d4f35fcc0f":
-                this.turnsRemains = 1;
                 return new CtrlZ();
             case "e4c24e34-91b9-4e52-a4de-46f66deaefb7":
-                this.turnsRemains = 1;
                 return new ArquivoCorrompido();
             case "f8bda8f6-7f20-4d48-9b30-8232dd492032":
-                this.turnsRemains = 1;
                 return new Firewall();
             case "66c20126-4341-42dc-a154-78c70dbcb556":
-                this.turnsRemains = 1;
                 return new CtrlX();
             case "98277fc4-6ad8-4807-ac2c-069725ee81b6":
-                this.turnsRemains = 1;
                 return new EstimulanteB();
             case "7b5037ea-083a-4591-9209-23e6f3f0540f":
-                this.turnsRemains = 1;
                 return new BloquearAcesso();
             case "ae3e91cf-0d58-4fce-970a-b29ed5329e28":
-                this.turnsRemains = 1;
                 return new Backup();
             case "b1c698dc-02c9-4789-a278-de1fe59da5b0":
-                this.turnsRemains = 1;
                 return new ProtegerSistema();
-
+            case "52a2ba2b-a17a-4129-8739-b6da9cf110df":
+                return new Metasploit();
+            case "26e6973c-4bb4-45ab-95f4-eb01f64ee123":
+                return new BurnOut();
+            case "d57f235a-431f-4c99-802b-57f849deb082":
+                this.targetCard = {
+                    has: true,
+                    type: "FIELD"
+                }
+                return new RegraDeFirewall();
+            case "fcf3ee48-6e6a-4275-86c1-1f54add1b44b":
+                return new Backdoor();
+            case "39ed4108-fb5d-4917-8d1d-eda4b3a7afdc":
+                this.targetCard = {
+                    has: true,
+                    type: "FIELD"
+                }
+                return new DeletarArquivo();
+            case "5c72c51f-b4ba-4076-8bf1-20c79cd84692":
+                return new Formatar();
+            case "b2dd85af-964e-4ebe-a00e-cd9a6ba83dd1":
+                return new SuporteTecnico();
+            
             // Adicione outros casos para diferentes tipos de carta
             default:
                 return {} as CardEffect;
@@ -125,4 +152,17 @@ export class Card{
     set turns(value: number){
         this.turnsRemains = value;
     }
+
+    get target(){
+        return this.targetCard
+    }
+
+    get isNegated(){
+        return this.negated;
+    }
+
+    set negatedCard(value: boolean){
+        this.negated = value;
+    }
+
 }

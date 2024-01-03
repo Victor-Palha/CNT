@@ -2,23 +2,29 @@ import { Player } from "../../../Players/Player";
 import { CardEffect, TargetToEffects } from "../Card-Effect";
 
 export class EstimulanteB implements CardEffect {
+    public isNegated: boolean = false;
     private _baseIncreaseDefense: number = 4;
     //Aumenta os pontos de defesa do seu avatar em 4, se for utilizada mais de uma vez no mesmo turno, o efeito diminui pela metade.
-    applyEffect({player, enemy}: TargetToEffects): void {
+    applyEffect({player}: TargetToEffects): void {
+        if(this.isNegated) return;
         this._checkIfCardWasUsedBefore(player);
         player.avatar.changeDefense = {
             value: this._baseIncreaseDefense,
             type: "increase"
         }
     }
-    revertEffect({player, enemy}: TargetToEffects): void {
+    revertEffect({player}: TargetToEffects): void {
+        if(this.isNegated) return;
         player.avatar.changeDefense = {
             value: this._baseIncreaseDefense,
             type: "decrease"
         }
     }
-    negateEffect(target: any): void {
-        return
+    negateEffect({player}: TargetToEffects): void {
+        player.avatar.changeDefense = {
+            value: this._baseIncreaseDefense,
+            type: "decrease"
+        }
     }
 
     private _checkIfCardWasUsedBefore(player: Player) {

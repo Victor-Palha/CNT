@@ -8,6 +8,8 @@ import { OponentField } from "./OponentField"
 import { Socket, io } from "socket.io-client";
 import { Dialog } from "./Dialog";
 import { GameState } from "./GameState";
+import { Reaction } from "./Reaction";
+import { Target } from "./Target";
 
 type AvatarProps = {
     id_avatar: string;
@@ -44,6 +46,8 @@ export function Game(){
     // 3 - Climax
 
     // States
+    const [responseChainOptions, setResponseChainOptions] = useState<Field | null>(null)
+
     const [canSkip, setCanSkip] = useState<boolean>(false)
     const [myAvatar, setMyAvatar] = useState<AvatarProps>({} as AvatarProps)
     const [myHand, setMyHand] = useState<Cards[]>([])
@@ -52,15 +56,19 @@ export function Game(){
     const [isMyTurn, setIsMyTurn] = useState<boolean>(false)
     const [setCard, setSetCard] = useState<string>("")
 
+    const [ability, setAbility] = useState<string>("")
+    const [inChain, setInChain] = useState<boolean>(false)
+
     const [enemyField, setEnemyField] = useState<Field>([])
     const [enemyDeck, setEnemyDeck] = useState<number>(0)
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
     // Render Game
-    function renderGame({gameState, turnOf, player, enemy}: RenderGame){
+    function renderGame({gameState, turnOf, player, enemy, inChain}: RenderGame){
         if(gameState === 3 && turnOf === Me.id_player){
             climaxPhase(room_id)
         }
+        setInChain(inChain)
         setCanSkip(player.canSkip)
         setPhase(gameState)
         setMyAvatar(player.avatar)
@@ -82,15 +90,22 @@ export function Game(){
         setDialog(!dialog)
         setCardDialog(card)
     }
+    // Target Selection
+    const [typeTarget, setTypeTarget] = useState<"DECK" | "FIELD" | null>(null)
 
     // Hand functions / Field functions
     function handleDragStart(e:React.DragEvent<HTMLDivElement>, id:string){
-        // e.preventDefault()
+        if(phase != 1){
+            return
+        }
         e.dataTransfer.setData("id", id)
         setSetCard(id)
     }
 
     function handleSetCards(e:React.DragEvent<HTMLDivElement>){
+        if(phase != 1){
+            return
+        }
         const idFromCard = setCard
         const idFromField = e.currentTarget.id
 
@@ -104,8 +119,21 @@ export function Game(){
         }
     }
 
-    function ativateCard(field_id: string){
-        socket && socket.emit("activate_Card", {field_id, room_id, player_id: Me.id_player})
+    function ativateCard(field_id: string, target?: string){
+        if(responseChainOptions){
+            setResponseChainOptions(null)
+        }if(typeTarget){
+            setTypeTarget(null)
+        }
+        socket && socket.emit("activate_Card", {field_id, room_id, player_id: Me.id_player, target})
+    }
+
+    function activateAbility(field_id: string){
+        const typeTarget = myField.find(field => field.field_id === field_id)?.card?.targetCard.type
+        if(typeTarget){
+            setTypeTarget(typeTarget)
+            setAbility(field_id)
+        }
     }
 
     function skipTurn(){
@@ -118,6 +146,11 @@ export function Game(){
     // Climax
     function climaxPhase(id: any){
         socket && socket.emit("climax_Phase", {room_id: id, player_id: Me.id_player})
+    }
+    // Chain
+    function handleCancelChain(){
+        setResponseChainOptions(null)
+        socket && socket.emit("cancel_Chain", {room_id, player_id: Me.id_player})
     }
 
     useEffect(()=>{        
@@ -146,6 +179,13 @@ export function Game(){
         })
         .on("enemy_Activate_Card", (newField: RenderGame)=>{
             renderGame(newField)
+        })
+        .on("enemy_Activate_Ability", (data: ResponseChain)=>{
+            const { response, to_enemy} = data;
+            toast.success(`Oponente ativou uma carta habilidade!`)
+
+            setResponseChainOptions(response)
+            renderGame(to_enemy)
         })
         .on("skip_Turn", (data)=>{
             const {turnOf, gameState} = data
@@ -189,13 +229,14 @@ export function Game(){
                     enemyDeck={enemyDeck}
                 />
                 <div className="w-full justify-center items-center flex">
-                    <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn} canSkip={canSkip}/>
+                    <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn} canSkip={canSkip} inChain={inChain}/>
                 </div>
                 <MyField 
                     handleDragStart={handleDragStart} 
                     handleSetCards={handleSetCards}
                     ativateCard={ativateCard}
                     dialog={handleDialog}
+                    activateAbility={activateAbility}
                     isMyTurn={isMyTurn}
                     myAvatar={myAvatar} 
                     myDeck={myDeck} 
@@ -205,6 +246,22 @@ export function Game(){
                 />
                 {dialog && (
                     <Dialog open={dialog} card={cardDialog} close={handleDialog}/>
+                )}
+                {responseChainOptions && (
+                    <Reaction 
+                        responseOptions={responseChainOptions} 
+                        cancel={handleCancelChain} 
+                        response={ativateCard}
+                        responseWithAbility={activateAbility}
+                    />
+                )}
+                {typeTarget && (
+                    <Target
+                        activateCard={ativateCard}
+                        enemyField={enemyField}
+                        type={typeTarget}
+                        ability={ability}
+                    />
                 )}
 
             <ToastContainer
@@ -225,9 +282,9 @@ export function Game(){
 }
 
 type RenderGame = {
-    winner: string;
     gameState: number
     turnOf: string;
+    inChain: boolean;
     player: {
         canSkip: boolean;
         hand: Cards[];
@@ -269,10 +326,20 @@ export type Cards = {
         activate: boolean;
         created_at: Date;
         updated_at: Date;
+        targetCard: CardTarget
 }
-
+// Target is just a reference to client to know what show in the effect
+type CardTarget = {
+    has: boolean;
+    type: "FIELD" | "DECK" | null
+}
 export type Field = {
     field_id: string;
     empty: boolean;
     card: Cards | null;
 }[]
+
+type ResponseChain = {
+    response: Field,
+    to_enemy: RenderGame
+}

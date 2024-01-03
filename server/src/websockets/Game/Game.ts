@@ -46,7 +46,6 @@ export class Game{
                     return new Card({activate:false, ...card})
                 }),
                 player_hand: [],
-                player_hit_points: 35,
                 player_name: player_host.player,
                 player_id: playerHost.player_id,
             })
@@ -57,7 +56,6 @@ export class Game{
                     return new Card({activate:false, ...card})
                 }),
                 player_hand: [],
-                player_hit_points: 35,
                 player_name: player_guest.player,
                 player_id: playerGuest.player_id,
             })
@@ -129,17 +127,40 @@ export class Game{
             })
 
             players.on("activate_Card", (data)=>{
-                const {field_id, room_id, player_id} = data
+                const {field_id, room_id, player_id, target} = data
                 const room = this.findRoom(room_id);
                 if(!room){
                     throw new Error("Room not found");
                 }
-                room.activeCard(field_id, player_id)
+                const isAbility = room.activeCard(field_id, player_id, target)
 
                 const {to_player, to_enemy} = this.renderGame(room, player_id)
 
                 players.emit("i_Activate_Card", to_player)
-                players.broadcast.to(room_id).emit("enemy_Activate_Card", to_enemy)
+                
+                if(!isAbility){
+                    players.broadcast.to(room_id).emit("enemy_Activate_Card", to_enemy)
+                }else{
+                    players.broadcast.to(room_id).emit("enemy_Activate_Ability", {
+                        response: isAbility,
+                        to_enemy
+                    })
+                }
+            })
+
+            players.on("cancel_Chain", (data)=>{
+                const {room_id, player_id} = data
+                const room = this.findRoom(room_id);
+                if(!room){
+                    throw new Error("Room not found");
+                }
+
+                room.resolveChain()
+
+                const {to_player, to_enemy} = this.renderGame(room, player_id)
+
+                players.emit("deal_Cards", to_player)
+                players.broadcast.to(room_id).emit("deal_Cards", to_enemy)
             })
 
             players.on("skip_Turn", (data)=>{
@@ -191,6 +212,7 @@ export class Game{
         const playerRender = {
             gameState: room.roomState,
             turnOf: room.turnOwnerPlayer,
+            inChain: room.chain,
             player: {
                 canSkip: player.can_skip_turn,
                 hand: player.hand,
@@ -209,6 +231,7 @@ export class Game{
         const opponentRender = {
             gameState: room.roomState,
             turnOf: room.turnOwnerPlayer,
+            inChain: room.chain,
             player: {
                 canSkip: opponent.can_skip_turn,
                 hand: opponent.hand,
@@ -237,6 +260,7 @@ type GameRender = {
 type PlayerRender = {
     gameState: number;
     turnOf: string;
+    inChain: boolean;
     player: {
         canSkip: boolean;
         hand: Card[];

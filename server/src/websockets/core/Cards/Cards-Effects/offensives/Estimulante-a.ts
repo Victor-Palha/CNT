@@ -3,11 +3,13 @@ import { Player } from "../../../Players/Player";
 import { CardEffect, TargetToEffects } from "../Card-Effect";
 
 export class Estimulante_A implements CardEffect {
+    public isNegated: boolean = false;
     private _baseIncreaseAttack: number = 4;
     /*
     Aumenta os pontos de ataque do avatar alvo em 4, se for utilizada mais de uma vez no mesmo turno, o efeito diminui pela metade.
     */
     applyEffect({player}: TargetToEffects): void {
+        if(this.isNegated) return;
         if(player.avatar instanceof Avatar){
             this._checkIfCardWasUsedBefore(player);
             player.avatar.changeAttack = {
@@ -19,6 +21,7 @@ export class Estimulante_A implements CardEffect {
     }
 
     revertEffect({player}: TargetToEffects): void {
+        if(this.isNegated) return;
         if(player.avatar instanceof Avatar){
             player.avatar.changeAttack = {
                 value: this._baseIncreaseAttack,
@@ -27,8 +30,13 @@ export class Estimulante_A implements CardEffect {
         }
     }
 
-    negateEffect(target: any): void {
-        return
+    negateEffect({player}: TargetToEffects): void {
+        if(player.avatar instanceof Avatar){
+            player.avatar.changeAttack = {
+                value: this._baseIncreaseAttack,
+                type: "decrease"
+            }
+        }
     }
 
     private _checkIfCardWasUsedBefore(player: Player) {

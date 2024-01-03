@@ -56,6 +56,9 @@ export class Avatar{
     get def(){
         return this.defense;
     }
+    set def(value:number){
+        this.defense = value
+    }
     get hp(){
         return this.hit_points;
     }
