@@ -14,7 +14,6 @@ export async function editDeckController(req: FastifyRequest, res: FastifyReply)
 
     try {
         const editDeckService = editDeckService_make();
-
         const deck = await editDeckService.execute({
             player_id: req.user.sign.sub,
             deck_id,

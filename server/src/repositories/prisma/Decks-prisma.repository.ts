@@ -53,6 +53,19 @@ export class DecksPrismaRepository implements DecksRepository{
 
         return deck;
     }
+    async deleteDeck(deck_id: string): Promise<void> {
+        await prisma.cardsDeck.deleteMany({
+            where: {
+                deck_id: deck_id
+            }
+        })
+
+        await prisma.deck.delete({
+            where: {
+                id_deck: deck_id
+            }
+        })
+    }
 
     async fetchDecks(search: string): Promise<Deck[]> {
         const decks = await prisma.deck.findMany({

@@ -28,12 +28,12 @@ export class EditDeckService{
         if(!avatar){
             throw new Error("Avatar not found");
         }
+  
         let cardsInDeck: Cards[] = [];
         let uniqueAbilityCount: number = 0;
 
-        for(let card in cards){
+        for(let card of cards){
             const cardInDeck = await this.cardsRepository.getCardById(card);
-
             if(!cardInDeck){
                 throw new Error("Card not found");
             }

@@ -26,6 +26,7 @@ export interface DeckWithCards{
 export interface DecksRepository{
     createDeck({player_id, avatar_id, cards, deck_name}: CreateDeckRequest): Promise<Deck>;
     editDeck({deck_id, avatar_id, cards, deck_name}: UpdateDeckRequest): Promise<Deck>;
+    deleteDeck(deck_id: string): Promise<void>;
     getDeckById(id: string): Promise<DeckWithCards>;
     fetchDecks(search: string): Promise<Deck[]>;
 }
