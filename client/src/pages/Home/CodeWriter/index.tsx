@@ -1,22 +1,38 @@
 import { useState, useEffect } from "react";
 
-const ex = `// QuantumFlux Data Integration Protocol initialization
-cyberVar quantumFluxStream
-\t
-// NeuroCortex Hyperthreading Mechanism activation
-activateNeuroThread(NCHM)
-\t
-// SynthoKinetic Quantum Encryption Algorithm key generation
-generateEncryptionKey(SKQEA)
-\t
-// CyberGenomic Quantum Biometrics scan
-userIdentity = scanQuantumBiometrics(CGQB)
-\t
-// MegaQuark Quantum Neural Fabric activation
-activateMegaQuarkFabric(MQQNF)
-\t
-// NanoChrono Quantum Entanglement Synchronization start
-startQuantumEntanglementSynchronization(NCQES)
+const ex = `#include <stdio.h>
+#include <stdlib.h>
+#include <libssh/libssh.h>
+
+int main() {
+\tssh_session my_ssh_session;
+\tint verbosity = SSH_LOG_PROTOCOL;
+
+\tmy_ssh_session = ssh_new();
+\tif (my_ssh_session == NULL) {
+\t\tfprintf(stderr, "Falha ao criar a sessão SSH.");
+\t\texit(EXIT_FAILURE);
+\t}
+
+\tssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, "seu_servidor_ssh.com");
+\tssh_options_set(my_ssh_session, SSH_OPTIONS_USER, "seu_usuario");
+\tssh_options_set(my_ssh_session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
+
+\tif (ssh_connect(my_ssh_session) != SSH_OK) {
+\t\tfprintf(stderr, "Falha ao conectar ao servidor SSH.");
+\t\texit(EXIT_FAILURE);
+\t}
+
+\tif (ssh_userauth_password(my_ssh_session, NULL, "sua_senha") != SSH_AUTH_SUCCESS) {
+\t\tfprintf(stderr, "Falha na autenticação.");
+\t\texit(EXIT_FAILURE);
+\t}
+
+\tssh_disconnect(my_ssh_session);
+\tssh_free(my_ssh_session);
+
+\treturn 0;
+}
 `;
 
 export function CodeWriter() {
@@ -29,7 +45,7 @@ export function CodeWriter() {
 
       setTimeout(() => {
         writeCode(text, c + 1);
-      }, 40);
+      }, 35);
     }
   }
 
@@ -39,7 +55,7 @@ export function CodeWriter() {
 
   return (
       <code
-        className="text-[16px] code-block cyber-glitch-2"
+        className="text-[14px] code-block cyber-glitch-2 opacity-80"
         data-title="CNT"
         style={{ whiteSpace: "pre-line" }}
       >
