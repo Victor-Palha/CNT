@@ -8,5 +8,5 @@ export interface CardEffect {
 export type TargetToEffects = {
     player: Player;
     enemy: Player;
-    target?: string;
+    target?: string | number;
 }

@@ -151,31 +151,47 @@ export class Player{
         this.selfDamageMultiplier = value;
     }
 
-    public resetField({player, enemy}: ResetField){
-        this.player_field.map(field => {
-            if(field.card !== null){
-                if(field.card.isActivate){
-                    // if the card is activate, the card will be deactivated if the turnsRemains is 0
+    public resetField({ player, enemy }: ResetField) {
+        this.player_field.forEach(field => {
+            if (field.card !== null) {
+                if (field.card.isActivate) {
                     field.card.turns--;
-                    // if the card is activate and the turnsRemains is 0, the card will be deactivated
-                    if(field.card.turns === 0){
-                        this.deck.unshift(field.card);
-                        !field.card.isNegated && field.card.cardEffect.revertEffect({player, enemy})
-                        field.card = null;
-                        field.empty = true;
+    
+                    if (field.card.turns === 0) {
+                        this.handleDeactivatedCard(field.card, player, enemy, field);
                     }
-                    // if the card is activate and the turnsRemains is greater than 0, the card will be kept activate on the field
-                }else{
-                    this.hand.push(field.card as Card);
-                    field.card = null;
-                    field.empty = true;
+                } else {
+                    this.handleNonActivateCard(field);
                 }
             }
         });
+    
         this.player_can_skip_turn = true;
-        while(this.hand.length < this.max_cards_hand){
+    
+        while (this.hand.length < this.max_cards_hand) {
             this.drawCard();
         }
+    }
+    
+    private handleDeactivatedCard(card: Card, player: Player, enemy: Player, field: Field) {
+        if (card.owner === player.id) {
+            this.deck.unshift(card);
+        } else {
+            enemy.deck.unshift(card);
+        }
+    
+        if (!card.isNegated) {
+            card.cardEffect.revertEffect({ player, enemy });
+        }
+    
+        field.card = null;
+        field.empty = true;
+    }
+    
+    private handleNonActivateCard(field: Field) {
+        this.hand.push(field.card as Card);
+        field.card = null;
+        field.empty = true;
     }
 }
 

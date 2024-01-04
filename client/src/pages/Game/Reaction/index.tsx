@@ -21,6 +21,7 @@ export function Reaction({responseOptions, cancel, response, responseWithAbility
                         ) : (
                             <button className="bg-yellow w-full justify-center" onClick={()=>responseWithAbility(field.field_id)}>Ativar</button>
                         )}
+                        
                         <img src={field.card?.image} className="object-fill max-h-[170px]"/>
                     </div>
                 ))}

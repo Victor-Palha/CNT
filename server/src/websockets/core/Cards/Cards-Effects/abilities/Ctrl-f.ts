@@ -16,6 +16,7 @@ export class CtrlF implements CardEffect{
                 set_card: tgt.set,
                 type_card: tgt.type,
                 list: tgt.list_card,
+                originalOwner: tgt.owner,
                 activate: false
             })
             this.targetFromDeck = card

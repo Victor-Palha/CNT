@@ -43,7 +43,10 @@ export class Game{
             const host = new Player({
                 player_avatar: new Avatar(playerHost.avatar as Avatars),
                 player_deck: playerHost.cards.map(card => {
-                    return new Card({activate:false, ...card})
+                    return new Card({
+                        activate:false,
+                        originalOwner: playerHost.player_id, 
+                        ...card})
                 }),
                 player_hand: [],
                 player_name: player_host.player,
@@ -53,7 +56,11 @@ export class Game{
             const guest = new Player({
                 player_avatar: new Avatar(playerGuest.avatar as Avatars),
                 player_deck: playerGuest.cards.map(card => {
-                    return new Card({activate:false, ...card})
+                    return new Card({
+                        activate:false,
+                        originalOwner: playerGuest.player_id,
+                        ...card
+                    })
                 }),
                 player_hand: [],
                 player_name: player_guest.player,

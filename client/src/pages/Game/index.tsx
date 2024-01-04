@@ -119,7 +119,7 @@ export function Game(){
         }
     }
 
-    function ativateCard(field_id: string, target?: string){
+    function ativateCard(field_id: string, target?: string | number){
         if(responseChainOptions){
             setResponseChainOptions(null)
         }if(typeTarget){

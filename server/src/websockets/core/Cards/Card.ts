@@ -18,6 +18,9 @@ import { Backdoor } from "./Cards-Effects/unique-abilities/Backdoor";
 import { DeletarArquivo } from "./Cards-Effects/abilities/Deletar-arquivo";
 import { Formatar } from "./Cards-Effects/abilities/Formatar";
 import { SuporteTecnico } from "./Cards-Effects/abilities/Suporte-tecnico";
+import { ForcarAcesso } from "./Cards-Effects/abilities/Forcar-acesso";
+import { DDos } from "./Cards-Effects/abilities/DDos";
+import { BancoDeDados } from "./Cards-Effects/abilities/Banco-de-dados";
 
 export type Cards = {
     id_card: string;
@@ -28,11 +31,12 @@ export type Cards = {
     type_card: "OFENSIVA" | "DEFENSIVA" | "HABILIDADE" | "HABILIDADE_UNICA";
     list: number;
     activate: boolean;
+    originalOwner: string;
 }
 // Target is just a reference to client to know what show in the effect
 type CardTarget = {
     has: boolean;
-    type: "FIELD" | "DECK" | null
+    type: "FIELD" | "DECK" | "NUMBER" | null
 }
 
 export class Card{
@@ -46,13 +50,14 @@ export class Card{
     private turnsRemains: number = 1;
     private effect: CardEffect;
     private activate: boolean = false;
+    private originalOwner: string = "";
     private targetCard: CardTarget = {
         has: false,
         type: null
     }
     private negated: boolean = false;
 
-    constructor({id_card, name, description, image, set_card, type_card, list}: Cards){
+    constructor({id_card, name, description, image, set_card, type_card, list, originalOwner}: Cards){
         this._id = id_card;
         this.name = name;
         this.description = description;
@@ -60,6 +65,7 @@ export class Card{
         this.set_card = set_card;
         this.type_card = type_card;
         this.list = list;
+        this.originalOwner = originalOwner;
         // Inicializa o efeito da carta **EXTREMAMENTE IMPORTANTE**
         this.effect = this.initializeEffect();
     }
@@ -118,6 +124,20 @@ export class Card{
                 return new Formatar();
             case "b2dd85af-964e-4ebe-a00e-cd9a6ba83dd1":
                 return new SuporteTecnico();
+            case "8f70751b-a0b4-43be-b36f-4532ed6ac6ce":
+                this.targetCard = {
+                    has: true,
+                    type: "FIELD"
+                }
+                return new ForcarAcesso()
+            case "d5e286b6-4fa9-4808-be77-186eae6c84e0":
+                this.targetCard = {
+                    has: true,
+                    type: "NUMBER"
+                }
+                return new DDos();
+            case "d76a7aa9-b8a5-429c-87c2-e8c98bd44990":
+                return new BancoDeDados();
             
             // Adicione outros casos para diferentes tipos de carta
             default:
@@ -185,4 +205,7 @@ export class Card{
         return this.list;
     }
 
+    get owner(){
+        return this.originalOwner;
+    }
 }
