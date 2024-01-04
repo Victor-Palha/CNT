@@ -47,14 +47,12 @@ export class CreateDeckService{
 
             cardsInDeck.push(cardInDeck);
         }
-        // console.log(cardsInDeck);
         const deck = await this.deckRepository.createDeck({
             avatar_id: avatar.id_avatar,
             player_id: player.id_player,
             deck_name: deck_name,
             cards: cardsInDeck
         });
-        console.log(deck);
         
         return deck;
     }

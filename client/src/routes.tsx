@@ -8,6 +8,7 @@ import { Rooms } from "./pages/Rooms";
 import { Confront } from "./pages/Confront";
 import { ConfrontProvider } from "./context/confrontContext";
 import { Game } from "./pages/Game";
+import { EditDeck } from "./pages/Deck/EditDeck";
 export function Router(){
     return (
         <BrowserRouter>
@@ -16,6 +17,7 @@ export function Router(){
                 <Route path="/signup" element={<SignUp/>} />
                 <Route path="/deck" element={<Deck/>} />
                 <Route path="/deck/create" element={<CreateDeck/>} />
+                <Route path="/deck/:deck_id" element={<EditDeck/>} />
                 <Route path="/confront/rooms" element={
                     <ConfrontProvider>
                         <Rooms/>

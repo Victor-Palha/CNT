@@ -7,6 +7,13 @@ export interface CreateDeckRequest{
     cards: Cards[];
 }
 
+export interface UpdateDeckRequest{
+    deck_id: string;
+    avatar_id: string;
+    deck_name: string;
+    cards: Cards[];
+}
+
 export interface DeckWithCards{
     player_id: string;
     deck: {
@@ -18,6 +25,7 @@ export interface DeckWithCards{
 }
 export interface DecksRepository{
     createDeck({player_id, avatar_id, cards, deck_name}: CreateDeckRequest): Promise<Deck>;
+    editDeck({deck_id, avatar_id, cards, deck_name}: UpdateDeckRequest): Promise<Deck>;
     getDeckById(id: string): Promise<DeckWithCards>;
     fetchDecks(search: string): Promise<Deck[]>;
 }

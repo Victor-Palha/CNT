@@ -1,5 +1,5 @@
 import { Deck, Prisma } from "@prisma/client";
-import { CreateDeckRequest, DeckWithCards, DecksRepository } from "../Decks.repository";
+import { CreateDeckRequest, DeckWithCards, DecksRepository, UpdateDeckRequest } from "../Decks.repository";
 import { prisma } from "../../../lib/prisma";
 
 export class DecksPrismaRepository implements DecksRepository{
@@ -13,6 +13,35 @@ export class DecksPrismaRepository implements DecksRepository{
             
         })
         
+        cards.forEach(async (card) => {
+            await prisma.cardsDeck.create({
+                data: {
+                    card_id: card.id_card,
+                    deck_id: deck.id_deck
+                }
+            })
+        })
+
+        return deck;
+    }
+
+    async editDeck({ deck_id, avatar_id, cards, deck_name }: UpdateDeckRequest){
+        const deck = await prisma.deck.update({
+            where: {
+                id_deck: deck_id
+            },
+            data: {
+                name: deck_name,
+                avatar_id: avatar_id
+            }
+        })
+
+        await prisma.cardsDeck.deleteMany({
+            where: {
+                deck_id: deck_id
+            }
+        })
+
         cards.forEach(async (card) => {
             await prisma.cardsDeck.create({
                 data: {
