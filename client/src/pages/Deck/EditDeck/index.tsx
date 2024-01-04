@@ -4,7 +4,6 @@ import { CardModel, CardsProps } from "../../../components/Card";
 import { AvatarModel, AvatarsProps } from "../../../components/Avatar";
 import instance from "../../../lib/axios";
 import { useParams } from "react-router-dom";
-import { MagicMotion } from "react-magic-motion";
 
 interface Deck{
     id_deck: string,
