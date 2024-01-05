@@ -4,7 +4,7 @@ export class Firewall implements CardEffect{
     //Aumente sua defesa em 5 pontos, se sua defesa for maior que o ataque do avatar atacante, seu oponente sofre o dobro de dano de combate.
 
     applyEffect({player, enemy}: TargetToEffects): void {
-        enemy.selfDamageMultiplierValue = 2;
+        enemy.selfDamageMultiplierValue *= 2;
         player.avatar.changeDefense = {
             value: 5,
             type: "increase"
