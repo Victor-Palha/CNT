@@ -80,7 +80,6 @@ export class Room {
     public setCardOnField(player_id: string, card: any, field_id: string): {player: Player, gameState: number}{
         const { player, opponent } = this.getPlayers(player_id);
         // Set card on field of player and initialize the card effect
-        console.log(card)
         player.setCardOnField(new Card({
             id_card: card._id,
             ...card
