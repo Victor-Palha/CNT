@@ -5,10 +5,9 @@ export class ForcarAcesso implements CardEffect{
     applyEffect({player, enemy, target}: TargetToEffects): void {
 
             const cardFromField = enemy.field.find(field => field.card && field.field_id === target)
-            console.log(cardFromField)
             if(!cardFromField || !cardFromField.card) return;
             const card = cardFromField.card;
-            if(card.isActivate) return;
+            if(card.isActivate || card.effectOccurred) return;
             player.hand.push(card);
             enemy.field.map(field => {
                 if(field.card && field.card.id_card === card.id_card){

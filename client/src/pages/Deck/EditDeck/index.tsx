@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 interface Deck{
     id_deck: string,
-    name: string,
+    deck_name: string,
     cards: CardsProps[],
     avatar: AvatarsProps
 }
@@ -49,10 +49,9 @@ export function EditDeck(){
         })
 
         const deck: Deck = response.data.deck
-        console.log(deck)
         setCardsSelected(deck.cards)
         setAvatarSelected(deck.avatar)
-        setDeckName(deck.name)
+        setDeckName(deck.deck_name)
     }
     // Info Card
     function handleInfoCards(cards: CardsProps | null, avatar: AvatarsProps | null){

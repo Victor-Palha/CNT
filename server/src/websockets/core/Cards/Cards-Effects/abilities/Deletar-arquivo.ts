@@ -5,13 +5,15 @@ export class DeletarArquivo implements CardEffect{
     applyEffect({enemy, target}: TargetToEffects): void {
         const tgt = enemy.field.find(card => card.field_id === target)
         if(tgt && tgt.card){
-            if(tgt.card.isActivate){
+            if(tgt.card.isActivate && !tgt.card.effectOccurred){
                 tgt.card.negatedCard = true
                 enemy.hand.push(tgt.card)
                 tgt.card = null
                 tgt.empty = true
             }
-            else{
+            else if(tgt.card.isActivate && tgt.card.effectOccurred){
+                return
+            }else{
                 enemy.deck.unshift(tgt.card)
                 tgt.card = null
                 tgt.empty = true

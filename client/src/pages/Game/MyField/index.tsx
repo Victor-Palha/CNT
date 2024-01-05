@@ -7,6 +7,7 @@ type MyFieldProps = {
     myAvatar: Avatar;
     myDeck: number;
     phase: number;
+    inChain: boolean;
     handleDragStart: (e: any, id: string) => void;
     handleSetCards: (e: any) => void;
     ativateCard(field_id: string): void;
@@ -14,9 +15,7 @@ type MyFieldProps = {
     activateAbility(field_id: string): void
 }
 
-export function MyField({ myHand, isMyTurn, myField, myAvatar, handleDragStart, handleSetCards, myDeck, ativateCard, phase, dialog, activateAbility}: MyFieldProps) {
-    console.log(myHand)
-
+export function MyField({ myHand, isMyTurn, myField, myAvatar, handleDragStart, handleSetCards, myDeck, ativateCard, phase, dialog, activateAbility, inChain}: MyFieldProps) {
     return (
         <div className={`p-4 ${isMyTurn === true && "border-b-2 border-l-2 border-r-2 border-cyan-500"} mx-[10%] md:mx-[25%] lg:mx-[35%] bg-gray-900`}>
             {/* Players Avatar */}
@@ -42,7 +41,7 @@ export function MyField({ myHand, isMyTurn, myField, myAvatar, handleDragStart, 
                             onDrop={(e)=>{handleSetCards(e)}}
                         >
                             {/* Cards without target */}
-                            {isMyTurn && card.card && !card.card.targetCard.has && !card.card.activate && phase === 2 && (
+                            {!inChain && isMyTurn && card.card && !card.card.targetCard.has && !card.card.activate && phase === 2 && (
                                 <div className="z-20 absolute bg-yellow w-full justify-center">
                                     <button className="font-bold" onClick={()=>ativateCard(card.field_id)}>
                                         Ativar Carta
@@ -50,7 +49,7 @@ export function MyField({ myHand, isMyTurn, myField, myAvatar, handleDragStart, 
                                 </div>
                             )}
                             {/* Cards with target */}
-                            {isMyTurn && card.card && card.card.targetCard.has && !card.card.activate && phase === 2 && (
+                            {!inChain && isMyTurn && card.card && card.card.targetCard.has && !card.card.activate && phase === 2 && (
                                 <div className="z-20 absolute bg-yellow w-full justify-center">
                                     <button className="font-bold" onClick={()=>activateAbility(card.field_id)}>
                                         Ativar Habilidade

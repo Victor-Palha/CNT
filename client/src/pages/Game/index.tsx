@@ -108,6 +108,13 @@ export function Game(){
         }
         const idFromCard = setCard
         const idFromField = e.currentTarget.id
+        const field = myField.find(field => field.field_id === idFromField)
+        if(field){
+            if(field.card){
+                toast.error("Campo já ocupado!")
+                return
+            }
+        }
 
         if (idFromCard) {
             socket && socket.emit("set_Card", {
@@ -237,6 +244,7 @@ export function Game(){
                     ativateCard={ativateCard}
                     dialog={handleDialog}
                     activateAbility={activateAbility}
+                    inChain={inChain}
                     isMyTurn={isMyTurn}
                     myAvatar={myAvatar} 
                     myDeck={myDeck} 
@@ -327,6 +335,7 @@ export type Cards = {
         created_at: Date;
         updated_at: Date;
         targetCard: CardTarget
+        cartEffectOccurred: boolean
 }
 // Target is just a reference to client to know what show in the effect
 type CardTarget = {

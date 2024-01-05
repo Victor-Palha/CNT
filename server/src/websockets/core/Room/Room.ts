@@ -32,6 +32,7 @@ export class Room {
     private winner: string | null = null;
     // This sockets represents the sockets that are in the room
     private sockets: string[] = [];
+    private cardsWhoWasActivated: Card[] = [];
 
     constructor({room_id, player_host, player_guest, sockets}: Rooms){
         this.room_id = room_id;
@@ -80,7 +81,6 @@ export class Room {
     public setCardOnField(player_id: string, card: any, field_id: string): {player: Player, gameState: number}{
         const { player, opponent } = this.getPlayers(player_id);
         // Set card on field of player and initialize the card effect
-        console.log(card)
         player.setCardOnField(new Card({
             id_card: card._id,
             ...card
@@ -181,8 +181,10 @@ export class Room {
         while (this.chainEffects.length > 0) {
             // pass turn in the end of chain to the enemy of the player who started the chain.
             if(this.chainEffects.length === 1){
-                this.turnOwner = this.chainEffects[0].enemy.id
-                if(!this.chainEffects[0].enemy.can_skip_turn || this.chainEffects[0].enemy.field.every(field => field.card !== null && field.card.isActivate)){
+                const enemy = this.chainEffects[0].enemy;
+
+                this.turnOwner = enemy.id;
+                if (!enemy.can_skip_turn || enemy.field.every(field => field.card?.isActivate)) {
                     this.changePhase = 3;
                 }
             }
@@ -191,11 +193,15 @@ export class Room {
                 const field = effect.player.field.find(field => field.field_id === effect.field_id) as Field;
                 const cardFromField = field.card;
                 if(cardFromField){
-                    !cardFromField.isNegated && cardFromField.cardEffect.applyEffect({
-                        player: effect.player,
-                        enemy: effect.enemy,
-                        target: effect.target
-                    })
+                    if(!cardFromField.isNegated){
+                        cardFromField.cardEffect.applyEffect({
+                            player: effect.player,
+                            enemy: effect.enemy,
+                            target: effect.target
+                        })
+                        cardFromField.effectOccurred = true;
+                        this.cardsWhoWasActivated.push(cardFromField);
+                    }
                 }
             }
         }
@@ -281,14 +287,15 @@ export class Room {
         // Cards that was not activated are removed from field and put on the hand
         this.player_host.resetField({
             player: this.player_host,
-            enemy: this.player_guest
+            enemy: this.player_guest,
         });
         this.player_guest.resetField({
             player: this.player_guest,
-            enemy: this.player_host
+            enemy: this.player_host,
         });
 
         this.room_state = 1;
+        this.cardsWhoWasActivated = [];
     }
 
     get winnerPlayer(){
