@@ -180,8 +180,9 @@ export class Player{
             enemy.deck.unshift(card);
         }
     
-        if (!card.isNegated) {
+        if (!card.isNegated || card.effectOccurred) {
             card.cardEffect.revertEffect({ player, enemy });
+            card.effectOccurred = false;
         }
     
         field.card = null;

@@ -51,6 +51,7 @@ export class Card{
     private effect: CardEffect;
     private activate: boolean = false;
     private originalOwner: string = "";
+    private cartEffectOccurred: boolean = false;
     private targetCard: CardTarget = {
         has: false,
         type: null
@@ -207,5 +208,13 @@ export class Card{
 
     get owner(){
         return this.originalOwner;
+    }
+
+    set effectOccurred(value: boolean){
+        this.cartEffectOccurred = value;
+    }
+
+    get effectOccurred(){
+        return this.cartEffectOccurred;
     }
 }

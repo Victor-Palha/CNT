@@ -335,6 +335,7 @@ export type Cards = {
         created_at: Date;
         updated_at: Date;
         targetCard: CardTarget
+        cartEffectOccurred: boolean
 }
 // Target is just a reference to client to know what show in the effect
 type CardTarget = {
