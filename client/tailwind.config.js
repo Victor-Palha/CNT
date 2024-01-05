@@ -10,8 +10,8 @@ export default {
         "red": "#ff003c",
       },
       "backgroundColor": {
-        "blue": "#136377",
-        "red": "#ff003cb4",
+        "blue-cyber": "#136377",
+        "red-cyber": "#ff003cb4",
       },
     },
   },

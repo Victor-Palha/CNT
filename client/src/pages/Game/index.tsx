@@ -108,6 +108,13 @@ export function Game(){
         }
         const idFromCard = setCard
         const idFromField = e.currentTarget.id
+        const field = myField.find(field => field.field_id === idFromField)
+        if(field){
+            if(field.card){
+                toast.error("Campo já ocupado!")
+                return
+            }
+        }
 
         if (idFromCard) {
             socket && socket.emit("set_Card", {
