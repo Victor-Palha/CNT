@@ -42,7 +42,7 @@ export function ConfrontProvider({children}: ConfrontProviderProps){
     }
     
     useEffect(()=>{
-        const socket = io("http://localhost:3000")
+        const socket = io("http://25.0.154.188:3000")
         setSocket(socket)
         getPlayerInformation()
     }, [])

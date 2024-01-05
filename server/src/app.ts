@@ -21,7 +21,9 @@ const server = fastify({serverFactory});
 // Socket.io Config
 const io = new Server(server.server, {
     cors: {
-        origin: "*"
+        origin: "*",
+        allowedHeaders: "*",
+        methods: ["GET", "POST"]
     }
 });
 
