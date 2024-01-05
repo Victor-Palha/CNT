@@ -244,6 +244,7 @@ export function Game(){
                     ativateCard={ativateCard}
                     dialog={handleDialog}
                     activateAbility={activateAbility}
+                    inChain={inChain}
                     isMyTurn={isMyTurn}
                     myAvatar={myAvatar} 
                     myDeck={myDeck} 
