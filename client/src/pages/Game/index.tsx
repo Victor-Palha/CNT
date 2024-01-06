@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Player } from "../../context/authContext"
-import { ToastContainer, toast } from "react-toastify"
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify"
 import { MyField } from "./MyField"
 import { OponentField } from "./OponentField"
 import { Socket, io } from "socket.io-client";
@@ -234,6 +233,7 @@ export function Game(){
                     enemyHand={enemyHand}
                     isMyTurn={isMyTurn}
                     enemyDeck={enemyDeck}
+                    dialog={handleDialog}
                 />
                 <div className="w-full justify-center items-center flex">
                     <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn} canSkip={canSkip} inChain={inChain}/>
@@ -272,19 +272,7 @@ export function Game(){
                     />
                 )}
 
-            <ToastContainer
-                limit={1}
-                position="top-center"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-            />
+
         </main>
     )
 }

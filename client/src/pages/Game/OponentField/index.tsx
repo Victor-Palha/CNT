@@ -1,4 +1,4 @@
-import { Avatar, Field } from "..";
+import { Avatar, Cards, Field } from "..";
 
 type OpponentFieldProps = {
     enemyHand: number;
@@ -6,9 +6,10 @@ type OpponentFieldProps = {
     enemyField: Field;
     enemyAvatar: Avatar;
     enemyDeck: number;
+    dialog(card: Cards | Avatar): void;
 }
 
-export function OponentField({enemyHand, isMyTurn, enemyField, enemyAvatar, enemyDeck}: OpponentFieldProps){
+export function OponentField({enemyHand, isMyTurn, enemyField, enemyAvatar, enemyDeck, dialog}: OpponentFieldProps){
     return (
         <div className={`px-4 ${isMyTurn === false && "animate-pulse"} mx-[10%] md:mx-[25%] lg:mx-[35%] bg-gray-900`}>
         {/* Enemys Deck */}
@@ -31,14 +32,14 @@ export function OponentField({enemyHand, isMyTurn, enemyField, enemyAvatar, enem
                                 {!card.empty && !card.card?.activate && <div className="bg-red w-full h-full"></div>}
 
                                 {!card.empty && card.card?.activate && 
-                                <img src={card.card.image} className="object-fill max-h-[170px] opacity-50"/>
+                                <img src={card.card.image} className="object-fill max-h-[170px] opacity-50" onClick={()=>dialog(card.card as Cards)}/>
                                 }
                             </div>
                         ))}
                     </div>
                 {/* Enemys Avatar */}
                     {enemyAvatar && (
-                        <div className="bg-black w-[120px] mx-auto m-4 rotate-180 cyber-tile">
+                        <div className="bg-black w-[120px] mx-auto m-4 rotate-180 cyber-tile" onClick={()=>dialog(enemyAvatar)}>
                             <img src={enemyAvatar.image}/>
                             <div className="text-white rotate-180 flex items-center justify-center">
                                 <span>ATK: {enemyAvatar.attack}</span>
