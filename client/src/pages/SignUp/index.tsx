@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import instance from "../../lib/axios"
+import { toast } from "react-toastify"
 
 export function SignUp(){
     const [username, setUsername] = useState('')
@@ -11,7 +12,7 @@ export function SignUp(){
     async function signUp(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault()
         if(password !== confirmPass){
-            alert('Password does not match')
+            toast.error('Password and Confirm Password must be the same')
             return
         }
         const res = await instance('/api/signup',{
@@ -27,7 +28,7 @@ export function SignUp(){
         })
 
         if(res.status === 201){
-            alert('Sign Up Success')
+            toast.success('Account created successfully')
             setPassword('')
             setConfirmPass('')
             setEmail('')
@@ -72,6 +73,7 @@ export function SignUp(){
 
                 <input 
                     type="password" placeholder='Password' className='w-full px-1 py-2 rounded border-none'
+                    min={6}
                     value={password} 
                     onChange={(e)=> setPassword(e.target.value)}
                     required
@@ -81,6 +83,7 @@ export function SignUp(){
 
                 <input 
                     type="password" placeholder='Confirm Password' className='w-full px-1 py-2 rounded border-none'
+                    min={6}
                     value={confirmPass} 
                     onChange={(e)=> setConfirmPass(e.target.value)}
                     required
