@@ -220,6 +220,7 @@ export class Game{
             gameState: room.roomState,
             turnOf: room.turnOwnerPlayer,
             inChain: room.chain,
+            turn: room.turnNumber,
             player: {
                 canSkip: player.can_skip_turn,
                 hand: player.hand,
@@ -239,6 +240,7 @@ export class Game{
             gameState: room.roomState,
             turnOf: room.turnOwnerPlayer,
             inChain: room.chain,
+            turn: room.turnNumber,
             player: {
                 canSkip: opponent.can_skip_turn,
                 hand: opponent.hand,
@@ -268,6 +270,7 @@ type PlayerRender = {
     gameState: number;
     turnOf: string;
     inChain: boolean;
+    turn: number;
     player: {
         canSkip: boolean;
         hand: Card[];

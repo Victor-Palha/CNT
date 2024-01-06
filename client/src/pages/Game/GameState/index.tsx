@@ -28,12 +28,12 @@ export function GameState({phase, isMyTurn, skip, canSkip, inChain}: GameStatePr
     return (
         <>
         {!inChain ? (
-            <div className="rounded-full bg-yellow-400 p-4 m-2 shadow-black shadow-lg">
-                <div className="text-lg font-bold text-center">{phaseText}</div>
-                <div className="italic text-center">{isMyTurn ? "Sua vez" : "Vez do oponente"}</div>
+            <div className="rounded-md bg-yellow-400 p-2 m-1 shadow-black shadow-lg">
+                <div className="text-sm font-bold text-center">{phaseText}</div>
+                <div className="italic text-center text-sm">{isMyTurn ? "Sua vez" : "Vez do oponente"}</div>
                 {canSkip && isMyTurn && phase === 2 && (
                     <div className="flex justify-center">
-                        <button className="bg-yellow-500 rounded-md p-2" onClick={()=>skip()}>Pular Turno</button>
+                        <button className="bg-yellow-500 rounded-md p-1 text-sm" onClick={()=>skip()}>Pular Turno</button>
                     </div>
                 )}
             </div>

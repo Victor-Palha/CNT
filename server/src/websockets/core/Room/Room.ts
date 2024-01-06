@@ -238,6 +238,9 @@ export class Room {
     set changePhase(value: 0 | 1 | 2 | 3){
         this.room_state = value;
     }
+    get turnNumber(): number{
+        return this.turn;
+    }
 
     get turnOwnerPlayer(): string{
         return this.turnOwner

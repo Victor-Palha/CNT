@@ -37,8 +37,24 @@ export function Game(){
     const {room_id} = useParams()
 
     const [phase, setPhase] = useState<number>(1)
+    const [_gameTurn, setGameTurn] = useState<number>(1)
     const [dialog, setDialog] = useState<boolean>(false)
     const [cardDialog, setCardDialog] = useState<Cards | Avatar | undefined>(undefined)
+    // States for Calculations to pop-up
+    // My Avatar
+    const [_myAvatarHp, setMyAvatarHp] = useState<number>(0)
+    const [damageReceived, setDamageReceived] = useState<number>(0)
+    const [_myAvatarAttack, setMyAvatarAttack] = useState<number>(0)
+    const [_myAvatarDefense, setMyAvatarDefense] = useState<number>(0)
+    const [differenceAttack, setDifferenceAttack] = useState<number>(0)
+    const [differenceDefense, setDifferenceDefense] = useState<number>(0)
+    // Enemy Avatar
+    const [_enemyAvatarHp, setEnemyAvatarHp] = useState<number>(0)
+    const [enemyDamageReceived, setEnemyDamageReceived] = useState<number>(0)
+    const [_enemyAvatarAttack, setEnemyAvatarAttack] = useState<number>(0)
+    const [_enemyAvatarDefense, setEnemyAvatarDefense] = useState<number>(0)
+    const [differenceEnemyAttack, setDifferenceEnemyAttack] = useState<number>(0)
+    const [differenceEnemyDefense, setDifferenceEnemyDefense] = useState<number>(0)
     // 0 - Compra
     // 1 - Preparação
     // 2 - Ação
@@ -63,10 +79,25 @@ export function Game(){
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
     // Render Game
-    function renderGame({gameState, turnOf, player, enemy, inChain}: RenderGame){
+    function renderGame({gameState, turnOf, player, enemy, inChain, turn}: RenderGame){
         if(gameState === 3 && turnOf === Me.id_player){
             climaxPhase(room_id)
         }
+        
+        if(turn === 1 && gameState === 1){
+            // Initial Render set states
+            setMyAvatarAttack(player.avatar.attack)
+            setMyAvatarDefense(player.avatar.defense)
+            setEnemyAvatarAttack(enemy.avatar.attack)
+            setEnemyAvatarDefense(enemy.avatar.defense)
+            setMyAvatarHp(player.avatar.hit_points)
+            setEnemyAvatarHp(enemy.avatar.hit_points)
+        }else{
+            damageCalculation(player.avatar.hit_points, enemy.avatar.hit_points)
+            differenceAttackCalculation(player.avatar.attack, enemy.avatar.attack)
+            differenceDefenseCalculation(player.avatar.defense, enemy.avatar.defense)
+        }
+        setGameTurn(turn)
         setInChain(inChain)
         setCanSkip(player.canSkip)
         setPhase(gameState)
@@ -126,6 +157,12 @@ export function Game(){
     }
 
     function ativateCard(field_id: string, target?: string | number){
+        setDamageReceived(0)
+        setEnemyDamageReceived(0)
+        setDifferenceAttack(0)
+        setDifferenceDefense(0)
+        setDifferenceEnemyAttack(0)
+        setDifferenceEnemyDefense(0)
         if(responseChainOptions){
             setResponseChainOptions(null)
         }if(typeTarget){
@@ -151,12 +188,74 @@ export function Game(){
     }
     // Climax
     function climaxPhase(id: any){
-        socket && socket.emit("climax_Phase", {room_id: id, player_id: Me.id_player})
+        setDamageReceived(0)
+        setEnemyDamageReceived(0)
+        setDifferenceAttack(0)
+        setDifferenceDefense(0)
+        setDifferenceEnemyAttack(0)
+        setDifferenceEnemyDefense(0)
+        setTimeout(() => {
+            socket && socket.emit("climax_Phase", {room_id: id, player_id: Me.id_player})
+        }, 3000);
     }
     // Chain
     function handleCancelChain(){
         setResponseChainOptions(null)
         socket && socket.emit("cancel_Chain", {room_id, player_id: Me.id_player})
+    }
+    // Damage Calculation to Animations
+    function damageCalculation(myAvatarHp: number, enemyAvatarHp: number){
+        setMyAvatarHp((prevValue) => {
+            console.log("PrevV: "+prevValue)
+            console.log("myAvatarHp: "+myAvatarHp)
+            // Calculate damage based on previous value
+            if(prevValue === myAvatarHp) return prevValue
+            const damage = prevValue - myAvatarHp;
+            setDamageReceived(damage)
+            return myAvatarHp;
+          });
+        
+          setEnemyAvatarHp((prevValue) => {
+            // Calculate damage based on previous value
+            if(prevValue === enemyAvatarHp) return prevValue
+            const damage = prevValue - enemyAvatarHp;
+            setEnemyDamageReceived(damage)
+            return enemyAvatarHp;
+          });
+    }
+    function differenceAttackCalculation(myAvatarAttack: number, enemyAvatarAttack: number){
+        setMyAvatarAttack((prevValue) => {
+            // Calculate damage based on previous value
+            if(prevValue === myAvatarAttack) return prevValue
+            const damage = prevValue - myAvatarAttack;
+            setDifferenceAttack(damage)
+            return myAvatarAttack;
+          });
+        
+          setEnemyAvatarAttack((prevValue) => {
+            // Calculate damage based on previous value
+            if(prevValue === enemyAvatarAttack) return prevValue
+            const damage = prevValue - enemyAvatarAttack;
+            setDifferenceEnemyAttack(damage)
+            return enemyAvatarAttack;
+          });
+    }
+    function differenceDefenseCalculation(myAvatarDefense: number, enemyAvatarDefense: number){
+        setMyAvatarDefense((prevValue) => {
+            // Calculate damage based on previous value
+            if(prevValue === myAvatarDefense) return prevValue
+            const damage = prevValue - myAvatarDefense;
+            setDifferenceDefense(damage)
+            return myAvatarDefense;
+          });
+        
+          setEnemyAvatarDefense((prevValue) => {
+            // Calculate damage based on previous value
+            if(prevValue === enemyAvatarDefense) return prevValue
+            const damage = prevValue - enemyAvatarDefense;
+            setDifferenceEnemyDefense(damage)
+            return enemyAvatarDefense;
+          });
     }
 
     useEffect(()=>{        
@@ -233,6 +332,9 @@ export function Game(){
                     enemyHand={enemyHand}
                     isMyTurn={isMyTurn}
                     enemyDeck={enemyDeck}
+                    enemyAvatarDamage={enemyDamageReceived}
+                    differenceAttack={differenceEnemyAttack}
+                    differenceDefense={differenceEnemyDefense}
                     dialog={handleDialog}
                 />
                 <div className="w-full justify-center items-center flex">
@@ -244,6 +346,9 @@ export function Game(){
                     ativateCard={ativateCard}
                     dialog={handleDialog}
                     activateAbility={activateAbility}
+                    differenceAttack={differenceAttack}
+                    differenceDefense={differenceDefense}
+                    myAvatarDamage={damageReceived}
                     inChain={inChain}
                     isMyTurn={isMyTurn}
                     myAvatar={myAvatar} 
@@ -281,6 +386,7 @@ type RenderGame = {
     gameState: number
     turnOf: string;
     inChain: boolean;
+    turn: number;
     player: {
         canSkip: boolean;
         hand: Cards[];
@@ -324,6 +430,7 @@ export type Cards = {
         updated_at: Date;
         targetCard: CardTarget
         cartEffectOccurred: boolean
+        negated: boolean
 }
 // Target is just a reference to client to know what show in the effect
 type CardTarget = {
