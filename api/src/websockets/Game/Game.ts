@@ -27,9 +27,7 @@ export class Game{
     constructor(
         public gameSocket: Server,
         private roomSocket: ConnectToRooms
-    ){
-        
-    }
+    ){}
     
     async initGame(){
         this.roomSocket.on("new_Game", async (data)=>{
