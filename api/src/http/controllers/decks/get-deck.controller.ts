@@ -11,8 +11,7 @@ export async function getDeckController(req:FastifyRequest, res:FastifyReply){
         const service = getDeckService_make();
         const {deck_id} = getDeckSchema.parse(req.params);
         const deck = await service.execute({
-            deck_id,
-            player_id: req.user.sign.sub
+            deck_id
         })
 
         return res.status(200).send({

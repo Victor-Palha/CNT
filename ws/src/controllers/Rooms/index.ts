@@ -1,5 +1,7 @@
 import { EventEmitter } from 'node:events';
 import {Server, Socket} from 'socket.io';
+import { ChooseDeck } from './events/choose-deck.event';
+import { Events } from './factory/events.factory';
 
 export interface PrepareRoom{
     room_id: string;
@@ -18,34 +20,26 @@ export interface PrepareRoom{
     inConfront: boolean;
 }
 
-type EventsFactory = {
-    setup: (socket: Socket) => void;
-}
-
 export class Rooms extends EventEmitter {
     public _io: Server
-    protected rooms: PrepareRoom[] = []
-    private events: EventsFactory = {} as EventsFactory
+    public rooms: PrepareRoom[] = []
 
     constructor(roomServer: Server){
         super()
         this._io = roomServer
-    }
-
-    public setupEvents(events: EventsFactory){
-        this.events = events
         this.connect()
     }
+
     private connect(){
         this.io.on('connection', (socket)=>{
-            this.events.setup(socket)
+            Events(socket, this)
             this.emitRooms()
         })
     }
-    protected emitRooms(){
+    public emitRooms(){
         this.io.emit('rooms', this.rooms)
     }
-    protected getRoom(room_id: string){
+    public getRoom(room_id: string){
         const room = this.rooms.find((room) => room.room_id === room_id)
         if(room){
             return room
