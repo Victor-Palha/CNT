@@ -65,6 +65,7 @@ export function Confront(){
     useEffect(()=>{
         socket && socket.emit("room_Info", room_id)
             .on("room_Info", (room: PrepareRoom)=>{
+                console.log(room)
                 setRoom(room)
                 setMessages(room.messages)
             }).on("new_Message", (message)=>{

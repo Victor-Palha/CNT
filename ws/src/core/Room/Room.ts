@@ -20,7 +20,7 @@ interface CardQueue {
     enemy: Player;
 }
 
-export class Room {
+export class GameRoom {
     readonly room_id: string;
     private player_host: Player;
     private player_guest: Player;
@@ -45,7 +45,7 @@ export class Room {
         this.sockets = sockets;
     }
 
-    public initGame(): Room{
+    public initGame(): GameRoom{
         this.player_host.shuffleDeck();
         this.player_guest.shuffleDeck();
 

@@ -4,7 +4,7 @@ import "./websockets"
 
 server.listen({
     port: env.port,
-    host: "25.0.154.188"
+    host: env.host
 }).then((address) => {
     console.log(`Server listening on ${address}`)
 })

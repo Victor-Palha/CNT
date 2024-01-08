@@ -28,7 +28,7 @@ export function CreateRoom(socket: Socket, INSTANCE: Rooms){
         const newRoom: PrepareRoom = {
             room_id,
             room_name,
-            host: socket.id,
+            host: playerName,
             players: [player],
             messages: [{
                 playerName: "sudo ssh root@"+room_name+" -p 22",

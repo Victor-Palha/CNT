@@ -320,7 +320,7 @@ export function Game(){
     }, [socket])
 
     useEffect(()=>{
-        const socket = io("http://25.0.154.188:3000/game")
+        const socket = io("http://localhost:3002/game")
         setSocket(socket)
     }, [])
 

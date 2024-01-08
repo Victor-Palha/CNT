@@ -18,15 +18,6 @@ const serverFactory = (handler: any, opts: any) => {
 
 const server = fastify({serverFactory});
 
-// Socket.io Config
-const io = new Server(server.server, {
-    cors: {
-        origin: "*",
-        allowedHeaders: "*",
-        methods: ["GET", "POST"]
-    }
-});
-
 // Server Config
 server.register(cors, {
     origin: "*"
@@ -57,4 +48,4 @@ server.get("/api/verify", async (req, res) => {
     }
 })
 
-export { server, io }
+export { server }

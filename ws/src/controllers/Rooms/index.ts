@@ -1,6 +1,5 @@
 import { EventEmitter } from 'node:events';
-import {Server, Socket} from 'socket.io';
-import { ChooseDeck } from './events/choose-deck.event';
+import {Server} from 'socket.io';
 import { Events } from './factory/events.factory';
 
 export interface PrepareRoom{

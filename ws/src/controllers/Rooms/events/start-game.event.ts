@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { Rooms } from "..";
 
 export function StartGame(socket: Socket, INSTANCE: Rooms){
-    socket.on("start_game", (room_id: string)=>{
+    socket.on("start_Game", (room_id: string)=>{
         const room = INSTANCE.getRoom(room_id)
         if(!room){
             socket.emit("room_not_found")

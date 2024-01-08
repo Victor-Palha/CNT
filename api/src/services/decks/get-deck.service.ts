@@ -20,6 +20,7 @@ export class GetDeckService{
         }
         const deck = {
             id_deck: getDeck.deck.id_deck,
+            player_id: getDeck.player_id,
             deck_name: getDeck.deck.name,
             cards: getDeck.cards,
             avatar
