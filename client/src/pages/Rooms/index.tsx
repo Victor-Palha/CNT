@@ -18,7 +18,7 @@ export function Rooms(){
 
         player && socket && socket.emit("create_Room", {
             room_name: nameRoom,
-            player_id: player.id_player,
+            playerName: player.username,
         }).on("room_created", (room_id) =>{
             return navigate("/confront/"+room_id)
         })
@@ -27,7 +27,7 @@ export function Rooms(){
     async function joinRoom(room_id: string){
         player && socket && socket.emit("join_Room", {
             room_id,
-            player_id: player.id_player,
+            playerName: player.username,
         }).on("room_joined", (room_id) =>{
             return navigate("/confront/"+room_id)
         })

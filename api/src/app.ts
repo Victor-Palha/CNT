@@ -28,7 +28,9 @@ const io = new Server(server.server, {
 });
 
 // Server Config
-server.register(cors)
+server.register(cors, {
+    origin: "*"
+})
 server.register(fastifyJwt, {
     secret: env.jwtSecret,
     sign: {
