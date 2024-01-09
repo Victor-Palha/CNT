@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { Player } from "./authContext";
+import { env } from "../lib/config";
 
 export type PrepareRoom = {
     room_id: string;
@@ -42,7 +43,7 @@ export function ConfrontProvider({children}: ConfrontProviderProps){
     }
     
     useEffect(()=>{
-        const socket = io("http://localhost:3002")
+        const socket = io(`http://${env.SOCKER_SERVER}:3001`)
         setSocket(socket)
         getPlayerInformation()
     }, [])

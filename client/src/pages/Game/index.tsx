@@ -9,6 +9,7 @@ import { Dialog } from "./Dialog";
 import { GameState } from "./GameState";
 import { Reaction } from "./Reaction";
 import { Target } from "./Target";
+import { env } from "../../lib/config"
 
 type AvatarProps = {
     id_avatar: string;
@@ -320,7 +321,7 @@ export function Game(){
     }, [socket])
 
     useEffect(()=>{
-        const socket = io("http://localhost:3002/game")
+        const socket = io(`http://${env.SOCKER_SERVER}:3001/game`)
         setSocket(socket)
     }, [])
 
