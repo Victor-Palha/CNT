@@ -4,6 +4,10 @@ import { authContext } from "../../context/authContext";
 
 export function Header(){
     const {isAuth} = useContext(authContext)
+    function signOut(){
+        localStorage.removeItem('@token:cnt')
+        window.location.reload()
+    }
     return (
         <header className="py-2 flex justify-evenly bg-black text-blue-500 cyber-razor-bottom items-center">
             {!isAuth && (
@@ -20,7 +24,7 @@ export function Header(){
             <nav className="flex gap-4">
                 <Link to={"/deck"}>Decks</Link>
                 <Link to={"/rules"}>Regras</Link>
-                <button>Signout</button>
+                <button onClick={signOut}>Signout</button>
             </nav>
         </header>
     )

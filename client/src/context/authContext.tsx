@@ -36,8 +36,8 @@ export function AuthProvider({children}: AuthProviderProps){
                 if(res.status === 200){
                     setIsAuth(true)
                 }
-            }).catch(err => {
-                console.log(err)
+            }).catch(_err => {
+                localStorage.removeItem('@token:cnt')
             })
         }
         checkAuth()
