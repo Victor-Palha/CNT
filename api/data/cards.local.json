@@ -145,7 +145,7 @@
   {
     "id_card": "4cf19caf-be29-4727-8ebf-feeb6654a3df",
     "name": "Ctrl F",
-    "description": " ",
+    "description": "Após ativar essa carta, procure uma carta 'Defensiva', 'Habilidade' ou 'Habilidade Única' e a adicione à sua mão.",
     "image": "http://localhost:3000/static/Ctrl_F.png",
     "set_card": "EXPLORADORES DE DADOS",
     "type_card": "HABILIDADE",
