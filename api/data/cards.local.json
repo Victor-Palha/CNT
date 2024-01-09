@@ -145,7 +145,7 @@
   {
     "id_card": "4cf19caf-be29-4727-8ebf-feeb6654a3df",
     "name": "Ctrl F",
-    "description": "O efeito desta carta se torna o mesmo efeito de uma carta defensiva, habilidade ou habilidade única do seu baralho, esta carta só pode ser usada uma vez por turno.",
+    "description": " ",
     "image": "http://localhost:3000/static/Ctrl_F.png",
     "set_card": "EXPLORADORES DE DADOS",
     "type_card": "HABILIDADE",
