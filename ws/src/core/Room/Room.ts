@@ -57,7 +57,7 @@ export class GameRoom {
 
         // Set turn owner based on avatar type
         const host = this.setTurnOwner(this.player_host.avatar.type)
-        const guest = this.setTurnOwner(this.player_host.avatar.type)
+        const guest = this.setTurnOwner(this.player_guest.avatar.type)
         
         if(host < guest){
             this.turnOwner = this.player_host.id;
