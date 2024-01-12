@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { FiMinimize2, FiMaximize2 } from "react-icons/fi";
 import { Field } from "..";
 
 type ReactionProps = {
@@ -7,10 +9,12 @@ type ReactionProps = {
     responseWithAbility(field_id: string): void;
 }
 export function Reaction({responseOptions, cancel, response, responseWithAbility}: ReactionProps){
+    const [mini, setMini] = useState(false)
     return (
-        <div className="cyber-tile mx-[10%] md:mx-[25%] lg:mx-[35%] bg-gray-950 p-4 w-fit z-40 absolute mt-[-12rem]">
-            <div className="cyber-att-2 w-full cyber-glitch-4">
+        <div className={!mini ? `cyber-tile mx-[10%] md:mx-[25%] lg:mx-[35%] bg-gray-950 p-4 w-fit z-40 absolute mt-[-12rem]` : "cyber-tile max-h-[95px] overflow-hidden z-40 absolute  mx-[10%] md:mx-[25%] lg:mx-[35%] w-fit"}>
+            <div className="cyber-att-2 w-full cyber-glitch-4 flex justify-between">
                 <p className="text-white">Corrente de efeitos</p>
+                <button onClick={()=>setMini(!mini)}>{!mini ? <FiMinimize2/> : <FiMaximize2/>}</button>
             </div>
 
             <div className={`grid grid-cols-${responseOptions.length} gap-10 mt-10`}>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Field } from "..";
+import costa from "../../../assets/Costa.png";
 
 type TargetProps = {
     type: "DECK" | "FIELD" | "NUMBER";
@@ -25,7 +26,7 @@ export function Target({type, enemyField, ability, activateCard}:TargetProps){
                                 <img onClick={()=>setCardTarget(field.field_id)} src={field.card.image} className={`object-fill max-h-[170px] ${cardTarget === field.field_id && "border-2 border-yellow-400"}`}/>
                             )}
                             {field.card && !field.card.activate && (
-                                <div onClick={()=>setCardTarget(field.field_id)} className={`bg-red w-full h-full ${cardTarget === field.field_id && "border-2 border-yellow-400"}`}></div>
+                                <img src={costa} onClick={()=>setCardTarget(field.field_id)} className={`bg-red w-full h-full ${cardTarget === field.field_id && "border-2 border-yellow-400"}`}></img>
                             )}
                             {field.card && field.card.activate && field.card.cartEffectOccurred && (
                                 <img src={field.card.image} className={`object-fill max-h-[170px] opacity-50 bg-red-cyber`} onClick={()=>setCardTarget("")}/>

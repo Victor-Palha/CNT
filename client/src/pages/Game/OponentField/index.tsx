@@ -1,4 +1,5 @@
 import { Avatar, Cards, Field } from "..";
+import costa from "../../../assets/Costa.png";
 import { Popups } from "../Popups";
 
 type OpponentFieldProps = {
@@ -24,7 +25,9 @@ export function OponentField({enemyHand, isMyTurn, enemyField, enemyAvatar, enem
             {/* Enemys Hand */}
             <div className="flex justify-center mt-[-4rem] items-center absolute z-10 gap-1">
             {Array.from({ length: enemyHand }, (_, index) => (
-                <div key={index} className="cyber-tile bg-red w-[100px] h-[100px] first:rotate-[2deg] last:rotate-[-2deg]"></div>
+                <div key={index} className="cyber-tile w-[100px] h-[100px] first:rotate-[2deg] last:rotate-[-2deg]">
+                    <img src={costa} alt="" />
+                </div>
             ))}
             </div>
             <div className="bg-gray-900">
@@ -37,7 +40,9 @@ export function OponentField({enemyHand, isMyTurn, enemyField, enemyAvatar, enem
                                 id={card.field_id} 
                                 className="bg-gray-800 w-full h-[130px] cyber-tile border-red-500 border-2"
                             >
-                                {!card.empty && !card.card?.activate && <div className="bg-red w-full h-full"></div>}
+                                {!card.empty && !card.card?.activate && <div className="w-full h-full">
+                                    <img src={costa} alt="" />
+                                </div>}
 
                                 {!card.empty && card.card?.activate && 
                                 <img 

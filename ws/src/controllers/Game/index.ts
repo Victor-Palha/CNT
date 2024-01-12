@@ -99,6 +99,7 @@ export class Game{
 
     private connect(){
         this._io.of("/game").on("connection", (socket)=>{
+            console.log(socket.id, " connected")
             Events(socket, this)
             socket.on("disconnect", ()=>{
                 console.log(socket.id, " disconnected")
