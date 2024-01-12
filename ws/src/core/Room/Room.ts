@@ -20,6 +20,14 @@ interface CardQueue {
     enemy: Player;
 }
 
+type Historic = {
+    player: string;
+    turn: number;
+    action: string;
+    card: Card;
+    target?: string;
+}
+
 export class GameRoom {
     readonly room_id: string;
     private player_host: Player;
@@ -32,7 +40,8 @@ export class GameRoom {
     private winner: string | null = null;
     // This sockets represents the sockets that are in the room
     private sockets: string[] = [];
-    private cardsWhoWasActivated: Card[] = [];
+    private historic: Historic[] = [];
+    
 
     constructor({room_id, player_host, player_guest, sockets}: Rooms){
         this.room_id = room_id;
@@ -156,6 +165,14 @@ export class GameRoom {
             player: player,
             enemy: opponent,
         });
+        // add action to historic
+        this.historic.push({
+            player: player.id,
+            turn: this.turnNumber,
+            action: "activate",
+            card: card,
+            target: target ? target : undefined,
+        });
         // Possible response to ability card
         const cardFromField = opponent.field.filter((field)=>{
             return !field.empty && field.card && !field.card.isActivate;
@@ -200,7 +217,6 @@ export class GameRoom {
                             target: effect.target
                         })
                         cardFromField.effectOccurred = true;
-                        this.cardsWhoWasActivated.push(cardFromField);
                     }
                 }
             }
@@ -233,6 +249,10 @@ export class GameRoom {
             player,
             opponent
         };
+    }
+
+    get historicGame(){
+        return this.historic;
     }
 
     set changePhase(value: 0 | 1 | 2 | 3){
@@ -298,7 +318,6 @@ export class GameRoom {
         });
 
         this.room_state = 1;
-        this.cardsWhoWasActivated = [];
     }
 
     get winnerPlayer(){

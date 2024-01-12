@@ -2,7 +2,7 @@ import axios from "axios";
 import { env } from "./config";
 
 const instance = axios.create({
-  baseURL: `http://${env.API_SERVER}:3000`,
+  baseURL: env.API_SERVER,
 });
 
 export default instance;

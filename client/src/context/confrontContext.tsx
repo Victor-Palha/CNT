@@ -43,7 +43,7 @@ export function ConfrontProvider({children}: ConfrontProviderProps){
     }
     
     useEffect(()=>{
-        const socket = io(`http://${env.SOCKER_SERVER}:3001`)
+        const socket = io(env.SOCKER_SERVER)
         setSocket(socket)
         getPlayerInformation()
     }, [])

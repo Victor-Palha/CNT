@@ -10,6 +10,7 @@ import { GameState } from "./GameState";
 import { Reaction } from "./Reaction";
 import { Target } from "./Target";
 import { env } from "../../lib/config"
+import { History } from "./History"
 
 type AvatarProps = {
     id_avatar: string;
@@ -41,6 +42,7 @@ export function Game(){
     const [_gameTurn, setGameTurn] = useState<number>(1)
     const [dialog, setDialog] = useState<boolean>(false)
     const [cardDialog, setCardDialog] = useState<Cards | Avatar | undefined>(undefined)
+    const [historic, setHistoric] = useState<Historic[]>([])
     // States for Calculations to pop-up
     // My Avatar
     const [_myAvatarHp, setMyAvatarHp] = useState<number>(0)
@@ -80,7 +82,8 @@ export function Game(){
     const [enemyHand, setEnemyHand] = useState<number>(0)
     const [enemyAvatar, setEnemyAvatar] = useState<AvatarProps>({} as AvatarProps)
     // Render Game
-    function renderGame({gameState, turnOf, player, enemy, inChain, turn}: RenderGame){
+    function renderGame({gameState, turnOf, player, enemy, inChain, turn, history}: RenderGame){
+        setHistoric(history)
         if(gameState === 3 && turnOf === Me.id_player){
             climaxPhase(room_id)
         }
@@ -321,7 +324,7 @@ export function Game(){
     }, [socket])
 
     useEffect(()=>{
-        const socket = io(`http://${env.SOCKER_SERVER}:3001/game`)
+        const socket = io(env.SOCKER_SERVER+"/game")
         setSocket(socket)
     }, [])
 
@@ -341,6 +344,7 @@ export function Game(){
                 <div className="w-full justify-center items-center flex">
                     <GameState phase={phase} isMyTurn={isMyTurn} skip={skipTurn} canSkip={canSkip} inChain={inChain}/>
                 </div>
+                <History historic={historic}/>
                 <MyField 
                     handleDragStart={handleDragStart} 
                     handleSetCards={handleSetCards}
@@ -385,6 +389,7 @@ export function Game(){
 
 type RenderGame = {
     gameState: number
+    history: any[]
     turnOf: string;
     inChain: boolean;
     turn: number;
@@ -447,4 +452,12 @@ export type Field = {
 type ResponseChain = {
     response: Field,
     to_enemy: RenderGame
+}
+
+export type Historic = {
+    player: string;
+    turn: number;
+    action: string;
+    card: Cards;
+    target?: string;
 }

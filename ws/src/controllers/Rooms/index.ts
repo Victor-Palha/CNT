@@ -33,6 +33,19 @@ export class Rooms extends EventEmitter {
         this.io.on('connection', (socket)=>{
             Events(socket, this)
             this.emitRooms()
+
+            socket.on('disconnect', ()=>{
+                this.rooms.forEach((room, index)=>{
+                    const playerIndex = room.players.findIndex((player) => player.socket_id === socket.id)
+                    if(playerIndex !== -1){
+                        room.players.splice(playerIndex, 1)
+                        if(room.players.length === 0){
+                            this.rooms.splice(index, 1)
+                        }
+                    }
+                })
+                this.emitRooms()
+            })
         })
     }
     public emitRooms(){

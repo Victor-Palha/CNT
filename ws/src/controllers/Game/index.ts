@@ -100,6 +100,9 @@ export class Game{
     private connect(){
         this._io.of("/game").on("connection", (socket)=>{
             Events(socket, this)
+            socket.on("disconnect", ()=>{
+                console.log(socket.id, " disconnected")
+            })
         })
     }
 
@@ -109,9 +112,10 @@ export class Game{
 
     public renderGame(room: GameRoom, player_id: string): GameRender{
         const {player, opponent} = room.getPlayers(player_id)
-
+        const historic = room.historicGame
         const playerRender: PlayerRender = {
             gameState: room.roomState,
+            history: historic,
             turnOf: room.turnOwnerPlayer,
             inChain: room.chain,
             turn: room.turnNumber,
@@ -132,6 +136,7 @@ export class Game{
 
         const opponentRender: PlayerRender = {
             gameState: room.roomState,
+            history: historic,
             turnOf: room.turnOwnerPlayer,
             inChain: room.chain,
             turn: room.turnNumber,
@@ -163,6 +168,7 @@ type GameRender = {
 
 type PlayerRender = {
     gameState: number;
+    history: any[];
     turnOf: string;
     inChain: boolean;
     turn: number;
