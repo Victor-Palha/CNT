@@ -24,7 +24,11 @@ export function StartGame(socket: Socket, INSTANCE: Rooms){
                     INSTANCE.io.to(room_id).emit("room_Info", room)
                     INSTANCE.rooms.filter(room => room.room_id !== room_id)
                 })
+            }else {
+                INSTANCE.io.to(room_id).emit("players_not_ready", "Jogadores não estão prontos ou sem deck.")
             }
+        }else {
+            INSTANCE.io.to(room_id).emit("players_not_ready", "Jogadores insuficientes.")
         }
     })
 }

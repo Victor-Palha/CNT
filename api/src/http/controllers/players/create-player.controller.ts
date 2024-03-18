@@ -12,7 +12,7 @@ export async function createPlayerController(req: FastifyRequest, res: FastifyRe
 
     try {
         const service = createPlayerService_make();
-
+        console.log(email)
         const player = await service.execute({
             email,
             username,

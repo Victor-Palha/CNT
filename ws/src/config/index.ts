@@ -9,7 +9,7 @@ const applicationEnvSchema = z.object({
 
 const applicationEnvConfig = applicationEnvSchema.safeParse({
     port: process.env.PORT,
-    host: process.env.HOST,
+    // host: process.env.HOST,
     api: process.env.API
 })
 

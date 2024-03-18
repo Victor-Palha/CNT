@@ -7,7 +7,7 @@ import { env } from "./config"
 const PORT = env.port
 const HOST = env.host
 
-server.listen({port: PORT, host: HOST}, () => {
+server.listen({port: PORT}, () => {
     console.log(`Web Socket Server listening on port ${PORT}`)
     const room = new Rooms(io)
     new Game(io, room)
