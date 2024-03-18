@@ -3,7 +3,6 @@ import fastifyJwt from "@fastify/jwt";
 import fastifyStatic from "@fastify/static";
 import cors from "@fastify/cors";
 import {createServer} from "node:http"
-import { Server } from "socket.io";
 import { env } from "../lib/zod";
 import { PlayerRoutes } from "./http/controllers/players/player.routes";
 import { DeckRoutes } from "./http/controllers/decks/deck.routes";

@@ -324,6 +324,10 @@ export class GameRoom {
         return this.winner;
     }
 
+    set winnerPlayer(value: string | null){
+        this.winner = value;
+    }
+
     get chain(){
         return this.inChain
     }

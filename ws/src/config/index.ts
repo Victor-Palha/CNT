@@ -2,7 +2,7 @@ import "dotenv/config"
 import { z } from "zod"
 
 const applicationEnvSchema = z.object({
-    port: z.coerce.number().default(3002),
+    port: z.coerce.number().default(3001),
     host: z.string().default("0.0.0.0"),
     api: z.string().default("localhost")
 })
