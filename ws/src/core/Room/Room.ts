@@ -32,6 +32,7 @@ export class GameRoom {
     readonly room_id: string;
     private player_host: Player;
     private player_guest: Player;
+    
     private turn: number = 1;
     private turnOwner: string;
     private chainEffects: CardQueue[] = [];
@@ -258,6 +259,7 @@ export class GameRoom {
     set changePhase(value: 0 | 1 | 2 | 3){
         this.room_state = value;
     }
+
     get turnNumber(): number{
         return this.turn;
     }
@@ -331,6 +333,7 @@ export class GameRoom {
     get chain(){
         return this.inChain
     }
+
     set chain(value: boolean){
         this.inChain = value;
     }
