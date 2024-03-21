@@ -1,7 +1,7 @@
 import { Card } from "../Cards/Card";
 import { Player } from "../Players/Player";
 
-interface CardQueue {
+export interface CardQueue {
     field_id: string;
     target: string | null;
     player: Player;
