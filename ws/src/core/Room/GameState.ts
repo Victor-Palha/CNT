@@ -41,8 +41,8 @@ export class GameState {
     public get getChainEffects(){
         return this.chainEffects
     }
-    public set setChainEffects(chain: CardQueue[]){
-        this.chainEffects = chain
+    public set setChainEffects(chain: CardQueue){
+        this.chainEffects.push(chain);
     }
     public get getInChain(){
         return this.inChain
@@ -71,7 +71,17 @@ export class GameState {
     public get getHistoric(){
         return this.historic
     }
-    public set setHistoric(historic: Historic[]){
-        this.historic = historic
+    public set setHistoric(historic: Historic){
+        this.historic.push(historic)
+    }
+
+    public newSocketsPlayers(oldSocket: string, newSocket: string){
+        //delete old socket
+        const index = this.sockets.indexOf(oldSocket);
+        if(index > -1){
+            this.sockets.splice(index, 1);
+        }
+        //add new socket
+        this.sockets.push(newSocket);
     }
 }

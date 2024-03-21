@@ -7,11 +7,16 @@ export function Surrender(socket: Socket, INSTANCE: Game){
         if(!room){
             return socket.emit("error", "Room not found")
         }
-        const {opponent} = room.getPlayers(socket.id)
-        room.winnerPlayer = opponent.id
+        const {opponent} = room.gameLogic.getPlayersRender({
+            player_id: socket.id,
+            player_guest: room.player_guest,
+            player_host: room.player_host
+        })
+
+        room.gameState.setWinner = opponent.id
 
         INSTANCE._io.of("/game").to(room_id).emit("enemy_Surrended", {
-            winner: room.winnerPlayer,
+            winner: room.gameState.getWinner,
             message: "Seu oponente se rendeu! Você venceu!"
         })
     })

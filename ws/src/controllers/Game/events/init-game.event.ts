@@ -13,10 +13,14 @@ export function InitGame(socket: Socket, INSTANCE: Game){
             socket.emit("room_Not_Found")
             return
         }
-        const {player} = room.getPlayers(player_id)
+        const {player} = room.gameLogic.getPlayersRender({
+            player_id,
+            player_guest: room.player_guest,
+            player_host: room.player_host
+        })
         const {to_player} = INSTANCE.renderGame(room, player_id)
 
-        const socketsConnected = room.socketsPlayers
+        const socketsConnected = room.gameState.getSockets
 
         socketsConnected.map((sockets)=>{
             // If socket is the same as the player who is connecting, just send the data to him
@@ -26,7 +30,7 @@ export function InitGame(socket: Socket, INSTANCE: Game){
             // If is a new socket but the player is already connected, send the data to him and replace the socket
             else{
                 
-                room.newSocketsPlayers(sockets, socket.id)
+                room.gameState.newSocketsPlayers(sockets, socket.id)
                 socket.join(room_id)
                 socket.emit("deal_Cards", to_player)
             }

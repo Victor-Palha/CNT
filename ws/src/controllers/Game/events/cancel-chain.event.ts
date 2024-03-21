@@ -12,7 +12,12 @@ export function CancelChain(socket: Socket, INSTANCE: Game){
             socket.emit("room_Not_Found")
             return
         }
-        room.resolveChain()
+        room.gameLogic.resolveChainEffects({
+            effect_queue: room.gameState.getChainEffects
+        })
+        
+        room.gameState.setInChain = false
+
         const {to_player, to_enemy} = INSTANCE.renderGame(room, player_id)
 
         socket.emit("deal_Cards", to_player)

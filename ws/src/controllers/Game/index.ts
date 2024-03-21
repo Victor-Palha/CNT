@@ -4,8 +4,10 @@ import { Rooms } from "../Rooms";
 import { Field, Player } from "../../core/Players/Player";
 import { Avatar } from "../../core/Avatares/Avatar";
 import { Card } from "../../core/Cards/Card";
-import { GameRoom } from "../../core/Room/Room";
 import { Events } from "./factory/game.factory";
+import { GameRoom } from "../../core/Room/GameRoom";
+import { GameLogic } from "../../core/Room/GameLogic";
+import { GameState } from "../../core/Room/GameState";
 
 type NewGame = {
     room_id: string;
@@ -83,11 +85,16 @@ export class Game{
             // setup Sockets
             const sockets = [socketHost, socketGuest]
 
+            const roomLogic = new GameLogic()
+            const roomState = new GameState()
+            roomState.setSockets = sockets
+
             const room = new GameRoom({
                 room_id,
                 player_host: host,
                 player_guest: guest,
-                sockets
+                gameLogic: roomLogic,
+                gameState: roomState
             })
 
             const roomInitialized = room.initGame()
@@ -112,14 +119,24 @@ export class Game{
     }
 
     public renderGame(room: GameRoom, player_id: string): GameRender{
-        const {player, opponent} = room.getPlayers(player_id)
-        const historic = room.historicGame
+        const host = room.player_host
+        const guest = room.player_guest
+
+        const {player, opponent} = room.gameLogic.getPlayersRender({
+            player_id,
+            player_guest: guest,
+            player_host: host
+        })
+
+        const historic = room.gameState.getHistoric
+
         const playerRender: PlayerRender = {
-            gameState: room.roomState,
+            gameState: room.gameState.getRoomState,
             history: historic,
-            turnOf: room.turnOwnerPlayer,
-            inChain: room.chain,
-            turn: room.turnNumber,
+            turnOf: room.gameState.getTurnOwner,
+            inChain: room.gameState.getInChain,
+            turn: room.gameState.getTurnNumber,
+
             player: {
                 canSkip: player.can_skip_turn,
                 hand: player.hand,
@@ -136,11 +153,11 @@ export class Game{
         }
 
         const opponentRender: PlayerRender = {
-            gameState: room.roomState,
+            gameState: room.gameState.getRoomState,
             history: historic,
-            turnOf: room.turnOwnerPlayer,
-            inChain: room.chain,
-            turn: room.turnNumber,
+            turnOf: room.gameState.getTurnOwner,
+            inChain: room.gameState.getInChain,
+            turn: room.gameState.getTurnNumber,
             player: {
                 canSkip: opponent.can_skip_turn,
                 hand: opponent.hand,

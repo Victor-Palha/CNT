@@ -28,7 +28,7 @@ type Historic = {
     target?: string;
 }
 
-export class GameRoom {
+export class OldGameRoom {
     readonly room_id: string;
     private player_host: Player;
     private player_guest: Player;
@@ -55,7 +55,7 @@ export class GameRoom {
         this.sockets = sockets;
     }
 
-    public initGame(): GameRoom{
+    public initGame(): OldGameRoom{
         this.player_host.shuffleDeck();
         this.player_guest.shuffleDeck();
 

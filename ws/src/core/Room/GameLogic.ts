@@ -1,4 +1,5 @@
-import { Player } from "../Players/Player";
+import { Card } from "../Cards/Card";
+import { Field, Player } from "../Players/Player";
 import { ActivateCardOnFieldRequest, ClimaxPhaseResolverRequest, GameLogicRepository, GetPlayersRenderRequest, GetPlayersRenderResponse, InitGameRequest, ResolveChainEffectsRequest, ResolveChainEffectsResponse, SetCardOnFieldRequest, SetCardOnFieldResponse, SkipTurnRequest, SkipTurnResponse } from "../Repository/GameLogic-repository";
 
 
@@ -51,11 +52,12 @@ export class GameLogic implements GameLogicRepository {
     };
 
     public setCardOnField({card, field_id, player}: SetCardOnFieldRequest): SetCardOnFieldResponse{
-        player.setCardOnField(card, field_id)
+        player.setCardOnField(new Card({
+            id_card: card._id,
+            ...card
+        }), field_id)
 
-        return {
-            player
-        }
+        return {player};
     }
     // Add others methods from setCardOnField
     public activateCardOnField({ player_id, field_id, player_guest, player_host }: ActivateCardOnFieldRequest){

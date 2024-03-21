@@ -14,11 +14,17 @@ export function SkipTurn(socket: Socket, INSTANCE: Game){
             return
         }
 
-        const {gameState, turnOwner, id} = room.skipTurn(player_id)
+        const {gameState, new_turn_owner} = room.gameLogic.skipTurn({
+            gameState: room.gameState.getRoomState,
+            player_guest: room.player_guest,
+            player_host: room.player_host,
+            player_id
+        })
+        
         INSTANCE._io.of("/game").to(room_id).emit("skip_Turn", {
-            turnOf: turnOwner,
+            turnOf: new_turn_owner,
             gameState,
-            id
+            id: room.room_id
         })
     })
 }

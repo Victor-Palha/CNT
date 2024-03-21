@@ -15,18 +15,23 @@ export function ClimaxPhase(socket: Socket, INSTANCE: Game){
             return
         }
 
-        if(player_id !== room.turnOwnerPlayer){
+        if(player_id !== room.gameState.getTurnOwner){
             return
         }
-        room.climaxPhase()
+        room.gameLogic.climaxPhaseResolver({
+            player_guest: room.player_guest,
+            player_host: room.player_host
+        })
+
         const {to_player, to_enemy} = INSTANCE.renderGame(room, player_id)
+
         socket.emit("climax_Phase_End", to_player)
         socket.broadcast.to(room_id).emit("climax_Phase_End", to_enemy)
         //
-        if(room.winnerPlayer !== null){
+        if(room.gameState.getWinner !== null){
             INSTANCE._io.of("/game").to(room_id).emit("game_End", {
-                winner: room.winnerPlayer,
-                gameState: room.roomState
+                winner: room.gameState.getWinner,
+                gameState: room.gameState.getRoomState
             })
         }
     })

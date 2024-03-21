@@ -32,7 +32,6 @@ export type ActivateCardOnFieldRequest = {
     player_guest: Player
     player_id: string
     field_id: string
-    target_id: string | undefined
 }
 
 export type ActivateCardOnFieldResponse = {
@@ -78,7 +77,7 @@ export interface GameLogicRepository {
     setTurnOwner: (type: "OFENSIVO" | "DEFENSIVO" | "MODERADO") => number
     setCardOnField: ({card, field_id, player}: SetCardOnFieldRequest) => SetCardOnFieldResponse
     skipTurn: ({gameState, player_guest, player_host, player_id}: SkipTurnRequest) => SkipTurnResponse
-    activateCardOnField: ({player_id, field_id, target_id}: ActivateCardOnFieldRequest) => ActivateCardOnFieldResponse
+    activateCardOnField: ({player_id, field_id, player_guest, player_host}: ActivateCardOnFieldRequest) => ActivateCardOnFieldResponse
     resolveChainEffects: ({effect_queue}: ResolveChainEffectsRequest) => ResolveChainEffectsResponse
     getPlayersRender: ({player_id, player_host, player_guest}: GetPlayersRenderRequest) => GetPlayersRenderResponse
     climaxPhaseResolver: ({player_guest, player_host}: ClimaxPhaseResolverRequest) => ClimaxPhaseResolverWithWinnerResponse | ClimaxPhaseResolverWithoutWinnerResponse
